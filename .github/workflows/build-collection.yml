@@ -50,5 +50,7 @@ jobs:
             git add docs/build-report.txt
             git diff --cached --quiet || git commit -m "Record mascot build diagnostics"
           fi
-          git push origin HEAD:main
+          git fetch origin main || exit 1
+          git rebase origin/main || exit 1
+          git push origin HEAD:main || exit 1
           exit "$result"
