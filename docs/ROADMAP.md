@@ -1,10 +1,17 @@
 # Roadmap
 
-- Starter: GPT code study, comparison reference, searchable static gallery, build commands and agent guide.
-- Next: import the latest GPT and Claude editable sources and individual exports; choose approved proportions.
-- Expressions: grow reviewed packs toward 50 common reactions with matching IDs and emoji aliases.
-- Animation: deterministic idle/blink/reaction loops, GIF/WebP export, static fallback and loop QA.
-- Distribution: individual downloads, pack ZIP releases, GitHub Pages gallery, clear per-pack usage terms.
-- Integrations: evaluate Remotion for reels; add optional narration and agent adapters after the core toolkit works.
+## Available
 
-A public Markdown skill is not an installed ChatGPT/Claude plugin. Agent-specific installation and MCP are not implemented in this starter.
+- Neutral light gallery, text/emoji search, character/mood filters and detail previews.
+- 50 shared expressions × GPT and Claude, exported as PNG/GIF/WebP.
+- Source packs, deterministic Pillow renderer, contact sheets and export validation.
+- GitHub Pages publication from main/root.
+
+## Next
+
+- Improve expression readability and hand poses based on feedback.
+- More expressive multi-part animation and customizable loop timing.
+- SVG character adapters, additional mascots and optional video composition.
+- Optional narration adapters and agent-specific installers after testing.
+
+No voice service, automatic AI generation, Remotion integration or MCP server is provided yet.

@@ -103,7 +103,10 @@ def arms(pose):
 
 
 def font(size):
-    return ImageFont.truetype('DejaVuSansMono.ttf',size)
+    try:
+        return ImageFont.truetype('DejaVuSansMono.ttf',size)
+    except OSError:
+        return ImageFont.load_default(size=size)
 
 
 def center_text(draw, text, y, left, width, size, fill):

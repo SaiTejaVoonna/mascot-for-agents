@@ -1,54 +1,53 @@
 # Mascot for Agents
 
-A community mascot toolkit and searchable emote gallery. Search a mood or emoji, choose GPT or Claude, preview the expression, then download a sticker. Animated loops and additional characters are the next stages.
+**[Open the live gallery](https://saitejavoonna.github.io/mascot-for-agents/)**
 
-**Status: early concept starter.** Ten transparent GPT PNGs and their code-drawn source are included. These are the separate Python expression study, not a replacement for the newer Claude-produced GPT v3 sheet. The supplied comparison sheet records the GPT/Claude concepts. Individual Claude exports and GIFs have not been imported yet. This project is not affiliated with OpenAI or Anthropic.
+A shared character toolkit for reactions, stickers and short animations. Browse 50 matching expressions for GPT and Claude: **100 transparent PNGs, 100 GIF loops and 100 animated WebPs**. Download individual files or a complete character ZIP with editable Python source.
 
-## Start here
+## Quick start
 
 ```sh
 git clone https://github.com/SaiTejaVoonna/mascot-for-agents.git
 cd mascot-for-agents
 python3 -m venv .venv
-# macOS / Linux
+# macOS / Linux:
 . .venv/bin/activate
 # Windows PowerShell instead: .venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
-python tools/build_mascot.py
+python tools/build_collection.py
 python tools/validate_catalog.py
 python -m http.server 8000
 ```
 
-Visit **http://localhost:8000/site/**. Serve the repository root: the gallery fetches JSON and cannot reliably run from a `file://` URL. Viewing/downloading the current gallery needs no model, API key, or paid subscription. A local Python environment is needed only for these preview/build commands.
+Visit http://localhost:8000/. The build runs without API keys or an AI subscription. The gallery itself needs only a browser. Python 3.10+ and Pillow are needed to rebuild exports. DejaVuSansMono is used where installed, otherwise Pillow's default font.
 
-## Use with an agent
+## Collection and formats
 
-Tell any coding agent with filesystem and command access:
+Each mascot has the same 50 expression IDs, including everyday reactions, gestures, work states, joy, surprise and attitude. PNG stickers are 384×384; GIF/WebP loops are 288×288, with 12 authored frames at 90 ms each. Loops use eye blinks, pose motion and expression-specific accents. These are procedural pixel-art studies, not hand-animated final character performances.
 
-> Work in this repository. Read AGENTS.md, then skills/mascot-toolkit/SKILL.md. Find the GPT happy PNG and give me its path. For a new expression, preserve the source silhouette, render a draft, validate the catalog, and show a preview before adding it to the gallery.
+The gallery offers text/emoji search, character and mood filters, static/animated previews, accessible detail dialogs, format-specific downloads, and source packs. Animated previews respect reduced motion; an explicit Play button can preview a loop. Transparent assets contain no card backgrounds or labels.
 
-The repository skill is plain Markdown instructions, not an installed connector. Clone/download the repo and point an agent at it. Chat-only assistants can read the public docs but need an execution environment or another tool to render files. Agents do not receive GitHub access automatically. Installation mechanisms differ by agent; no universal plugin or subscription bridge is provided.
+## Work with any coding agent
 
-## What is included
+> Read AGENTS.md, then skills/mascot-toolkit/SKILL.md. Use the catalog to find an existing expression. Preserve the character identity when editing; rebuild, validate and visually inspect before publishing.
+
+This is a repository workflow, not an installed connector. A coding agent needs a checkout and command access. Chat-only assistants can read the public docs but require an execution tool to render files. GitHub permissions and AI subscriptions are not transferred by this repo.
 
 | Path | Purpose |
 | --- | --- |
-| `AGENTS.md` | Repository rules and first steps |
-| `skills/mascot-toolkit/SKILL.md` | Reusable agent workflow |
-| `site/` | Static search, filters, previews and PNG downloads |
-| `assets/mascots/gpt/` | Ten code-drawn concept PNGs, bitmap source, manifest and layers |
-| `assets/mascots/claude/` | Supplied comparison reference; exports pending |
-| `tools/build_mascot.py` | Deterministic Pillow renderer; writes directly to GPT assets |
-| `tools/validate_catalog.py` | Validate entries, paths, transparency, image readability |
-| `docs/WORKFLOW.md` | New characters, expressions, animations and release sequence |
-| `docs/ROADMAP.md` | What works now and what remains |
+| `index.html` | Root GitHub Pages homepage |
+| `site/` | Website, interactions, styles and catalog v2 |
+| `assets/collection/{gpt,claude}/` | Current PNG, GIF, WebP, contact sheet and manifest exports |
+| `assets/mascots/` | Preserved original studies and comparison reference |
+| `tools/build_collection.py` | Shared 50-expression definitions and deterministic multi-format renderer |
+| `tools/build_mascot.py` | Original GPT silhouette and bitmap drawing helpers |
+| `tools/validate_catalog.py` | Validate exports, alpha, animation changes, unique stills and ZIPs |
+| `packs/` | Downloadable per-character packs with source |
+| `skills/mascot-toolkit/SKILL.md` | Agent workflow |
+| `docs/` | Contribution workflow and roadmap |
 
-The Pillow renderer uses a DejaVuSansMono font when available, with a fallback. Nearest-neighbor scaling preserves pixel edges. Regeneration preserves the authored mascot manifest and writes technical metadata to `render-info.json`.
+## Publishing and contributions
 
-## Contribute
+GitHub Pages publishes `main` at `/ (root)`. Root index uses the gallery's `site/` assets; `/site/` also works. Use a branch for contributions, include source and previews, and run validation before opening a PR. Preserve older reference files.
 
-Make changes on a branch, preserve references, include editable source and exports, validate, and attach previews to the pull request. See [CONTRIBUTING.md](CONTRIBUTING.md). Code is covered by [LICENSE](LICENSE); artwork and represented brands have separate [asset usage notes](assets/README.md). No third-party mascot toolkit has been vendored or installed.
-
-## Website deployment
-
-The site is static-host compatible but **not deployed by this starter**. A GitHub Pages deployment should publish the repository root so both `site/` and `assets/` are available; the gallery entry point is `/site/`. Enable publishing deliberately after reviewing the asset packs. Do not publish only `site/`, because its image paths point to the sibling `assets/` directory.
+This is a community project, not an official OpenAI or Anthropic product. GPT uses the project's mint knot concept; Claude uses a code-drawn Clawd-style character. Code and documentation are MIT licensed; see [asset usage](assets/README.md) for artwork and brand notes. No external mascot skill, image service, TTS service, Remotion dependency or MCP server is bundled.

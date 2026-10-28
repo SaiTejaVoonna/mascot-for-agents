@@ -2,7 +2,7 @@
 
 ## Find an existing emote
 
-Read `site/catalog.json`, choose the mascot and expression, and resolve the PNG path. The gallery adds emoji/synonym aliases. A requested Claude PNG or animated GIF is currently unavailable; do not substitute a comparison sheet and claim it is an individual export.
+Read `site/catalog.json`, choose the mascot and expression, and resolve the PNG path. The gallery adds emoji/synonym aliases. The current version includes both characters in PNG, GIF and animated WebP. Resolve expression files through catalog v2.
 
 ## Add an expression or character
 

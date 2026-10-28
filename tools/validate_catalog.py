@@ -1,27 +1,34 @@
-"""Check the starter catalog and downloadable PNG exports."""
-import json
+"""Validate every downloadable collection export, loop and source pack."""
+import json, hashlib, zipfile
 from pathlib import Path
 from PIL import Image
-
-root = Path(__file__).resolve().parents[1]
-site = root / 'site'
-data = json.loads((site / 'catalog.json').read_text())
-seen = set()
-count = 0
-for mascot in data['mascots']:
-    assert mascot['id'] not in seen, 'Duplicate mascot ID'
-    seen.add(mascot['id'])
-    names = mascot['expressions']
-    assert len(names) == len(set(names)), 'Duplicate expression'
-    for index, name in enumerate(names, 1):
-        file = (site / mascot['assetBase'] / f"{mascot['id']}-{index:02}-{name}.png").resolve()
-        assert file.is_relative_to(root), 'Asset path escapes repository'
-        assert file.is_file(), f'Missing export: {file}'
-        with Image.open(file) as im:
-            im.load()
-            assert im.format == 'PNG', f'Unexpected format: {file}'
-            assert im.mode == 'RGBA', f'PNG lacks alpha: {file}'
-            assert im.getchannel('A').getextrema() == (0, 255), f'Invalid transparency: {file}'
-        count += 1
-assert count, 'No downloadable expressions'
-print(f'Validated {count} PNG exports across {len(seen)} catalog entries.')
+root=Path(__file__).resolve().parents[1]
+data=json.loads((root/'site/catalog.json').read_text())
+assert data['version']==2
+assert len(data['expressions'])==50
+ids=[e['id'] for e in data['expressions']]
+assert len(set(ids))==50
+count=0
+for m in data['mascots']:
+    hashes=[]
+    for e in data['expressions']:
+        for fmt in ('png','gif','webp'):
+            p=(root/'site'/m['base']/f"{e['id']}.{fmt}").resolve()
+            assert p.is_relative_to(root) and p.is_file(),p
+            with Image.open(p) as im:
+                im.load()
+                rgba=im.convert('RGBA');assert rgba.getchannel('A').getextrema()==(0,255),p
+                if fmt=='png':hashes.append(hashlib.sha256(im.tobytes()).hexdigest())
+                else:
+                    assert im.n_frames>1 and im.info.get('loop')==0,p
+                    first=im.convert('RGBA').tobytes();changed=False
+                    for i in range(im.n_frames):
+                        im.seek(i);assert im.convert('RGBA').getchannel('A').getextrema()==(0,255),p
+                        changed|=im.convert('RGBA').tobytes()!=first
+                    assert changed,f'Static animation: {p}'
+            count+=1
+    assert len(set(hashes))==50,f'Duplicate stills in {m["id"]}'
+    with zipfile.ZipFile((root/'site'/m['pack']).resolve()) as z:
+        assert z.testzip() is None
+        assert 'tools/build_collection.py' in z.namelist()
+print(f'Validated {count} exports, 100 distinct character/expression pairs and 2 source ZIPs.')
