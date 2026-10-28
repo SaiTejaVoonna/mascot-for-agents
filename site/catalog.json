@@ -1,0 +1,6 @@
+{
+  "mascots": [
+    {"id":"gpt","name":"GPT knot","creator":"Community concept","assetBase":"../assets/mascots/gpt/","license":"Concept artwork; review rights before redistribution","expressions":["neutral","happy","thinking","confused","skeptical","surprised","smug","embarrassed","annoyed","jealous"]},
+    {"id":"claude","name":"Claude crab","creator":"Reference only","assetBase":"../assets/mascots/claude/","license":"Reference image only; individual downloads pending","expressions":[]}
+  ]
+}

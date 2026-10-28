@@ -1,0 +1,21 @@
+{
+  "canvas": [
+    78,
+    78
+  ],
+  "color": "#84edbd",
+  "expressions": [
+    "gpt-01-neutral.png",
+    "gpt-02-happy.png",
+    "gpt-03-thinking.png",
+    "gpt-04-confused.png",
+    "gpt-05-skeptical.png",
+    "gpt-06-surprised.png",
+    "gpt-07-smug.png",
+    "gpt-08-embarrassed.png",
+    "gpt-09-annoyed.png",
+    "gpt-10-jealous.png"
+  ],
+  "layers": "layers/",
+  "method": "Pillow pixel drawing"
+}
