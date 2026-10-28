@@ -193,7 +193,7 @@ def main():
             assert len(payload)>20, spec[0]
             (out/f'{spec[0]}.webp').write_bytes(payload)
         # Compact contact sheet for review.
-        sheet=Image.new('RGB',(1000,1250),'#f5f2ee');d=ImageDraw.Draw(sheet)
+        sheet=Image.new('RGB',(1000,math.ceil(len(SPECS)/8)*170),'#f5f2ee');d=ImageDraw.Draw(sheet)
         for i,spec in enumerate(SPECS):
             x=(i%8)*125;y=(i//8)*170
             sprite=render(mascot,spec).resize((110,110),Image.Resampling.NEAREST)

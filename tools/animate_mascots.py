@@ -62,7 +62,7 @@ def render(mascot,spec,k=0,animated=False):
         facebox=(29,27,38,30)
     f=face(style,animated and k in (28,29))
     fd=ImageDraw.Draw(f)
-    if not gpt and style=='sad':
+    if style=='sad':
         fd.rectangle((0,5,23,10),fill=(0,0,0,0))
         line(fd,[(2,9),(8,6)],DARK,1);line(fd,[(14,6),(20,9)],DARK,1)
     if name=='angry':
@@ -95,7 +95,7 @@ def render(mascot,spec,k=0,animated=False):
             x=12 if i==0 else 72;d.rectangle((x,36,x+11,47),fill=color);continue
         elbow=(round(origin[0]+(end[0]-origin[0])*.55),round((origin[1]+end[1])*.5+3))
         if not gpt and end[0] in range(35,63):
-            line(d,[origin,elbow,end],DARK,10)
+            line(d,[origin,elbow,end],'#ad6247',10)
         line(d,[origin,elbow,end],color,4 if gpt else 8)
         draw_hand(d,elbow,end,color,gpt,pose,i)
         if name=='pointing' and i==1:d.rectangle((end[0],end[1]-2,end[0]+5,end[1]),fill=color)

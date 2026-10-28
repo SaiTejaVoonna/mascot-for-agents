@@ -1,17 +1,23 @@
 # Roadmap
 
-## Available
+## Available in v5
 
-- Neutral light gallery, text/emoji search, character/mood filters and detail previews.
-- 50 shared expressions × GPT and Claude, exported as PNG/GIF/WebP.
-- Source packs, deterministic Pillow renderer, contact sheets and export validation.
-- GitHub Pages publication from main/root.
+- Light and dark gallery themes, saved manual preference and system-theme default.
+- Text/emoji search, character/mood filters, still and GIF previews.
+- 58 paired reactions per character: 116 PNGs, 116 GIFs and 116 animated WebPs.
+- Fuller GPT outer knot with separate compact hands and moving feet.
+- Claude reference block with attached moving tabs and four block feet.
+- Staged jumps, hand waves, claps, dance/walk cycles, pointing, flag waving, typing, peeking, stumbling and foot tapping.
+- Source ZIPs, manifests, contact sheets and deterministic Pillow renderer.
+- Repository build workflow validates all assets before publishing.
+- Chromium tests cover theme persistence, mobile layout, previews and downloads.
+- GitHub Pages from main/root; legacy asset links retained.
 
-## Next
+## Future
 
-- Improve expression readability and hand poses based on feedback.
-- More expressive multi-part animation and customizable loop timing.
-- SVG character adapters, additional mascots and optional video composition.
-- Optional narration adapters and agent-specific installers after testing.
+- Visual refinement from small-size and loop feedback.
+- User-configurable timing and additional hand poses.
+- More character adapters and optional video composition.
+- Narration adapters and agent-specific installers.
 
-No voice service, automatic AI generation, Remotion integration or MCP server is provided yet.
+Voice synthesis, an MCP server, paid model generation and Remotion integration are not implemented.
