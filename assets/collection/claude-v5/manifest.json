@@ -1,0 +1,618 @@
+{
+  "id": "claude",
+  "name": "Claude",
+  "status": "Community expression study",
+  "source": "tools/build_collection.py",
+  "formats": [
+    "png",
+    "gif",
+    "webp"
+  ],
+  "expressions": [
+    {
+      "id": "neutral",
+      "name": "Neutral",
+      "category": "Everyday",
+      "tags": [
+        "calm",
+        "\ud83d\ude10"
+      ],
+      "motion": "breathe"
+    },
+    {
+      "id": "happy",
+      "name": "Happy",
+      "category": "Joy",
+      "tags": [
+        "smile",
+        "\ud83d\ude0a",
+        "\ud83d\ude04"
+      ],
+      "motion": "bounce"
+    },
+    {
+      "id": "thinking",
+      "name": "Thinking",
+      "category": "Everyday",
+      "tags": [
+        "hmm",
+        "\ud83e\udd14"
+      ],
+      "motion": "tilt"
+    },
+    {
+      "id": "confused",
+      "name": "Confused",
+      "category": "Everyday",
+      "tags": [
+        "what",
+        "\ud83d\ude15"
+      ],
+      "motion": "tilt"
+    },
+    {
+      "id": "skeptical",
+      "name": "Skeptical",
+      "category": "Everyday",
+      "tags": [
+        "doubt",
+        "\ud83e\udd28"
+      ],
+      "motion": "tilt"
+    },
+    {
+      "id": "surprised",
+      "name": "Surprised",
+      "category": "Surprise",
+      "tags": [
+        "wow",
+        "\ud83d\ude2e"
+      ],
+      "motion": "pop"
+    },
+    {
+      "id": "smug",
+      "name": "Smug",
+      "category": "Attitude",
+      "tags": [
+        "heh",
+        "\ud83d\ude0f"
+      ],
+      "motion": "tilt"
+    },
+    {
+      "id": "embarrassed",
+      "name": "Embarrassed",
+      "category": "Shy",
+      "tags": [
+        "oops",
+        "\ud83d\ude33"
+      ],
+      "motion": "sway"
+    },
+    {
+      "id": "annoyed",
+      "name": "Annoyed",
+      "category": "Attitude",
+      "tags": [
+        "irritated",
+        "\ud83d\ude12"
+      ],
+      "motion": "shake"
+    },
+    {
+      "id": "jealous",
+      "name": "Jealous",
+      "category": "Attitude",
+      "tags": [
+        "envy",
+        "jealous"
+      ],
+      "motion": "sway"
+    },
+    {
+      "id": "laughing",
+      "name": "Laughing",
+      "category": "Joy",
+      "tags": [
+        "lol",
+        "\ud83d\ude02"
+      ],
+      "motion": "shake"
+    },
+    {
+      "id": "love",
+      "name": "Love",
+      "category": "Joy",
+      "tags": [
+        "love",
+        "\u2764\ufe0f",
+        "\ud83e\udd70"
+      ],
+      "motion": "bounce"
+    },
+    {
+      "id": "sad",
+      "name": "Sad",
+      "category": "Sad",
+      "tags": [
+        "unhappy",
+        "\ud83d\ude41"
+      ],
+      "motion": "breathe"
+    },
+    {
+      "id": "crying",
+      "name": "Crying",
+      "category": "Sad",
+      "tags": [
+        "cry",
+        "\ud83d\ude22"
+      ],
+      "motion": "sob"
+    },
+    {
+      "id": "angry",
+      "name": "Angry",
+      "category": "Attitude",
+      "tags": [
+        "mad",
+        "\ud83d\ude21"
+      ],
+      "motion": "shake"
+    },
+    {
+      "id": "excited",
+      "name": "Excited",
+      "category": "Joy",
+      "tags": [
+        "yay",
+        "\ud83e\udd29"
+      ],
+      "motion": "bounce"
+    },
+    {
+      "id": "sleepy",
+      "name": "Sleepy",
+      "category": "Everyday",
+      "tags": [
+        "tired",
+        "\ud83e\udd71"
+      ],
+      "motion": "breathe"
+    },
+    {
+      "id": "sleeping",
+      "name": "Sleeping",
+      "category": "Everyday",
+      "tags": [
+        "sleep",
+        "\ud83d\ude34"
+      ],
+      "motion": "breathe"
+    },
+    {
+      "id": "wink",
+      "name": "Wink",
+      "category": "Everyday",
+      "tags": [
+        "\ud83d\ude09"
+      ],
+      "motion": "wave"
+    },
+    {
+      "id": "cool",
+      "name": "Cool",
+      "category": "Attitude",
+      "tags": [
+        "sunglasses",
+        "\ud83d\ude0e"
+      ],
+      "motion": "sway"
+    },
+    {
+      "id": "shocked",
+      "name": "Shocked",
+      "category": "Surprise",
+      "tags": [
+        "\ud83d\ude31",
+        "shock"
+      ],
+      "motion": "pop"
+    },
+    {
+      "id": "worried",
+      "name": "Worried",
+      "category": "Sad",
+      "tags": [
+        "anxious",
+        "\ud83d\ude1f"
+      ],
+      "motion": "sway"
+    },
+    {
+      "id": "nervous",
+      "name": "Nervous",
+      "category": "Shy",
+      "tags": [
+        "\ud83d\ude2c",
+        "nervous"
+      ],
+      "motion": "shake"
+    },
+    {
+      "id": "proud",
+      "name": "Proud",
+      "category": "Attitude",
+      "tags": [
+        "pride"
+      ],
+      "motion": "bounce"
+    },
+    {
+      "id": "celebrating",
+      "name": "Celebrating",
+      "category": "Joy",
+      "tags": [
+        "party",
+        "\ud83c\udf89",
+        "\ud83e\udd73"
+      ],
+      "motion": "wave"
+    },
+    {
+      "id": "hello",
+      "name": "Hello",
+      "category": "Gestures",
+      "tags": [
+        "hi",
+        "hey",
+        "\ud83d\udc4b"
+      ],
+      "motion": "wave"
+    },
+    {
+      "id": "goodbye",
+      "name": "Goodbye",
+      "category": "Gestures",
+      "tags": [
+        "bye",
+        "\ud83d\udc4b"
+      ],
+      "motion": "wave"
+    },
+    {
+      "id": "thanks",
+      "name": "Thanks",
+      "category": "Gestures",
+      "tags": [
+        "thank",
+        "you",
+        "\ud83d\ude4f"
+      ],
+      "motion": "bow"
+    },
+    {
+      "id": "sorry",
+      "name": "Sorry",
+      "category": "Shy",
+      "tags": [
+        "apology",
+        "\ud83e\udd7a"
+      ],
+      "motion": "bow"
+    },
+    {
+      "id": "please",
+      "name": "Please",
+      "category": "Shy",
+      "tags": [
+        "beg",
+        "\ud83e\udd7a"
+      ],
+      "motion": "breathe"
+    },
+    {
+      "id": "yes",
+      "name": "Yes",
+      "category": "Gestures",
+      "tags": [
+        "okay",
+        "\u2705",
+        "\ud83d\udc4d"
+      ],
+      "motion": "nod"
+    },
+    {
+      "id": "no",
+      "name": "No",
+      "category": "Gestures",
+      "tags": [
+        "nope",
+        "\u274c"
+      ],
+      "motion": "shake"
+    },
+    {
+      "id": "facepalm",
+      "name": "Facepalm",
+      "category": "Attitude",
+      "tags": [
+        "\ud83e\udd26",
+        "fail"
+      ],
+      "motion": "tilt"
+    },
+    {
+      "id": "shrug",
+      "name": "Shrug",
+      "category": "Gestures",
+      "tags": [
+        "idk",
+        "\ud83e\udd37"
+      ],
+      "motion": "sway"
+    },
+    {
+      "id": "clapping",
+      "name": "Clapping",
+      "category": "Gestures",
+      "tags": [
+        "applause",
+        "\ud83d\udc4f"
+      ],
+      "motion": "clap"
+    },
+    {
+      "id": "thumbs-up",
+      "name": "Thumbs Up",
+      "category": "Gestures",
+      "tags": [
+        "good",
+        "\ud83d\udc4d"
+      ],
+      "motion": "wave"
+    },
+    {
+      "id": "victory",
+      "name": "Victory",
+      "category": "Joy",
+      "tags": [
+        "win",
+        "\ud83c\udfc6"
+      ],
+      "motion": "bounce"
+    },
+    {
+      "id": "mind-blown",
+      "name": "Mind Blown",
+      "category": "Surprise",
+      "tags": [
+        "\ud83e\udd2f",
+        "mind",
+        "blown"
+      ],
+      "motion": "pop"
+    },
+    {
+      "id": "dizzy",
+      "name": "Dizzy",
+      "category": "Surprise",
+      "tags": [
+        "\ud83d\ude35",
+        "dizzy"
+      ],
+      "motion": "sway"
+    },
+    {
+      "id": "sick",
+      "name": "Sick",
+      "category": "Sad",
+      "tags": [
+        "ill",
+        "\ud83e\udd12"
+      ],
+      "motion": "breathe"
+    },
+    {
+      "id": "hungry",
+      "name": "Hungry",
+      "category": "Everyday",
+      "tags": [
+        "food",
+        "hungry",
+        "\ud83d\ude0b"
+      ],
+      "motion": "bounce"
+    },
+    {
+      "id": "focused",
+      "name": "Focused",
+      "category": "Work",
+      "tags": [
+        "focus",
+        "coding"
+      ],
+      "motion": "breathe"
+    },
+    {
+      "id": "idea",
+      "name": "Idea",
+      "category": "Work",
+      "tags": [
+        "eureka",
+        "\ud83d\udca1"
+      ],
+      "motion": "pop"
+    },
+    {
+      "id": "loading",
+      "name": "Loading",
+      "category": "Work",
+      "tags": [
+        "working",
+        "wait",
+        "\u23f3"
+      ],
+      "motion": "breathe"
+    },
+    {
+      "id": "error",
+      "name": "Error",
+      "category": "Work",
+      "tags": [
+        "bug",
+        "failure",
+        "\ud83d\udea8"
+      ],
+      "motion": "shake"
+    },
+    {
+      "id": "success",
+      "name": "Success",
+      "category": "Work",
+      "tags": [
+        "done",
+        "passed",
+        "\u2705"
+      ],
+      "motion": "bounce"
+    },
+    {
+      "id": "suspicious",
+      "name": "Suspicious",
+      "category": "Attitude",
+      "tags": [
+        "sus",
+        "\ud83e\uddd0"
+      ],
+      "motion": "tilt"
+    },
+    {
+      "id": "bored",
+      "name": "Bored",
+      "category": "Everyday",
+      "tags": [
+        "meh",
+        "\ud83d\ude11"
+      ],
+      "motion": "breathe"
+    },
+    {
+      "id": "determined",
+      "name": "Determined",
+      "category": "Work",
+      "tags": [
+        "ready",
+        "\ud83d\udcaa"
+      ],
+      "motion": "bounce"
+    },
+    {
+      "id": "relieved",
+      "name": "Relieved",
+      "category": "Everyday",
+      "tags": [
+        "phew",
+        "\ud83d\ude0c"
+      ],
+      "motion": "bow"
+    },
+    {
+      "id": "walking",
+      "name": "Walking",
+      "category": "Actions",
+      "tags": [
+        "walk",
+        "steps",
+        "\ud83d\udeb6"
+      ],
+      "motion": "walk"
+    },
+    {
+      "id": "dancing",
+      "name": "Dancing",
+      "category": "Actions",
+      "tags": [
+        "dance",
+        "groove",
+        "\ud83d\udc83"
+      ],
+      "motion": "dance"
+    },
+    {
+      "id": "pointing",
+      "name": "Pointing",
+      "category": "Actions",
+      "tags": [
+        "point",
+        "look",
+        "\ud83d\udc49"
+      ],
+      "motion": "point"
+    },
+    {
+      "id": "flag-waving",
+      "name": "Flag Waving",
+      "category": "Actions",
+      "tags": [
+        "flag",
+        "cheer",
+        "\ud83d\udea9"
+      ],
+      "motion": "flag"
+    },
+    {
+      "id": "typing",
+      "name": "Typing",
+      "category": "Work",
+      "tags": [
+        "type",
+        "keyboard",
+        "laptop",
+        "\u2328\ufe0f"
+      ],
+      "motion": "type"
+    },
+    {
+      "id": "peeking",
+      "name": "Peeking",
+      "category": "Actions",
+      "tags": [
+        "peek",
+        "hide",
+        "\ud83e\udee3"
+      ],
+      "motion": "peek"
+    },
+    {
+      "id": "stumbling",
+      "name": "Stumbling",
+      "category": "Actions",
+      "tags": [
+        "stumble",
+        "trip",
+        "balance"
+      ],
+      "motion": "stumble"
+    },
+    {
+      "id": "foot-tap",
+      "name": "Foot Tap",
+      "category": "Actions",
+      "tags": [
+        "tap",
+        "impatient",
+        "foot"
+      ],
+      "motion": "tap"
+    }
+  ],
+  "revision": "v5",
+  "frames": 36,
+  "durationMs": 2520,
+  "canvas": [
+    96,
+    96
+  ]
+}

@@ -1,0 +1,6 @@
+Built 116 PNGs, 116 GIF loops, 116 animated WebPs and two source packs.
+Validated 348 exports, 116 distinct character/expression pairs and 2 source ZIPs.
+/home/runner/work/mascot-for-agents/mascot-for-agents/tools/check_claude_shape.py:9: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  mask.putdata([255 if p[:3]==color and p[3] else 0 for p in im.getdata()])
+Reference Claude block, both moving rigs and 4,176 animation poses verified without canvas clipping.
+Gallery verified: 116 reactions, dark-mode persistence, mobile width, GIF preview, PNG/GIF/WebP and ZIP downloads.

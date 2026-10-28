@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "expressions": [
     {
       "id": "neutral",
@@ -509,20 +509,109 @@
         "😌"
       ],
       "motion": "bow"
+    },
+    {
+      "id": "walking",
+      "name": "Walking",
+      "category": "Actions",
+      "tags": [
+        "walk",
+        "steps",
+        "🚶"
+      ],
+      "motion": "walk"
+    },
+    {
+      "id": "dancing",
+      "name": "Dancing",
+      "category": "Actions",
+      "tags": [
+        "dance",
+        "groove",
+        "💃"
+      ],
+      "motion": "dance"
+    },
+    {
+      "id": "pointing",
+      "name": "Pointing",
+      "category": "Actions",
+      "tags": [
+        "point",
+        "look",
+        "👉"
+      ],
+      "motion": "point"
+    },
+    {
+      "id": "flag-waving",
+      "name": "Flag Waving",
+      "category": "Actions",
+      "tags": [
+        "flag",
+        "cheer",
+        "🚩"
+      ],
+      "motion": "flag"
+    },
+    {
+      "id": "typing",
+      "name": "Typing",
+      "category": "Work",
+      "tags": [
+        "type",
+        "keyboard",
+        "laptop",
+        "⌨️"
+      ],
+      "motion": "type"
+    },
+    {
+      "id": "peeking",
+      "name": "Peeking",
+      "category": "Actions",
+      "tags": [
+        "peek",
+        "hide",
+        "🫣"
+      ],
+      "motion": "peek"
+    },
+    {
+      "id": "stumbling",
+      "name": "Stumbling",
+      "category": "Actions",
+      "tags": [
+        "stumble",
+        "trip",
+        "balance"
+      ],
+      "motion": "stumble"
+    },
+    {
+      "id": "foot-tap",
+      "name": "Foot Tap",
+      "category": "Actions",
+      "tags": [
+        "tap",
+        "impatient",
+        "foot"
+      ],
+      "motion": "tap"
     }
   ],
   "mascots": [
     {
       "id": "gpt",
       "name": "GPT",
-      "base": "../assets/collection/gpt/",
-      "pack": "../packs/gpt-50-emotes-v4.zip"
+      "base": "../assets/collection/gpt-v5/",
+      "pack": "../packs/gpt-58-emotes-v5.zip"
     },
     {
       "id": "claude",
       "name": "Claude",
-      "base": "../assets/collection/claude-v4/",
-      "pack": "../packs/claude-50-emotes-v4.zip"
+      "base": "../assets/collection/claude-v5/",
+      "pack": "../packs/claude-58-emotes-v5.zip"
     }
   ]
 }
