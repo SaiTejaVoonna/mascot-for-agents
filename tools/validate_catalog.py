@@ -4,10 +4,10 @@ from pathlib import Path
 from PIL import Image
 root=Path(__file__).resolve().parents[1]
 data=json.loads((root/'site/catalog.json').read_text())
-assert data['version']==2
-assert len(data['expressions'])==50
+assert data['version']==3
+assert len(data['expressions'])==58
 ids=[e['id'] for e in data['expressions']]
-assert len(set(ids))==50
+assert len(set(ids))==58
 count=0
 for m in data['mascots']:
     hashes=[]
@@ -27,8 +27,9 @@ for m in data['mascots']:
                         changed|=im.convert('RGBA').tobytes()!=first
                     assert changed,f'Static animation: {p}'
             count+=1
-    assert len(set(hashes))==50,f'Duplicate stills in {m["id"]}'
+    assert len(set(hashes))==58,f'Duplicate stills in {m["id"]}'
     with zipfile.ZipFile((root/'site'/m['pack']).resolve()) as z:
         assert z.testzip() is None
         assert 'tools/build_collection.py' in z.namelist()
-print(f'Validated {count} exports, 100 distinct character/expression pairs and 2 source ZIPs.')
+        assert 'tools/animate_mascots.py' in z.namelist()
+print(f'Validated {count} exports, 116 distinct character/expression pairs and 2 source ZIPs.')

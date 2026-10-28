@@ -1,4 +1,4 @@
-"""Build 50 paired emotes as transparent PNG, GIF and animated WebP.
+"""Build 58 paired emotes as transparent PNG, GIF and animated WebP.
 No API keys or model calls. Run from any working directory.
 """
 from pathlib import Path
@@ -59,7 +59,19 @@ SPECS=[
 ('determined','angry','hips','flame','bounce','Work','ready 💪'),
 ('relieved','closed','down','sigh','bow','Everyday','phew 😌'),
 ]
-DARK='#202531';MINT='#50bd94';ORANGE='#d77757';BLUE='#4386e6';GOLD='#e6ac38';PINK='#ef839f'
+
+SPECS += [
+('walking','open','down','none','walk','Actions','walk steps 🚶'),
+('dancing','happy','up','none','dance','Actions','dance groove 💃'),
+('pointing','open','raise','none','point','Actions','point look 👉'),
+('flag-waving','happy','raise','none','flag','Actions','flag cheer 🚩'),
+('typing','angry','chin','none','type','Work','type keyboard laptop ⌨️'),
+('peeking','uneven','hug','none','peek','Actions','peek hide 🫣'),
+('stumbling','wide','shrug','none','stumble','Actions','stumble trip balance'),
+('foot-tap','half','down','none','tap','Actions','tap impatient foot'),
+]
+
+DARK='#202531';MINT='#79dfb0';ORANGE='#d77757';BLUE='#4386e6';GOLD='#e6ac38';PINK='#ef839f'
 def line(d,points,fill=DARK,width=2):d.line(points,fill=fill,width=width)
 def heart(d,x,y,c,size=1):
     pts=[(0,1),(1,0),(2,0),(3,1),(4,0),(5,0),(6,1),(6,3),(3,6),(0,3)]
@@ -143,52 +155,8 @@ def fx(im,effect,k):
     elif effect=='snack':d.rectangle((75,12,89,21),fill='#b88c56');line(d,[(75,15),(89,15)],'#e8b76f',2)
 
 def render(mascot,spec,k=0,animated=False):
-    name,style,pose,effect,motion,category,tags=spec
-    color=MINT if mascot=='gpt' else ORANGE
-    im=Image.new('RGBA',(96,96))
-    if mascot=='gpt':
-        body=silhouette()
-        # Recolor to richer mint for contrast against the new pale stages.
-        px=Image.new('RGBA',body.size,color);px.putalpha(body.getchannel('A'));im.alpha_composite(px,(9,9))
-        facebox=(37,34,24,26)
-    else:
-        d=ImageDraw.Draw(im)
-        # Reference identity: flat rectangular block, side tabs, four short legs.
-        # Claude has no separate arms or hands; retain its expressive mouth.
-        d.rectangle((24,24,71,59),fill=color)
-        d.rectangle((12,36,83,47),fill=color)
-        for x in [24,38,52,66]:d.rectangle((x,60,x+5,71),fill=color)
-        facebox=(29,27,38,30)
-    if mascot=='gpt':
-        im.alpha_composite(hand_layer(pose,color,math.sin(k*math.pi/6)))
-    f=face(style,animated and k in (9,10))
-    if mascot=='claude':
-        fd=ImageDraw.Draw(f)
-        if style=='sad':
-            # Lift the inner eyebrows: sadness must not read as anger.
-            fd.rectangle((0,5,23,10),fill=(0,0,0,0))
-            line(fd,[(2,9),(8,6)],width=1);line(fd,[(14,6),(20,9)],width=1)
-        if name=='angry':
-            line(fd,[(1,7),(8,11)],width=3);line(fd,[(14,11),(21,7)],width=3)
-        elif name=='laughing':
-            fd.rectangle((8,19,15,24),fill=DARK)
-            fd.rectangle((10,23,13,24),fill=PINK)
-    im.alpha_composite(f.resize(facebox[2:],Image.Resampling.NEAREST),facebox[:2])
-    fx(im,'check' if mascot=='claude' and effect=='thumb' else effect,k)
-    if mascot=='claude' and name=='success':
-        cd=ImageDraw.Draw(im);line(cd,[(12,15),(18,15)],GOLD,2);line(cd,[(15,12),(15,18)],GOLD,2)
-    dx=dy=0
-    if animated:
-        a=k*math.pi/6
-        if motion in ('bounce','pop'):dy=-round(abs(math.sin(a))* (3 if motion=='bounce' else 5))
-        elif motion in ('sway','shake'):dx=round(math.sin(a)*(2 if motion=='sway' else 1))
-        elif motion in ('breathe','sob','nod','bow'):dy=round(math.sin(a)*(2 if motion in ('nod','bow') else 1))
-        elif motion=='tilt':dx=round(math.sin(a))
-        if motion=='wave' and mascot=='gpt':
-            # Animated raised hand pulses above a fixed shoulder.
-            d=ImageDraw.Draw(im);y=39-round(math.sin(a)*4);d.rectangle((83,y-2,88,y+3),fill=color)
-        shifted=Image.new('RGBA',im.size);shifted.alpha_composite(im,(dx,dy));im=shifted
-    return im
+    from animate_mascots import render as articulated_render
+    return articulated_render(mascot,spec,k,animated)
 
 def gif_frame(im):
     # Stable palette: reserve index zero for transparency in every frame.
@@ -204,20 +172,26 @@ def gif_frame(im):
 def main():
     (ROOT/'packs').mkdir(parents=True,exist_ok=True)
     (ROOT/'site').mkdir(parents=True,exist_ok=True)
-    catalog={'version':2,'expressions':[],'mascots':[]}
+    from animate_mascots import FRAMES, FRAME_MS
+    catalog={'version':3,'expressions':[],'mascots':[]}
     expressions=[{'id':s[0],'name':s[0].replace('-',' ').title(),'category':s[5],'tags':s[6].split(),'motion':s[4]} for s in SPECS]
     catalog['expressions']=expressions
     for mascot in ['gpt','claude']:
-        folder='claude-v4' if mascot=='claude' else 'gpt'
+        folder=f'{mascot}-v5'
         out=ROOT/'assets'/'collection'/folder;out.mkdir(parents=True,exist_ok=True)
         for spec in SPECS:
             still=render(mascot,spec)
             still.resize((384,384),Image.Resampling.NEAREST).save(out/f'{spec[0]}.png')
-            frames=[render(mascot,spec,k,True) for k in range(12)]
+            frames=[render(mascot,spec,k,True) for k in range(FRAMES)]
             gifs=[gif_frame(f) for f in frames]
-            gifs[0].save(out/f'{spec[0]}.gif',save_all=True,append_images=gifs[1:],duration=90,loop=0,transparency=0,disposal=2,optimize=False)
+            gifs[0].save(out/f'{spec[0]}.gif',save_all=True,append_images=gifs[1:],duration=FRAME_MS,loop=0,transparency=0,disposal=2,optimize=False)
             webps=[f.resize((288,288),Image.Resampling.NEAREST) for f in frames]
-            webps[0].save(out/f'{spec[0]}.webp',save_all=True,append_images=webps[1:],duration=90,loop=0,lossless=True)
+            from io import BytesIO
+            buffer=BytesIO()
+            webps[0].save(buffer,format='WEBP',save_all=True,append_images=webps[1:],duration=FRAME_MS,loop=0,lossless=True,method=4)
+            payload=buffer.getvalue()
+            assert len(payload)>20, spec[0]
+            (out/f'{spec[0]}.webp').write_bytes(payload)
         # Compact contact sheet for review.
         sheet=Image.new('RGB',(1000,1250),'#f5f2ee');d=ImageDraw.Draw(sheet)
         for i,spec in enumerate(SPECS):
@@ -225,13 +199,13 @@ def main():
             sprite=render(mascot,spec).resize((110,110),Image.Resampling.NEAREST)
             sheet.paste(sprite,(x+7,y+10),sprite);d.text((x+5,y+126),spec[0],fill=DARK,font=ImageFont.load_default(size=12))
         sheet.save(out/'contact-sheet.jpg',quality=90)
-        manifest={'id':mascot,'name':'GPT' if mascot=='gpt' else 'Claude','status':'Community expression study','source':'tools/build_collection.py','formats':['png','gif','webp'],'expressions':expressions,'revision':'v4' if mascot=='claude' else 'v2','frames':12,'durationMs':1080,'canvas':[96,96]}
+        manifest={'id':mascot,'name':'GPT' if mascot=='gpt' else 'Claude','status':'Community expression study','source':'tools/build_collection.py','formats':['png','gif','webp'],'expressions':expressions,'revision':'v5','frames':FRAMES,'durationMs':FRAMES*FRAME_MS,'canvas':[96,96]}
         (out/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
-        with zipfile.ZipFile(ROOT/'packs'/f'{mascot}-50-emotes-v4.zip','w',zipfile.ZIP_DEFLATED) as z:
+        with zipfile.ZipFile(ROOT/'packs'/f'{mascot}-58-emotes-v5.zip','w',zipfile.ZIP_DEFLATED) as z:
             for f in out.iterdir():z.write(f,f'{mascot}/{f.name}')
-            for f in [ROOT/'tools/build_collection.py',ROOT/'tools/build_mascot.py',ROOT/'requirements.txt',ROOT/'README.md',ROOT/'tools/validate_catalog.py',ROOT/'tools/check_claude_shape.py',ROOT/'AGENTS.md',ROOT/'docs/CLAUDE_REFERENCE.md',ROOT/'index.html',ROOT/'site/index.html',ROOT/'site/app.js',ROOT/'site/style.css',ROOT/'assets/README.md',ROOT/'assets/mascots/gpt/silhouette.json']:
+            for f in [ROOT/'tools/animate_mascots.py',ROOT/'tools/build_collection.py',ROOT/'tools/build_mascot.py',ROOT/'requirements.txt',ROOT/'README.md',ROOT/'tools/validate_catalog.py',ROOT/'tools/check_claude_shape.py',ROOT/'AGENTS.md',ROOT/'docs/CLAUDE_REFERENCE.md',ROOT/'index.html',ROOT/'site/index.html',ROOT/'site/app.js',ROOT/'site/style.css',ROOT/'assets/README.md',ROOT/'assets/mascots/gpt/silhouette.json']:
                 z.write(f,f.relative_to(ROOT))
-        catalog['mascots'].append({'id':mascot,'name':'GPT' if mascot=='gpt' else 'Claude','base':f'../assets/collection/{folder}/','pack':f'../packs/{mascot}-50-emotes-v4.zip'})
+        catalog['mascots'].append({'id':mascot,'name':'GPT' if mascot=='gpt' else 'Claude','base':f'../assets/collection/{folder}/','pack':f'../packs/{mascot}-58-emotes-v5.zip'})
     (ROOT/'site/catalog.json').write_text(json.dumps(catalog,ensure_ascii=False,indent=2)+'\n')
-    print('Built 100 PNGs, 100 GIF loops, 100 animated WebPs and two source packs.')
+    print('Built 116 PNGs, 116 GIF loops, 116 animated WebPs and two source packs.')
 if __name__=='__main__':main()

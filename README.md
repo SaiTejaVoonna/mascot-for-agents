@@ -54,3 +54,21 @@ GitHub Pages publishes `main` at `/ (root)`. Root index uses the gallery's `site
 This is a community project, not an official OpenAI or Anthropic product. GPT uses the project's mint knot concept; Claude uses a code-drawn Clawd-style character. Code and documentation are MIT licensed; see [asset usage](assets/README.md) for artwork and brand notes. No external mascot skill, image service, TTS service, Remotion dependency or MCP server is bundled.
 
 Claude revision v4 restores straight sides, a flat top, block side tabs and four short rectangular legs. It retains the mouth, fixes the sad eyebrow direction, and uses versioned asset/pack paths to avoid stale images. Earlier Claude folders are legacy exports, not the active gallery pack.
+
+
+### Expressive motion and dark mode (v5)
+
+Both characters now have 58 paired reactions: the original 50 plus walking, dancing, pointing, flag waving, typing, peeking, stumbling and foot tapping. The procedural renderer articulates hands, feet and body with preparation, a held gesture and recovery. Each loop has 36 authored poses at 70 ms (2.52 seconds); encoders may combine identical consecutive frames.
+
+GPT keeps its reference knot with fuller outer strands and a compact face. Claude keeps the flat original resting block; its existing side tabs act as attached chunky hands during movement. These are community character studies.
+
+The gallery has light/dark themes: it follows the system setting until you choose the sun/moon button, then remembers that choice on your device.
+
+```sh
+python -m pip install -r requirements.txt
+python tools/build_collection.py
+python tools/validate_catalog.py
+python tools/check_claude_shape.py
+```
+
+The workflow `.github/workflows/build-collection.yml` runs these checks before committing generated v5 assets and packs. Render code is in `tools/animate_mascots.py`; the catalog is generated from `SPECS` in `tools/build_collection.py`. PNG stickers are 384 px; GIF and animated WebP are 288 px with transparency. Keep the pixel grid crisp when scaling.
