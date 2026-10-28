@@ -516,13 +516,13 @@
       "id": "gpt",
       "name": "GPT",
       "base": "../assets/collection/gpt/",
-      "pack": "../packs/gpt-50-emotes.zip"
+      "pack": "../packs/gpt-50-emotes-v4.zip"
     },
     {
       "id": "claude",
       "name": "Claude",
-      "base": "../assets/collection/claude/",
-      "pack": "../packs/claude-50-emotes.zip"
+      "base": "../assets/collection/claude-v4/",
+      "pack": "../packs/claude-50-emotes-v4.zip"
     }
   ]
 }

@@ -16,6 +16,7 @@ python3 -m venv .venv
 python -m pip install -r requirements.txt
 python tools/build_collection.py
 python tools/validate_catalog.py
+python tools/check_claude_shape.py
 python -m http.server 8000
 ```
 
@@ -37,7 +38,7 @@ This is a repository workflow, not an installed connector. A coding agent needs 
 | --- | --- |
 | `index.html` | Root GitHub Pages homepage |
 | `site/` | Website, interactions, styles and catalog v2 |
-| `assets/collection/{gpt,claude}/` | Current PNG, GIF, WebP, contact sheet and manifest exports |
+| `assets/collection/{gpt,claude-v4}/` | Current PNG, GIF, WebP, contact sheet and manifest exports |
 | `assets/mascots/` | Preserved original studies and comparison reference |
 | `tools/build_collection.py` | Shared 50-expression definitions and deterministic multi-format renderer |
 | `tools/build_mascot.py` | Original GPT silhouette and bitmap drawing helpers |
@@ -51,3 +52,5 @@ This is a repository workflow, not an installed connector. A coding agent needs 
 GitHub Pages publishes `main` at `/ (root)`. Root index uses the gallery's `site/` assets; `/site/` also works. Use a branch for contributions, include source and previews, and run validation before opening a PR. Preserve older reference files.
 
 This is a community project, not an official OpenAI or Anthropic product. GPT uses the project's mint knot concept; Claude uses a code-drawn Clawd-style character. Code and documentation are MIT licensed; see [asset usage](assets/README.md) for artwork and brand notes. No external mascot skill, image service, TTS service, Remotion dependency or MCP server is bundled.
+
+Claude revision v4 restores straight sides, a flat top, block side tabs and four short rectangular legs. It retains the mouth, fixes the sad eyebrow direction, and uses versioned asset/pack paths to avoid stale images. Earlier Claude folders are legacy exports, not the active gallery pack.

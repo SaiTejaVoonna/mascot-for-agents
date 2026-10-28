@@ -59,7 +59,7 @@ SPECS=[
 ('determined','angry','hips','flame','bounce','Work','ready 💪'),
 ('relieved','closed','down','sigh','bow','Everyday','phew 😌'),
 ]
-DARK='#202531';MINT='#50bd94';ORANGE='#d57955';BLUE='#4386e6';GOLD='#e6ac38';PINK='#ef839f'
+DARK='#202531';MINT='#50bd94';ORANGE='#d77757';BLUE='#4386e6';GOLD='#e6ac38';PINK='#ef839f'
 def line(d,points,fill=DARK,width=2):d.line(points,fill=fill,width=width)
 def heart(d,x,y,c,size=1):
     pts=[(0,1),(1,0),(2,0),(3,1),(4,0),(5,0),(6,1),(6,3),(3,6),(0,3)]
@@ -155,15 +155,19 @@ def render(mascot,spec,k=0,animated=False):
         d=ImageDraw.Draw(im)
         # Reference identity: flat rectangular block, side tabs, four short legs.
         # Claude has no separate arms or hands; retain its expressive mouth.
-        d.rectangle((21,29,75,59),fill=color)
-        d.rectangle((12,38,84,47),fill=color)
-        for x in [27,39,51,63]:d.rectangle((x,60,x+6,69),fill='#ad6247')
-        facebox=(35,32,26,25)
+        d.rectangle((24,24,71,59),fill=color)
+        d.rectangle((12,36,83,47),fill=color)
+        for x in [24,38,52,66]:d.rectangle((x,60,x+5,71),fill=color)
+        facebox=(29,27,38,30)
     if mascot=='gpt':
         im.alpha_composite(hand_layer(pose,color,math.sin(k*math.pi/6)))
     f=face(style,animated and k in (9,10))
     if mascot=='claude':
         fd=ImageDraw.Draw(f)
+        if style=='sad':
+            # Lift the inner eyebrows: sadness must not read as anger.
+            fd.rectangle((0,5,23,10),fill=(0,0,0,0))
+            line(fd,[(2,9),(8,6)],width=1);line(fd,[(14,6),(20,9)],width=1)
         if name=='angry':
             line(fd,[(1,7),(8,11)],width=3);line(fd,[(14,11),(21,7)],width=3)
         elif name=='laughing':
@@ -204,7 +208,8 @@ def main():
     expressions=[{'id':s[0],'name':s[0].replace('-',' ').title(),'category':s[5],'tags':s[6].split(),'motion':s[4]} for s in SPECS]
     catalog['expressions']=expressions
     for mascot in ['gpt','claude']:
-        out=ROOT/'assets'/'collection'/mascot;out.mkdir(parents=True,exist_ok=True)
+        folder='claude-v4' if mascot=='claude' else 'gpt'
+        out=ROOT/'assets'/'collection'/folder;out.mkdir(parents=True,exist_ok=True)
         for spec in SPECS:
             still=render(mascot,spec)
             still.resize((384,384),Image.Resampling.NEAREST).save(out/f'{spec[0]}.png')
@@ -220,13 +225,13 @@ def main():
             sprite=render(mascot,spec).resize((110,110),Image.Resampling.NEAREST)
             sheet.paste(sprite,(x+7,y+10),sprite);d.text((x+5,y+126),spec[0],fill=DARK,font=ImageFont.load_default(size=12))
         sheet.save(out/'contact-sheet.jpg',quality=90)
-        manifest={'id':mascot,'name':'GPT' if mascot=='gpt' else 'Claude','status':'Community expression study','source':'tools/build_collection.py','formats':['png','gif','webp'],'expressions':expressions,'frames':12,'durationMs':1080,'canvas':[96,96]}
+        manifest={'id':mascot,'name':'GPT' if mascot=='gpt' else 'Claude','status':'Community expression study','source':'tools/build_collection.py','formats':['png','gif','webp'],'expressions':expressions,'revision':'v4' if mascot=='claude' else 'v2','frames':12,'durationMs':1080,'canvas':[96,96]}
         (out/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
-        with zipfile.ZipFile(ROOT/'packs'/f'{mascot}-50-emotes.zip','w',zipfile.ZIP_DEFLATED) as z:
+        with zipfile.ZipFile(ROOT/'packs'/f'{mascot}-50-emotes-v4.zip','w',zipfile.ZIP_DEFLATED) as z:
             for f in out.iterdir():z.write(f,f'{mascot}/{f.name}')
-            for f in [ROOT/'tools/build_collection.py',ROOT/'tools/build_mascot.py',ROOT/'requirements.txt',ROOT/'README.md',ROOT/'tools/validate_catalog.py',ROOT/'index.html',ROOT/'site/index.html',ROOT/'site/app.js',ROOT/'site/style.css',ROOT/'assets/README.md',ROOT/'assets/mascots/gpt/silhouette.json']:
+            for f in [ROOT/'tools/build_collection.py',ROOT/'tools/build_mascot.py',ROOT/'requirements.txt',ROOT/'README.md',ROOT/'tools/validate_catalog.py',ROOT/'tools/check_claude_shape.py',ROOT/'AGENTS.md',ROOT/'docs/CLAUDE_REFERENCE.md',ROOT/'index.html',ROOT/'site/index.html',ROOT/'site/app.js',ROOT/'site/style.css',ROOT/'assets/README.md',ROOT/'assets/mascots/gpt/silhouette.json']:
                 z.write(f,f.relative_to(ROOT))
-        catalog['mascots'].append({'id':mascot,'name':'GPT' if mascot=='gpt' else 'Claude','base':f'../assets/collection/{mascot}/','pack':f'../packs/{mascot}-50-emotes.zip'})
+        catalog['mascots'].append({'id':mascot,'name':'GPT' if mascot=='gpt' else 'Claude','base':f'../assets/collection/{folder}/','pack':f'../packs/{mascot}-50-emotes-v4.zip'})
     (ROOT/'site/catalog.json').write_text(json.dumps(catalog,ensure_ascii=False,indent=2)+'\n')
     print('Built 100 PNGs, 100 GIF loops, 100 animated WebPs and two source packs.')
 if __name__=='__main__':main()
