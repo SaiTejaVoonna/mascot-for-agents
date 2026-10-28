@@ -153,15 +153,26 @@ def render(mascot,spec,k=0,animated=False):
         facebox=(37,34,24,26)
     else:
         d=ImageDraw.Draw(im)
-        # Recognizable Clawd-style stepped body, side claws and four feet.
-        d.rectangle((19,29,77,59),fill=color);d.rectangle((27,24,69,59),fill=color)
-        d.rectangle((11,36,84,45),fill=color)
-        for x in [27,39,51,63]:d.rectangle((x,60,x+6,69),fill=color)
+        # Reference identity: flat rectangular block, side tabs, four short legs.
+        # Claude has no separate arms or hands; retain its expressive mouth.
+        d.rectangle((21,29,75,59),fill=color)
+        d.rectangle((12,38,84,47),fill=color)
+        for x in [27,39,51,63]:d.rectangle((x,60,x+6,69),fill='#ad6247')
         facebox=(35,32,26,25)
-    im.alpha_composite(hand_layer(pose,color,math.sin(k*math.pi/6)))
+    if mascot=='gpt':
+        im.alpha_composite(hand_layer(pose,color,math.sin(k*math.pi/6)))
     f=face(style,animated and k in (9,10))
+    if mascot=='claude':
+        fd=ImageDraw.Draw(f)
+        if name=='angry':
+            line(fd,[(1,7),(8,11)],width=3);line(fd,[(14,11),(21,7)],width=3)
+        elif name=='laughing':
+            fd.rectangle((8,19,15,24),fill=DARK)
+            fd.rectangle((10,23,13,24),fill=PINK)
     im.alpha_composite(f.resize(facebox[2:],Image.Resampling.NEAREST),facebox[:2])
-    fx(im,effect,k)
+    fx(im,'check' if mascot=='claude' and effect=='thumb' else effect,k)
+    if mascot=='claude' and name=='success':
+        cd=ImageDraw.Draw(im);line(cd,[(12,15),(18,15)],GOLD,2);line(cd,[(15,12),(15,18)],GOLD,2)
     dx=dy=0
     if animated:
         a=k*math.pi/6
@@ -169,7 +180,7 @@ def render(mascot,spec,k=0,animated=False):
         elif motion in ('sway','shake'):dx=round(math.sin(a)*(2 if motion=='sway' else 1))
         elif motion in ('breathe','sob','nod','bow'):dy=round(math.sin(a)*(2 if motion in ('nod','bow') else 1))
         elif motion=='tilt':dx=round(math.sin(a))
-        if motion=='wave':
+        if motion=='wave' and mascot=='gpt':
             # Animated raised hand pulses above a fixed shoulder.
             d=ImageDraw.Draw(im);y=39-round(math.sin(a)*4);d.rectangle((83,y-2,88,y+3),fill=color)
         shifted=Image.new('RGBA',im.size);shifted.alpha_composite(im,(dx,dy));im=shifted
@@ -178,7 +189,7 @@ def render(mascot,spec,k=0,animated=False):
 def gif_frame(im):
     # Stable palette: reserve index zero for transparency in every frame.
     rgba=im.resize((288,288),Image.Resampling.NEAREST)
-    palette=Image.new('P',(1,1));colors=['#000000',MINT,ORANGE,DARK,BLUE,GOLD,PINK,'#9b83c7','#73a8d5','#d75353','#9f8bc7','#47976f','#ce655c','#c9d3df','#ea8d42','#b88c56','#e8b76f','#ffffff','#6d8094']
+    palette=Image.new('P',(1,1));colors=['#000000',MINT,ORANGE,DARK,BLUE,GOLD,PINK,'#9b83c7','#73a8d5','#d75353','#9f8bc7','#47976f','#ce655c','#c9d3df','#ea8d42','#b88c56','#e8b76f','#ffffff','#6d8094','#ad6247']
     rgb=[]
     for c in colors:rgb.extend(tuple(bytes.fromhex(c[1:])))
     palette.putpalette(rgb+[0]*(768-len(rgb)))
