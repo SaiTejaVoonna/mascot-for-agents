@@ -1,19 +1,65 @@
 {
   "version": 3,
-  "revision": 6,
+  "revision": 7,
   "redesigned": [
+    "angry",
+    "annoyed",
+    "bored",
+    "celebrating",
     "clapping",
+    "confused",
+    "cool",
     "crying",
+    "dancing",
+    "determined",
+    "dizzy",
+    "embarrassed",
+    "error",
+    "excited",
+    "facepalm",
+    "flag-waving",
+    "focused",
+    "foot-tap",
+    "goodbye",
     "happy",
     "hello",
+    "hungry",
+    "idea",
+    "jealous",
     "laughing",
+    "loading",
     "love",
+    "mind-blown",
+    "nervous",
     "neutral",
+    "no",
+    "peeking",
+    "please",
     "pointing",
+    "proud",
+    "relieved",
+    "sad",
+    "shocked",
     "shrug",
+    "sick",
+    "skeptical",
+    "sleeping",
+    "sleepy",
+    "smug",
+    "sorry",
+    "stumbling",
+    "success",
+    "surprised",
+    "suspicious",
     "thanks",
     "thinking",
-    "thumbs-up"
+    "thumbs-up",
+    "typing",
+    "victory",
+    "walking",
+    "wink",
+    "worried",
+    "yes"
   ],
   "expressions": [
     {
@@ -24,7 +70,9 @@
         "calm",
         "😐"
       ],
-      "motion": "breathe"
+      "motion": "idle",
+      "pose": "down",
+      "durationMs": 3960
     },
     {
       "id": "happy",
@@ -35,7 +83,9 @@
         "😊",
         "😄"
       ],
-      "motion": "breathe"
+      "motion": "smile",
+      "pose": "down",
+      "durationMs": 2880
     },
     {
       "id": "thinking",
@@ -45,7 +95,9 @@
         "hmm",
         "🤔"
       ],
-      "motion": "tilt"
+      "motion": "gaze",
+      "pose": "chin",
+      "durationMs": 3960
     },
     {
       "id": "confused",
@@ -55,7 +107,9 @@
         "what",
         "😕"
       ],
-      "motion": "tilt"
+      "motion": "search",
+      "pose": "down",
+      "durationMs": 3240
     },
     {
       "id": "skeptical",
@@ -65,7 +119,9 @@
         "doubt",
         "🤨"
       ],
-      "motion": "tilt"
+      "motion": "brow",
+      "pose": "down",
+      "durationMs": 3600
     },
     {
       "id": "surprised",
@@ -75,7 +131,9 @@
         "wow",
         "😮"
       ],
-      "motion": "pop"
+      "motion": "recoil",
+      "pose": "shrug",
+      "durationMs": 2520
     },
     {
       "id": "smug",
@@ -85,7 +143,9 @@
         "heh",
         "😏"
       ],
-      "motion": "tilt"
+      "motion": "hold",
+      "pose": "hips",
+      "durationMs": 3600
     },
     {
       "id": "embarrassed",
@@ -95,7 +155,9 @@
         "oops",
         "😳"
       ],
-      "motion": "sway"
+      "motion": "shy",
+      "pose": "clasp",
+      "durationMs": 3600
     },
     {
       "id": "annoyed",
@@ -105,7 +167,9 @@
         "irritated",
         "😒"
       ],
-      "motion": "shake"
+      "motion": "exhale",
+      "pose": "down",
+      "durationMs": 3600
     },
     {
       "id": "jealous",
@@ -115,7 +179,9 @@
         "envy",
         "jealous"
       ],
-      "motion": "sway"
+      "motion": "glance",
+      "pose": "down",
+      "durationMs": 3600
     },
     {
       "id": "laughing",
@@ -125,7 +191,9 @@
         "lol",
         "😂"
       ],
-      "motion": "laugh"
+      "motion": "laugh",
+      "pose": "down",
+      "durationMs": 2520
     },
     {
       "id": "love",
@@ -136,7 +204,9 @@
         "❤️",
         "🥰"
       ],
-      "motion": "sway"
+      "motion": "hug",
+      "pose": "hug",
+      "durationMs": 3240
     },
     {
       "id": "sad",
@@ -146,7 +216,9 @@
         "unhappy",
         "🙁"
       ],
-      "motion": "breathe"
+      "motion": "sigh",
+      "pose": "down",
+      "durationMs": 3960
     },
     {
       "id": "crying",
@@ -156,7 +228,9 @@
         "cry",
         "😢"
       ],
-      "motion": "sob"
+      "motion": "cry",
+      "pose": "wipe",
+      "durationMs": 3240
     },
     {
       "id": "angry",
@@ -166,7 +240,9 @@
         "mad",
         "😡"
       ],
-      "motion": "shake"
+      "motion": "tense",
+      "pose": "lowfist",
+      "durationMs": 2880
     },
     {
       "id": "excited",
@@ -176,7 +252,9 @@
         "yay",
         "🤩"
       ],
-      "motion": "bounce"
+      "motion": "hop",
+      "pose": "up",
+      "durationMs": 2520
     },
     {
       "id": "sleepy",
@@ -186,7 +264,9 @@
         "tired",
         "🥱"
       ],
-      "motion": "breathe"
+      "motion": "yawn",
+      "pose": "mouth",
+      "durationMs": 3960
     },
     {
       "id": "sleeping",
@@ -196,7 +276,9 @@
         "sleep",
         "😴"
       ],
-      "motion": "breathe"
+      "motion": "breathe",
+      "pose": "down",
+      "durationMs": 3960
     },
     {
       "id": "wink",
@@ -205,7 +287,9 @@
       "tags": [
         "😉"
       ],
-      "motion": "breathe"
+      "motion": "wink",
+      "pose": "down",
+      "durationMs": 3240
     },
     {
       "id": "cool",
@@ -215,7 +299,9 @@
         "sunglasses",
         "😎"
       ],
-      "motion": "sway"
+      "motion": "shades",
+      "pose": "hips",
+      "durationMs": 3600
     },
     {
       "id": "shocked",
@@ -225,7 +311,9 @@
         "😱",
         "shock"
       ],
-      "motion": "pop"
+      "motion": "freeze",
+      "pose": "cheeks",
+      "durationMs": 3600
     },
     {
       "id": "worried",
@@ -235,7 +323,9 @@
         "anxious",
         "😟"
       ],
-      "motion": "sway"
+      "motion": "anxious",
+      "pose": "chest",
+      "durationMs": 3600
     },
     {
       "id": "nervous",
@@ -245,7 +335,9 @@
         "😬",
         "nervous"
       ],
-      "motion": "shake"
+      "motion": "tremble",
+      "pose": "clasp",
+      "durationMs": 2880
     },
     {
       "id": "proud",
@@ -254,7 +346,9 @@
       "tags": [
         "pride"
       ],
-      "motion": "bounce"
+      "motion": "lift",
+      "pose": "hips",
+      "durationMs": 3600
     },
     {
       "id": "celebrating",
@@ -265,7 +359,9 @@
         "🎉",
         "🥳"
       ],
-      "motion": "wave"
+      "motion": "cheer",
+      "pose": "up",
+      "durationMs": 2520
     },
     {
       "id": "hello",
@@ -276,7 +372,9 @@
         "hey",
         "👋"
       ],
-      "motion": "wave"
+      "motion": "wave",
+      "pose": "raise",
+      "durationMs": 2520
     },
     {
       "id": "goodbye",
@@ -286,7 +384,9 @@
         "bye",
         "👋"
       ],
-      "motion": "wave"
+      "motion": "slowwave",
+      "pose": "raise",
+      "durationMs": 3600
     },
     {
       "id": "thanks",
@@ -297,7 +397,9 @@
         "you",
         "🙏"
       ],
-      "motion": "bow"
+      "motion": "dip",
+      "pose": "chest",
+      "durationMs": 3600
     },
     {
       "id": "sorry",
@@ -307,7 +409,9 @@
         "apology",
         "🥺"
       ],
-      "motion": "bow"
+      "motion": "bow",
+      "pose": "clasp",
+      "durationMs": 3960
     },
     {
       "id": "please",
@@ -317,7 +421,9 @@
         "beg",
         "🥺"
       ],
-      "motion": "breathe"
+      "motion": "plead",
+      "pose": "clasp",
+      "durationMs": 3960
     },
     {
       "id": "yes",
@@ -328,7 +434,9 @@
         "✅",
         "👍"
       ],
-      "motion": "nod"
+      "motion": "nod",
+      "pose": "down",
+      "durationMs": 2880
     },
     {
       "id": "no",
@@ -338,7 +446,9 @@
         "nope",
         "❌"
       ],
-      "motion": "shake"
+      "motion": "no",
+      "pose": "lowopen",
+      "durationMs": 3240
     },
     {
       "id": "facepalm",
@@ -348,7 +458,9 @@
         "🤦",
         "fail"
       ],
-      "motion": "tilt"
+      "motion": "facepalm",
+      "pose": "forehead",
+      "durationMs": 3600
     },
     {
       "id": "shrug",
@@ -358,7 +470,9 @@
         "idk",
         "🤷"
       ],
-      "motion": "sway"
+      "motion": "shrug",
+      "pose": "shrug",
+      "durationMs": 3240
     },
     {
       "id": "clapping",
@@ -368,7 +482,9 @@
         "applause",
         "👏"
       ],
-      "motion": "clap"
+      "motion": "clap",
+      "pose": "clap",
+      "durationMs": 2520
     },
     {
       "id": "thumbs-up",
@@ -378,7 +494,9 @@
         "good",
         "👍"
       ],
-      "motion": "hold"
+      "motion": "thumb",
+      "pose": "raise",
+      "durationMs": 3240
     },
     {
       "id": "victory",
@@ -388,7 +506,9 @@
         "win",
         "🏆"
       ],
-      "motion": "bounce"
+      "motion": "win",
+      "pose": "trophy",
+      "durationMs": 3240
     },
     {
       "id": "mind-blown",
@@ -399,7 +519,9 @@
         "mind",
         "blown"
       ],
-      "motion": "pop"
+      "motion": "freeze",
+      "pose": "shrug",
+      "durationMs": 2880
     },
     {
       "id": "dizzy",
@@ -409,7 +531,9 @@
         "😵",
         "dizzy"
       ],
-      "motion": "sway"
+      "motion": "wobble",
+      "pose": "down",
+      "durationMs": 3240
     },
     {
       "id": "sick",
@@ -419,7 +543,9 @@
         "ill",
         "🤒"
       ],
-      "motion": "breathe"
+      "motion": "breathe",
+      "pose": "belly",
+      "durationMs": 3960
     },
     {
       "id": "hungry",
@@ -430,7 +556,9 @@
         "hungry",
         "😋"
       ],
-      "motion": "bounce"
+      "motion": "rub",
+      "pose": "belly",
+      "durationMs": 3240
     },
     {
       "id": "focused",
@@ -440,7 +568,9 @@
         "focus",
         "coding"
       ],
-      "motion": "breathe"
+      "motion": "focus",
+      "pose": "down",
+      "durationMs": 3960
     },
     {
       "id": "idea",
@@ -450,7 +580,9 @@
         "eureka",
         "💡"
       ],
-      "motion": "pop"
+      "motion": "realization",
+      "pose": "down",
+      "durationMs": 2880
     },
     {
       "id": "loading",
@@ -461,7 +593,9 @@
         "wait",
         "⏳"
       ],
-      "motion": "breathe"
+      "motion": "wait",
+      "pose": "down",
+      "durationMs": 3960
     },
     {
       "id": "error",
@@ -472,7 +606,9 @@
         "failure",
         "🚨"
       ],
-      "motion": "shake"
+      "motion": "recoil",
+      "pose": "down",
+      "durationMs": 3240
     },
     {
       "id": "success",
@@ -483,7 +619,9 @@
         "passed",
         "✅"
       ],
-      "motion": "bounce"
+      "motion": "nod",
+      "pose": "down",
+      "durationMs": 3240
     },
     {
       "id": "suspicious",
@@ -493,7 +631,9 @@
         "sus",
         "🧐"
       ],
-      "motion": "tilt"
+      "motion": "scan",
+      "pose": "down",
+      "durationMs": 3600
     },
     {
       "id": "bored",
@@ -503,7 +643,9 @@
         "meh",
         "😑"
       ],
-      "motion": "breathe"
+      "motion": "idle",
+      "pose": "down",
+      "durationMs": 3960
     },
     {
       "id": "determined",
@@ -513,7 +655,9 @@
         "ready",
         "💪"
       ],
-      "motion": "bounce"
+      "motion": "set",
+      "pose": "lowfist",
+      "durationMs": 3240
     },
     {
       "id": "relieved",
@@ -523,7 +667,9 @@
         "phew",
         "😌"
       ],
-      "motion": "bow"
+      "motion": "exhale",
+      "pose": "down",
+      "durationMs": 3960
     },
     {
       "id": "walking",
@@ -534,7 +680,9 @@
         "steps",
         "🚶"
       ],
-      "motion": "walk"
+      "motion": "walk",
+      "pose": "down",
+      "durationMs": 2520
     },
     {
       "id": "dancing",
@@ -545,7 +693,9 @@
         "groove",
         "💃"
       ],
-      "motion": "dance"
+      "motion": "dance",
+      "pose": "dance",
+      "durationMs": 2520
     },
     {
       "id": "pointing",
@@ -556,7 +706,9 @@
         "look",
         "👉"
       ],
-      "motion": "point"
+      "motion": "point",
+      "pose": "pointer",
+      "durationMs": 3240
     },
     {
       "id": "flag-waving",
@@ -567,7 +719,9 @@
         "cheer",
         "🚩"
       ],
-      "motion": "flag"
+      "motion": "flag",
+      "pose": "raise",
+      "durationMs": 2520
     },
     {
       "id": "typing",
@@ -579,7 +733,9 @@
         "laptop",
         "⌨️"
       ],
-      "motion": "type"
+      "motion": "type",
+      "pose": "type",
+      "durationMs": 2520
     },
     {
       "id": "peeking",
@@ -590,7 +746,9 @@
         "hide",
         "🫣"
       ],
-      "motion": "peek"
+      "motion": "peek",
+      "pose": "peek",
+      "durationMs": 3600
     },
     {
       "id": "stumbling",
@@ -601,7 +759,9 @@
         "trip",
         "balance"
       ],
-      "motion": "stumble"
+      "motion": "stumble",
+      "pose": "balance",
+      "durationMs": 2520
     },
     {
       "id": "foot-tap",
@@ -612,7 +772,9 @@
         "impatient",
         "foot"
       ],
-      "motion": "tap"
+      "motion": "tap",
+      "pose": "down",
+      "durationMs": 3240
     }
   ],
   "mascots": [
