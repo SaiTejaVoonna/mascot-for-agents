@@ -1,5 +1,9 @@
 # Mascot for Agents
 
+## Gallery revision 11
+
+A neutral pixel speech-bubble identity, live two-character mood selector and a scroll-linked reaction deck make the existing artwork the focus. The main collection retains search, filters, saved items, theme preferences, shareable URLs and format downloads. Native scroll motion has a still/reduced-motion fallback and a compact phone layout. Preview links can be copied directly from the preview desk.
+
 ## Gallery revision 10
 
 The main website now uses the refined Expression Studio layout: self-hosted Sora typography, light and dark themes, local favourites, shareable search and filters, a desktop preview desk and a native phone preview dialog. PNG, GIF and WebP downloads retain the revision-9 artwork and animation timing.

@@ -23,5 +23,15 @@ Header / mascot scene and introduction / collection toolbar / gallery with deskt
 
 Phones use a native dialog for the selected reaction; Escape closes it and focus returns to the selected card. Filters and the selected reaction are shareable in the URL. Favourites stay local. Light and dark themes follow the system until explicitly chosen. Reduced motion starts still; explicit playback is available. Offscreen and hidden-tab previews pause. WebP falls back to GIF, then PNG.
 
-Use movement for the existing character performances. Interface feedback is short and restrained; there are no staggered scroll reveals or floating card effects.
+Use movement for the existing character performances. Interface feedback is short and restrained.
+
+## Gallery revision 11: the product performs
+
+Taste Skill direction `product-performs`, seed 1071951182, with the existing palette and Sora type retained. The same feeling performed by the orange block and mint knot becomes the live mood selector and the reaction deck. The gallery's own pixel speech-bubble mark replaces Claude as the brand symbol, giving both characters equal standing.
+
+The first action is exploration. A visitor can try Hello, Thinking or Celebrating on both characters in the hero, then choose a reaction in the three-card deck to enter the matching collection. The primary browse and download path remains steady. Cards carry the real exported artwork; there are no stock photographs, simulated testimonials or invented popularity claims.
+
+The deck opens into three reactions using native CSS scroll timelines where supported. Other browsers use a short entrance without hiding content. Phone composition is a compact vertical list; reduced-motion and Still mode show the completed arrangement. Motion and visibility observers stop background previews, hero images and story images when they are not in view or a phone dialog is open. Copy-link feedback is explicit; search inputs use 16 px type on phones.
+
+Verification limitation for this pass: browser access was disabled in Work settings. The browser inspector and scroll-film scripts were not run through another runner. Source syntax and deployment status can be checked; rendered layout, timing and device performance need browser review when access is restored.
 
