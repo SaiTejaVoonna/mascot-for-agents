@@ -17,15 +17,18 @@ for m in data['mascots']:
             assert p.is_relative_to(root) and p.is_file(),p
             with Image.open(p) as im:
                 im.load()
+                assert im.size==((384,384) if fmt=='png' else (288,288)),p
                 rgba=im.convert('RGBA');assert rgba.getchannel('A').getextrema()==(0,255),p
                 if fmt=='png':hashes.append(hashlib.sha256(im.tobytes()).hexdigest())
                 else:
                     assert im.n_frames>1 and im.info.get('loop')==0,p
-                    first=im.convert('RGBA').tobytes();changed=False
+                    first=im.convert('RGBA').tobytes();changed=False;total_ms=0
                     for i in range(im.n_frames):
                         im.seek(i);assert im.convert('RGBA').getchannel('A').getextrema()==(0,255),p
                         changed|=im.convert('RGBA').tobytes()!=first
+                        if fmt=='gif':total_ms+=im.info.get('duration',0)
                     assert changed,f'Static animation: {p}'
+                    if fmt=='gif':assert total_ms==e['durationMs'],('GIF timing drift',p,total_ms,e['durationMs'])
             count+=1
     assert len(set(hashes))==58,f'Duplicate stills in {m["id"]}'
     with zipfile.ZipFile((root/'site'/m['pack']).resolve()) as z:

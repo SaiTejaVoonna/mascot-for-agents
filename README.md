@@ -1,6 +1,13 @@
 # Mascot for Agents
 
-## Expression revision 8
+## Expression revision 9
+
+Animated motion is now calculated at the 288 px export resolution, retaining
+crisp pixel shapes while moving in one-output-pixel steps. Both GIF and WebP
+use exact 40 ms frame intervals. Idle breathing, in-between blink drawings,
+held greeting poses and hand-launched confetti improve performance rhythm.
+The website previews WebP with GIF fallback, pauses off-screen/background
+previews, and responds to reduced-motion preference changes.
 
 Claude's original side tabs now articulate as thick overlapping blocks without
 long outlined forearms. Four separate leg contacts support torso leans; the
@@ -18,9 +25,9 @@ celebration can hop. Typing hands remain visible over the keyboard, peeking
 uses a real occluding barrier, and the flag stays attached to its grip.
 
 Every animation returns exactly to its meaningful opening pose. Static exports
-use an intentional key pose. Each loop has 36 rendered frames; per-reaction
-timing ranges from 2.52 to 3.96 seconds. Catalog and manifests record timings.
-The main gallery and ZIP downloads use revision-8 cache keys at the existing
+use an intentional key pose. Each loop has 64–99 rendered frames at a consistent 25 fps; per-reaction
+timing ranges from 2.56 to 3.96 seconds. Catalog and manifests record timings.
+The main gallery and ZIP downloads use revision-9 cache keys at the existing
 v5 paths. Earlier artwork remains in Git history. These web downloads are not
 installable WhatsApp or iMessage packs, and the art has not undergone a formal
 user comprehension study.

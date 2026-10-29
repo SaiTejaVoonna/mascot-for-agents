@@ -158,9 +158,9 @@ def fx(im,effect,k):
     elif effect=='thermo':line(d,[(80,8),(80,22)],'#d75353',3);d.ellipse((77,20,83,26),fill='#d75353')
     elif effect=='snack':d.rectangle((75,12,89,21),fill='#b88c56');line(d,[(75,15),(89,15)],'#e8b76f',2)
 
-def render(mascot,spec,k=0,animated=False):
+def render(mascot,spec,k=0,animated=False,scale=1):
     from animate_mascots import render as articulated_render
-    return articulated_render(mascot,spec,k,animated)
+    return articulated_render(mascot,spec,k,animated,scale=scale)
 
 def gif_frame(im):
     # Stable palette: reserve index zero for transparency in every frame.
@@ -176,9 +176,9 @@ def gif_frame(im):
 def main():
     (ROOT/'packs').mkdir(parents=True,exist_ok=True)
     (ROOT/'site').mkdir(parents=True,exist_ok=True)
-    from animate_mascots import FRAMES, frame_ms, REDESIGNED
-    catalog={'version':3,'revision':8,'redesigned':sorted(REDESIGNED),'expressions':[],'mascots':[]}
-    expressions=[{'id':s[0],'name':s[0].replace('-',' ').title(),'category':s[5],'tags':s[6].split(),'motion':s[4],'pose':s[2],'durationMs':FRAMES*frame_ms(s)} for s in SPECS]
+    from animate_mascots import frame_count, frame_ms, REDESIGNED
+    catalog={'version':3,'revision':9,'redesigned':sorted(REDESIGNED),'expressions':[],'mascots':[]}
+    expressions=[{'id':s[0],'name':s[0].replace('-',' ').title(),'category':s[5],'tags':s[6].split(),'motion':s[4],'pose':s[2],'frames':frame_count(s),'fps':25,'durationMs':frame_count(s)*frame_ms(s)} for s in SPECS]
     catalog['expressions']=expressions
     for mascot in ['gpt','claude']:
         folder=f'{mascot}-v5'
@@ -187,7 +187,7 @@ def main():
             duration=frame_ms(spec)
             still=render(mascot,spec)
             still.resize((384,384),Image.Resampling.NEAREST).save(out/f'{spec[0]}.png')
-            frames=[render(mascot,spec,k,True) for k in range(FRAMES)]
+            frames=[render(mascot,spec,k,True,scale=3) for k in range(frame_count(spec))]
             gifs=[gif_frame(f) for f in frames]
             gifs[0].save(out/f'{spec[0]}.gif',save_all=True,append_images=gifs[1:],duration=duration,loop=0,transparency=0,disposal=2,optimize=False)
             webps=[f.resize((288,288),Image.Resampling.NEAREST) for f in frames]
@@ -204,7 +204,7 @@ def main():
             sprite=render(mascot,spec).resize((110,110),Image.Resampling.NEAREST)
             sheet.paste(sprite,(x+7,y+10),sprite);d.text((x+5,y+126),spec[0],fill=DARK,font=ImageFont.load_default(size=12))
         sheet.save(out/'contact-sheet.jpg',quality=90)
-        manifest={'id':mascot,'name':'GPT' if mascot=='gpt' else 'Claude','status':'Community expression study','source':'tools/build_collection.py','formats':['png','gif','webp'],'expressions':expressions,'revision':'v8','frames':FRAMES,'durationMsByExpression':{s[0]:FRAMES*frame_ms(s) for s in SPECS},'redesigned':sorted(REDESIGNED),'canvas':[96,96]}
+        manifest={'id':mascot,'name':'GPT' if mascot=='gpt' else 'Claude','status':'Community expression study','source':'tools/build_collection.py','formats':['png','gif','webp'],'expressions':expressions,'revision':'v9','fps':25,'frameMs':40,'framesByExpression':{s[0]:frame_count(s) for s in SPECS},'durationMsByExpression':{s[0]:frame_count(s)*frame_ms(s) for s in SPECS},'redesigned':sorted(REDESIGNED),'canvas':[96,96],'animatedCanvas':[288,288]}
         (out/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
         with zipfile.ZipFile(ROOT/'packs'/f'{mascot}-58-emotes-v5.zip','w',zipfile.ZIP_DEFLATED) as z:
             for f in out.iterdir():z.write(f,f'{mascot}/{f.name}')

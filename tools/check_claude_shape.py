@@ -1,7 +1,7 @@
 """Reference shape, motion and clipping checks for the two articulated rigs."""
 from PIL import Image, ImageChops, ImageDraw
 from build_collection import SPECS, ORANGE, render
-from animate_mascots import FRAMES, claude_rig
+from animate_mascots import FRAMES, frame_count, claude_rig
 neutral=next(s for s in SPECS if s[0]=='neutral')
 im=render('claude',neutral)
 color=tuple(bytes.fromhex(ORANGE[1:]))
@@ -18,7 +18,7 @@ for y in (24,25,34,35,48,58):
 for mascot in ('gpt','claude'):
     for spec in SPECS:
         poses=[]
-        for k in range(FRAMES):
+        for k in range(frame_count(spec)):
             im=render(mascot,spec,k,True)
             poses.append(im.tobytes())
             box=im.getchannel('A').getbbox()
@@ -27,7 +27,7 @@ for mascot in ('gpt','claude'):
         assert len(set(poses))>1,('No animation',mascot,spec[0])
     for name in ('hello','clapping','walking','dancing','flag-waving'):
         spec=next(s for s in SPECS if s[0]==name)
-        frames=[render(mascot,spec,k,True) for k in range(FRAMES)]
+        frames=[render(mascot,spec,k,True) for k in range(frame_count(spec))]
         assert len({f.tobytes() for f in frames})>=6,(mascot,name)
 for name in ('hello','goodbye','thinking','shrug','flag-waving'):
     for k in range(FRAMES):
@@ -40,4 +40,15 @@ landing=claude_rig('excited',.54)
 assert crouch['bottom']>59 and all(y==71 for x,y in crouch['feet'])
 assert flight['air']<0 and all(y<71 for x,y in flight['feet'])
 assert landing['bottom']>59 and all(y==71 for x,y in landing['feet'])
-print('Reference block, 4,176 unclipped poses, loop seams, four planted contacts and jump phases verified.')
+for mascot in ('gpt','claude'):
+    for name in ('hello','walking','celebrating','flag-waving','laughing'):
+        spec=next(s for s in SPECS if s[0]==name)
+        frames=[render(mascot,spec,k,True,scale=3) for k in range(frame_count(spec))]
+        assert all(f.size==(288,288) for f in frames)
+        assert frames[0].tobytes()==frames[-1].tobytes(),('Export seam',mascot,name)
+        for f in frames:
+            box=f.getchannel('A').getbbox()
+            assert box and min(box[:2])>0 and max(box[2:])<288,('Export clipping',mascot,name,box)
+        coarse=[render(mascot,spec,k,True).resize((288,288),Image.Resampling.NEAREST) for k in range(frame_count(spec))]
+        assert len({f.tobytes() for f in frames})>=len({f.tobytes() for f in coarse}),('Motion resolution regression',mascot,name)
+print(f'Reference block, {2*sum(frame_count(s) for s in SPECS)} source poses, output-resolution motion, loop seams, four contacts and jump phases verified.')
