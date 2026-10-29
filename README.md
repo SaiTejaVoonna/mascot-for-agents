@@ -1,21 +1,22 @@
 # Mascot for Agents
 
-## Expression revision 6
+## Expression revision 7
 
-The main gallery includes a redesigned 12-reaction pilot for both characters:
-neutral, happy, laughing, crying, love, thanks, hello, thinking, shrug,
-thumbs-up, pointing and clapping. General hands use broad mitten silhouettes;
-only the named thumbs-up and pointing reactions have an explicit digit.
-Laughing changes mouth shape, crying animates cheek tears and a wipe, and
-gratitude uses a lowered gaze rather than a sideways body roll. Quiet reactions
-have longer timing. Pilot loops start and end with the same meaningful pose.
+All 58 reactions for both characters now have explicit face, hand, accent and
+action directions in `PERFORMANCES` and `FACES` in tools/animate_mascots.py.
+General hands are broad mittens; only the named thumbs-up and pointing designs
+use an explicit digit. Distinct facial drawings replace the previous generic
+pose/motion combinations. Quiet emotions stay grounded; excitement and
+celebration can hop. Typing hands remain visible over the keyboard, peeking
+uses a real occluding barrier, and the flag stays attached to its grip.
 
-The complete collection still has 58 reactions per character. Revision 6 is
-served at the existing v5 asset/ZIP paths with updated cache keys; manifests
-and the catalog identify the new revision. Previous artwork remains in Git
-history. Website downloads are not installable WhatsApp or iMessage packs.
-The remaining reactions retain their earlier acting with the new general hand
-silhouettes. This is an incremental art redesign, not a user-study-certified set.
+Every animation returns exactly to its meaningful opening pose. Static exports
+use an intentional key pose. Each loop has 36 rendered frames; per-reaction
+timing ranges from 2.52 to 3.96 seconds. Catalog and manifests record timings.
+The main gallery and ZIP downloads use revision-7 cache keys at the existing
+v5 paths. Earlier artwork remains in Git history. These web downloads are not
+installable WhatsApp or iMessage packs, and the art has not undergone a formal
+user comprehension study.
 
 **[Open the live gallery](https://saitejavoonna.github.io/mascot-for-agents/)**
 

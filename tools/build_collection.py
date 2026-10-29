@@ -71,6 +71,10 @@ SPECS += [
 ('foot-tap','half','down','none','tap','Actions','tap impatient foot'),
 ]
 
+from animate_mascots import PERFORMANCES
+assert {s[0] for s in SPECS}==set(PERFORMANCES), 'Each reaction needs an explicit performance'
+SPECS=[(s[0],s[1],*PERFORMANCES[s[0]][:3],s[5],s[6]) for s in SPECS]
+
 DARK='#202531';MINT='#79dfb0';ORANGE='#d77757';BLUE='#4386e6';GOLD='#e6ac38';PINK='#ef839f'
 def line(d,points,fill=DARK,width=2):d.line(points,fill=fill,width=width)
 def heart(d,x,y,c,size=1):
@@ -172,9 +176,9 @@ def gif_frame(im):
 def main():
     (ROOT/'packs').mkdir(parents=True,exist_ok=True)
     (ROOT/'site').mkdir(parents=True,exist_ok=True)
-    from animate_mascots import FRAMES, FRAME_MS, frame_ms, PILOT
-    catalog={'version':3,'revision':6,'redesigned':sorted(PILOT),'expressions':[],'mascots':[]}
-    expressions=[{'id':s[0],'name':s[0].replace('-',' ').title(),'category':s[5],'tags':s[6].split(),'motion':s[4]} for s in SPECS]
+    from animate_mascots import FRAMES, frame_ms, REDESIGNED
+    catalog={'version':3,'revision':7,'redesigned':sorted(REDESIGNED),'expressions':[],'mascots':[]}
+    expressions=[{'id':s[0],'name':s[0].replace('-',' ').title(),'category':s[5],'tags':s[6].split(),'motion':s[4],'pose':s[2],'durationMs':FRAMES*frame_ms(s)} for s in SPECS]
     catalog['expressions']=expressions
     for mascot in ['gpt','claude']:
         folder=f'{mascot}-v5'
@@ -200,7 +204,7 @@ def main():
             sprite=render(mascot,spec).resize((110,110),Image.Resampling.NEAREST)
             sheet.paste(sprite,(x+7,y+10),sprite);d.text((x+5,y+126),spec[0],fill=DARK,font=ImageFont.load_default(size=12))
         sheet.save(out/'contact-sheet.jpg',quality=90)
-        manifest={'id':mascot,'name':'GPT' if mascot=='gpt' else 'Claude','status':'Community expression study','source':'tools/build_collection.py','formats':['png','gif','webp'],'expressions':expressions,'revision':'v6','frames':FRAMES,'durationMsByExpression':{s[0]:FRAMES*frame_ms(s) for s in SPECS},'redesigned':sorted(PILOT),'canvas':[96,96]}
+        manifest={'id':mascot,'name':'GPT' if mascot=='gpt' else 'Claude','status':'Community expression study','source':'tools/build_collection.py','formats':['png','gif','webp'],'expressions':expressions,'revision':'v7','frames':FRAMES,'durationMsByExpression':{s[0]:FRAMES*frame_ms(s) for s in SPECS},'redesigned':sorted(REDESIGNED),'canvas':[96,96]}
         (out/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
         with zipfile.ZipFile(ROOT/'packs'/f'{mascot}-58-emotes-v5.zip','w',zipfile.ZIP_DEFLATED) as z:
             for f in out.iterdir():z.write(f,f'{mascot}/{f.name}')

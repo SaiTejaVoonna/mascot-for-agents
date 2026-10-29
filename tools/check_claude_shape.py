@@ -17,10 +17,14 @@ for y in (24,25,34,35,48,58):
     assert (min(xs),max(xs))==(24,71),(y,xs)
 for mascot in ('gpt','claude'):
     for spec in SPECS:
+        poses=[]
         for k in range(FRAMES):
             im=render(mascot,spec,k,True)
+            poses.append(im.tobytes())
             box=im.getchannel('A').getbbox()
             assert box and box[0]>0 and box[1]>0 and box[2]<96 and box[3]<96,(mascot,spec[0],k,box)
+        assert poses[0]==poses[-1],('Loop seam',mascot,spec[0])
+        assert len(set(poses))>1,('No animation',mascot,spec[0])
     for name in ('hello','clapping','walking','dancing','flag-waving'):
         spec=next(s for s in SPECS if s[0]==name)
         frames=[render(mascot,spec,k,True) for k in range(FRAMES)]
