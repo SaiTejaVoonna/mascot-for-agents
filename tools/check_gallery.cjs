@@ -11,8 +11,9 @@ const http=require('node:http'),fs=require('node:fs/promises'),path=require('nod
   }catch{res.statusCode=404;res.end('Not found')}
  });
  await new Promise(resolve=>server.listen(8765,'127.0.0.1',resolve));
- const browser=await chromium.launch();
+ let browser;
  try {
+  browser=await chromium.launch({executablePath:process.env.MASCOT_BROWSER_EXECUTABLE||undefined});
   const page=await browser.newPage({viewport:{width:1280,height:1000},colorScheme:'light'});
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   const bad=[];page.on('response',r=>{if(r.status()>=400&&!r.url().endsWith('favicon.ico'))bad.push(r.url())});
@@ -30,7 +31,7 @@ const http=require('node:http'),fs=require('node:fs/promises'),path=require('nod
   await page.getByRole('button',{name:'Animated',exact:false}).click();
   await page.getByRole('button',{name:'Preview Claude Hello',exact:true}).click();
   await page.locator('#detail-image').evaluate(img=>img.decode());
-  assert((await page.locator('#detail-image').getAttribute('src')).includes('claude-v5/hello.gif'));
+  assert((await page.locator('#detail-image').getAttribute('src')).includes('claude-v5/hello.webp'));
   for(const link of await page.locator('#downloads a').all()){
    const response=await page.request.get(await link.getAttribute('href'));assert.equal(response.status(),200);
    assert((await response.body()).length>20);
@@ -44,7 +45,23 @@ const http=require('node:http'),fs=require('node:fs/promises'),path=require('nod
   await page.locator('#collection').scrollIntoViewIfNeeded();
   await page.screenshot({path:'docs/qa-light-mobile.png'});
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Mobile horizontal overflow');
+  await page.getByRole('button',{name:'Animated',exact:false}).click();
+  await page.waitForFunction(()=>{
+   const imgs=Array.from(document.querySelectorAll('#grid img'));
+   return imgs.some(im=>{const r=im.getBoundingClientRect();return r.top<innerHeight&&r.bottom>0&&im.src.includes('.webp')})&&
+          imgs.some(im=>im.getBoundingClientRect().top>innerHeight+100&&im.src.includes('.png'));
+  });
+  await page.getByRole('searchbox').fill('hello');
+  await page.getByRole('button',{name:'Animated',exact:false}).click();
+  await page.route('**/claude-v5/hello.webp*',route=>route.abort());
+  await page.getByRole('button',{name:'Preview Claude Hello',exact:true}).click();
+  await page.waitForFunction(()=>{const im=document.querySelector('#detail-image');return im.src.includes('hello.gif')&&im.complete&&im.naturalWidth>0});
+  await page.getByRole('button',{name:'Close preview',exact:true}).click();
+  await page.unroute('**/claude-v5/hello.webp*');
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await page.waitForFunction(()=>Array.from(document.querySelectorAll('#grid img')).every(im=>im.src.includes('.png')));
+  assert(await page.locator('#motion-note').isVisible());
   assert.deepEqual(errors,[]);assert.deepEqual(bad,[]);
-  console.log('Gallery verified: 116 reactions, dark-mode persistence, mobile width, GIF preview, PNG/GIF/WebP and ZIP downloads.');
- } finally {await browser.close();await new Promise(resolve=>server.close(resolve))}
+  console.log('Gallery verified: 116 reactions, dark mode, mobile layout, visible WebP playback, off-screen pause, GIF fallback, reduced motion and all downloads.');
+ } finally {if(browser)await browser.close();await new Promise(resolve=>server.close(resolve))}
 })().catch(e=>{console.error(e);process.exitCode=1});
