@@ -28,7 +28,7 @@
         "\ud83d\ude0a",
         "\ud83d\ude04"
       ],
-      "motion": "bounce"
+      "motion": "breathe"
     },
     {
       "id": "thinking",
@@ -118,7 +118,7 @@
         "lol",
         "\ud83d\ude02"
       ],
-      "motion": "shake"
+      "motion": "laugh"
     },
     {
       "id": "love",
@@ -198,7 +198,7 @@
       "tags": [
         "\ud83d\ude09"
       ],
-      "motion": "wave"
+      "motion": "breathe"
     },
     {
       "id": "cool",
@@ -371,7 +371,7 @@
         "good",
         "\ud83d\udc4d"
       ],
-      "motion": "wave"
+      "motion": "hold"
     },
     {
       "id": "victory",
@@ -608,9 +608,82 @@
       "motion": "tap"
     }
   ],
-  "revision": "v5",
+  "revision": "v6",
   "frames": 36,
-  "durationMs": 2520,
+  "durationMsByExpression": {
+    "neutral": 3960,
+    "happy": 2520,
+    "thinking": 3960,
+    "confused": 2520,
+    "skeptical": 2520,
+    "surprised": 2520,
+    "smug": 2520,
+    "embarrassed": 2520,
+    "annoyed": 2520,
+    "jealous": 2520,
+    "laughing": 2520,
+    "love": 2520,
+    "sad": 2520,
+    "crying": 2520,
+    "angry": 2520,
+    "excited": 2520,
+    "sleepy": 3960,
+    "sleeping": 3960,
+    "wink": 2520,
+    "cool": 2520,
+    "shocked": 2520,
+    "worried": 2520,
+    "nervous": 2520,
+    "proud": 2520,
+    "celebrating": 2520,
+    "hello": 2520,
+    "goodbye": 2520,
+    "thanks": 2520,
+    "sorry": 2520,
+    "please": 2520,
+    "yes": 2520,
+    "no": 2520,
+    "facepalm": 2520,
+    "shrug": 2520,
+    "clapping": 2520,
+    "thumbs-up": 2520,
+    "victory": 2520,
+    "mind-blown": 2520,
+    "dizzy": 2520,
+    "sick": 2520,
+    "hungry": 2520,
+    "focused": 2520,
+    "idea": 2520,
+    "loading": 2520,
+    "error": 2520,
+    "success": 2520,
+    "suspicious": 2520,
+    "bored": 2520,
+    "determined": 2520,
+    "relieved": 2520,
+    "walking": 2520,
+    "dancing": 2520,
+    "pointing": 2520,
+    "flag-waving": 2520,
+    "typing": 2520,
+    "peeking": 2520,
+    "stumbling": 2520,
+    "foot-tap": 2520
+  },
+  "redesigned": [
+    "clapping",
+    "crying",
+    "happy",
+    "hello",
+    "laughing",
+    "love",
+    "neutral",
+    "pointing",
+    "shrug",
+    "thanks",
+    "thinking",
+    "thumbs-up"
+  ],
   "canvas": [
     96,
     96

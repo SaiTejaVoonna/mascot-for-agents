@@ -1,5 +1,20 @@
 {
   "version": 3,
+  "revision": 6,
+  "redesigned": [
+    "clapping",
+    "crying",
+    "happy",
+    "hello",
+    "laughing",
+    "love",
+    "neutral",
+    "pointing",
+    "shrug",
+    "thanks",
+    "thinking",
+    "thumbs-up"
+  ],
   "expressions": [
     {
       "id": "neutral",
@@ -20,7 +35,7 @@
         "😊",
         "😄"
       ],
-      "motion": "bounce"
+      "motion": "breathe"
     },
     {
       "id": "thinking",
@@ -110,7 +125,7 @@
         "lol",
         "😂"
       ],
-      "motion": "shake"
+      "motion": "laugh"
     },
     {
       "id": "love",
@@ -190,7 +205,7 @@
       "tags": [
         "😉"
       ],
-      "motion": "wave"
+      "motion": "breathe"
     },
     {
       "id": "cool",
@@ -363,7 +378,7 @@
         "good",
         "👍"
       ],
-      "motion": "wave"
+      "motion": "hold"
     },
     {
       "id": "victory",
