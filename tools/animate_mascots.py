@@ -28,6 +28,7 @@ def targets(pose,mascot):
       'down':rest,'up':[(14,31),(81,31)],'raise':[rest[0],(80,30)],
       'hips':[(29,62),(68,62)],'chin':[rest[0],(58,57)],
       'shrug':[(14,43),(81,43)],'hug':[(42,60),(55,60)],
+      'heart':[rest[0],(55,52)],
       'cross':[(58,61),(39,61)],'clap':[(44,61),(52,61)],
       'face':[rest[0],(49,42)],'wipe':[rest[0],(60,48)],
     }.get(pose,rest)
@@ -72,10 +73,11 @@ def render(mascot,spec,k=0,animated=False):
     body.alpha_composite(f.resize(facebox[2:],Image.Resampling.NEAREST),facebox[:2])
     rest=targets('down',mascot);ends=[lerp(a,b,energy) for a,b in zip(rest,targets(pose,mascot))]
     origins=[(25,56),(71,56)] if gpt else [(26,42),(69,42)]
-    if animated and name in ('hello','goodbye','wink','thumbs-up'):
-        ends[1]=(ends[1][0]+round(4*math.sin(6*math.pi*p)*energy),ends[1][1]-round(3*math.cos(6*math.pi*p)*energy))
+    # Only greetings wave. Other raised-hand expressions hold their gesture.
+    if animated and name in ('hello','goodbye'):
+        ends[1]=(ends[1][0]+round(3*math.sin(4*math.pi*p)*energy),ends[1][1]-round(2*max(0,math.cos(4*math.pi*p))*energy))
     if name=='clapping':
-        gap=round(7*(.5+.5*math.cos(8*math.pi*p))) if animated else 0
+        gap=round(7*(.5+.5*math.cos(4*math.pi*p))) if animated else 0
         ends=[(45-gap,58),(51+gap,58)]
     if name=='walking':
         stride=round(7*wave) if animated else 5
@@ -115,18 +117,41 @@ def render(mascot,spec,k=0,animated=False):
         for x in (34,62):d.rectangle((x-3,58,x+3,63),fill=color)
     dy=dx=angle=0
     if animated:
-        dy=round(math.sin(2*math.pi*p))
-        if motion in ('bounce','pop'):
-            # Anticipation, takeoff, flight, landing, settle.
-            keys=[(0,0),(.12,3),(.27,-10 if motion=='pop' else -7),(.43,-8 if motion=='pop' else -5),(.57,3),(.7,0),(1,0)]
+        # Give each motion family its own cue. Most reactions should hold still
+        # long enough for the face and pose to read instead of constantly bobbing.
+        if motion=='breathe':
+            dy=-round(.5*(1-math.cos(2*math.pi*p)))
+        elif motion=='bounce':
+            # A compact buoyant bounce; reserve a full jump for explicit pops.
+            keys=[(0,0),(.14,1),(.28,-3),(.43,-2),(.58,1),(.72,0),(1,0)]
             for (a,y),(b,z) in zip(keys,keys[1:]):
                 if a<=p<=b:
                     t=(p-a)/(b-a);dy=round(y+(z-y)*(t*t*(3-2*t)));break
-        if motion in ('sway','tilt','bow','shake'):
-            angle=(3 if motion!='shake' else 1.8)*wave
-            dx=round(wave)
-        if name=='dancing':angle=4*wave;dy=-round(2*abs(math.sin(4*math.pi*p)))
-        if name=='walking':dy=-round(abs(2*math.sin(4*math.pi*p)))
+        elif motion=='pop':
+            # A single clear anticipation, takeoff, landing and settle.
+            keys=[(0,0),(.16,2),(.32,-7),(.46,-6),(.62,2),(.78,0),(1,0)]
+            for (a,y),(b,z) in zip(keys,keys[1:]):
+                if a<=p<=b:
+                    t=(p-a)/(b-a);dy=round(y+(z-y)*(t*t*(3-2*t)));break
+        elif motion=='sway':
+            angle=2*wave;dx=round(.5*wave)
+        elif motion=='tilt':
+            angle=3*wave;dx=round(.5*wave)
+        elif motion=='bow':
+            # Lean forward briefly, then return upright.
+            bow=max(0.0,math.sin(math.pi*(p-.12)/.48)) if .12<=p<=.60 else 0.0
+            angle=4*bow
+            dy=round(1.5*bow)
+        elif motion=='nod':
+            angle=2*math.sin(2*math.pi*p)
+        elif motion=='shake':
+            dx=round(1.5*math.sin(6*math.pi*p))
+            angle=1.2*math.sin(6*math.pi*p)
+        elif motion=='sob':
+            dy=round(1.5*abs(math.sin(2*math.pi*p)))
+            angle=1.5*wave
+        if name=='dancing':angle=4*wave;dy=-round(1.5*abs(math.sin(4*math.pi*p)))
+        if name=='walking':dy=-round(abs(math.sin(4*math.pi*p)))
         if name=='foot-tap':
             # Tap the outer foot independently without translating the body.
             x=56 if gpt else 69
