@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "revision": 8,
+  "revision": 9,
   "redesigned": [
     "angry",
     "annoyed",
@@ -72,6 +72,8 @@
       ],
       "motion": "idle",
       "pose": "down",
+      "frames": 99,
+      "fps": 25,
       "durationMs": 3960
     },
     {
@@ -85,6 +87,8 @@
       ],
       "motion": "smile",
       "pose": "down",
+      "frames": 72,
+      "fps": 25,
       "durationMs": 2880
     },
     {
@@ -97,6 +101,8 @@
       ],
       "motion": "gaze",
       "pose": "chin",
+      "frames": 99,
+      "fps": 25,
       "durationMs": 3960
     },
     {
@@ -109,6 +115,8 @@
       ],
       "motion": "search",
       "pose": "down",
+      "frames": 81,
+      "fps": 25,
       "durationMs": 3240
     },
     {
@@ -121,6 +129,8 @@
       ],
       "motion": "brow",
       "pose": "down",
+      "frames": 90,
+      "fps": 25,
       "durationMs": 3600
     },
     {
@@ -133,7 +143,9 @@
       ],
       "motion": "recoil",
       "pose": "shrug",
-      "durationMs": 2520
+      "frames": 64,
+      "fps": 25,
+      "durationMs": 2560
     },
     {
       "id": "smug",
@@ -145,6 +157,8 @@
       ],
       "motion": "hold",
       "pose": "hips",
+      "frames": 90,
+      "fps": 25,
       "durationMs": 3600
     },
     {
@@ -157,6 +171,8 @@
       ],
       "motion": "shy",
       "pose": "clasp",
+      "frames": 90,
+      "fps": 25,
       "durationMs": 3600
     },
     {
@@ -169,6 +185,8 @@
       ],
       "motion": "exhale",
       "pose": "down",
+      "frames": 90,
+      "fps": 25,
       "durationMs": 3600
     },
     {
@@ -181,6 +199,8 @@
       ],
       "motion": "glance",
       "pose": "down",
+      "frames": 90,
+      "fps": 25,
       "durationMs": 3600
     },
     {
@@ -192,8 +212,10 @@
         "😂"
       ],
       "motion": "laugh",
-      "pose": "down",
-      "durationMs": 2520
+      "pose": "belly",
+      "frames": 64,
+      "fps": 25,
+      "durationMs": 2560
     },
     {
       "id": "love",
@@ -206,6 +228,8 @@
       ],
       "motion": "hug",
       "pose": "hug",
+      "frames": 81,
+      "fps": 25,
       "durationMs": 3240
     },
     {
@@ -218,6 +242,8 @@
       ],
       "motion": "sigh",
       "pose": "down",
+      "frames": 99,
+      "fps": 25,
       "durationMs": 3960
     },
     {
@@ -230,6 +256,8 @@
       ],
       "motion": "cry",
       "pose": "wipe",
+      "frames": 81,
+      "fps": 25,
       "durationMs": 3240
     },
     {
@@ -242,6 +270,8 @@
       ],
       "motion": "tense",
       "pose": "lowfist",
+      "frames": 72,
+      "fps": 25,
       "durationMs": 2880
     },
     {
@@ -254,7 +284,9 @@
       ],
       "motion": "hop",
       "pose": "up",
-      "durationMs": 2520
+      "frames": 64,
+      "fps": 25,
+      "durationMs": 2560
     },
     {
       "id": "sleepy",
@@ -266,6 +298,8 @@
       ],
       "motion": "yawn",
       "pose": "mouth",
+      "frames": 99,
+      "fps": 25,
       "durationMs": 3960
     },
     {
@@ -278,6 +312,8 @@
       ],
       "motion": "breathe",
       "pose": "down",
+      "frames": 99,
+      "fps": 25,
       "durationMs": 3960
     },
     {
@@ -289,6 +325,8 @@
       ],
       "motion": "wink",
       "pose": "down",
+      "frames": 81,
+      "fps": 25,
       "durationMs": 3240
     },
     {
@@ -301,6 +339,8 @@
       ],
       "motion": "shades",
       "pose": "hips",
+      "frames": 90,
+      "fps": 25,
       "durationMs": 3600
     },
     {
@@ -313,6 +353,8 @@
       ],
       "motion": "freeze",
       "pose": "cheeks",
+      "frames": 90,
+      "fps": 25,
       "durationMs": 3600
     },
     {
@@ -325,6 +367,8 @@
       ],
       "motion": "anxious",
       "pose": "chest",
+      "frames": 90,
+      "fps": 25,
       "durationMs": 3600
     },
     {
@@ -337,6 +381,8 @@
       ],
       "motion": "tremble",
       "pose": "clasp",
+      "frames": 72,
+      "fps": 25,
       "durationMs": 2880
     },
     {
@@ -348,6 +394,8 @@
       ],
       "motion": "lift",
       "pose": "hips",
+      "frames": 90,
+      "fps": 25,
       "durationMs": 3600
     },
     {
@@ -361,7 +409,9 @@
       ],
       "motion": "cheer",
       "pose": "up",
-      "durationMs": 2520
+      "frames": 64,
+      "fps": 25,
+      "durationMs": 2560
     },
     {
       "id": "hello",
@@ -374,7 +424,9 @@
       ],
       "motion": "wave",
       "pose": "raise",
-      "durationMs": 2520
+      "frames": 64,
+      "fps": 25,
+      "durationMs": 2560
     },
     {
       "id": "goodbye",
@@ -386,6 +438,8 @@
       ],
       "motion": "slowwave",
       "pose": "raise",
+      "frames": 90,
+      "fps": 25,
       "durationMs": 3600
     },
     {
@@ -399,6 +453,8 @@
       ],
       "motion": "dip",
       "pose": "chest",
+      "frames": 90,
+      "fps": 25,
       "durationMs": 3600
     },
     {
@@ -411,6 +467,8 @@
       ],
       "motion": "bow",
       "pose": "clasp",
+      "frames": 99,
+      "fps": 25,
       "durationMs": 3960
     },
     {
@@ -423,6 +481,8 @@
       ],
       "motion": "plead",
       "pose": "clasp",
+      "frames": 99,
+      "fps": 25,
       "durationMs": 3960
     },
     {
@@ -436,6 +496,8 @@
       ],
       "motion": "nod",
       "pose": "down",
+      "frames": 72,
+      "fps": 25,
       "durationMs": 2880
     },
     {
@@ -448,6 +510,8 @@
       ],
       "motion": "no",
       "pose": "lowopen",
+      "frames": 81,
+      "fps": 25,
       "durationMs": 3240
     },
     {
@@ -460,6 +524,8 @@
       ],
       "motion": "facepalm",
       "pose": "forehead",
+      "frames": 90,
+      "fps": 25,
       "durationMs": 3600
     },
     {
@@ -472,6 +538,8 @@
       ],
       "motion": "shrug",
       "pose": "shrug",
+      "frames": 81,
+      "fps": 25,
       "durationMs": 3240
     },
     {
@@ -484,7 +552,9 @@
       ],
       "motion": "clap",
       "pose": "clap",
-      "durationMs": 2520
+      "frames": 64,
+      "fps": 25,
+      "durationMs": 2560
     },
     {
       "id": "thumbs-up",
@@ -496,6 +566,8 @@
       ],
       "motion": "thumb",
       "pose": "raise",
+      "frames": 81,
+      "fps": 25,
       "durationMs": 3240
     },
     {
@@ -508,6 +580,8 @@
       ],
       "motion": "win",
       "pose": "trophy",
+      "frames": 81,
+      "fps": 25,
       "durationMs": 3240
     },
     {
@@ -521,6 +595,8 @@
       ],
       "motion": "freeze",
       "pose": "shrug",
+      "frames": 72,
+      "fps": 25,
       "durationMs": 2880
     },
     {
@@ -533,6 +609,8 @@
       ],
       "motion": "wobble",
       "pose": "down",
+      "frames": 81,
+      "fps": 25,
       "durationMs": 3240
     },
     {
@@ -545,6 +623,8 @@
       ],
       "motion": "breathe",
       "pose": "belly",
+      "frames": 99,
+      "fps": 25,
       "durationMs": 3960
     },
     {
@@ -558,6 +638,8 @@
       ],
       "motion": "rub",
       "pose": "belly",
+      "frames": 81,
+      "fps": 25,
       "durationMs": 3240
     },
     {
@@ -570,6 +652,8 @@
       ],
       "motion": "focus",
       "pose": "down",
+      "frames": 99,
+      "fps": 25,
       "durationMs": 3960
     },
     {
@@ -582,6 +666,8 @@
       ],
       "motion": "realization",
       "pose": "down",
+      "frames": 72,
+      "fps": 25,
       "durationMs": 2880
     },
     {
@@ -595,6 +681,8 @@
       ],
       "motion": "wait",
       "pose": "down",
+      "frames": 99,
+      "fps": 25,
       "durationMs": 3960
     },
     {
@@ -608,6 +696,8 @@
       ],
       "motion": "recoil",
       "pose": "down",
+      "frames": 81,
+      "fps": 25,
       "durationMs": 3240
     },
     {
@@ -621,6 +711,8 @@
       ],
       "motion": "nod",
       "pose": "down",
+      "frames": 81,
+      "fps": 25,
       "durationMs": 3240
     },
     {
@@ -633,6 +725,8 @@
       ],
       "motion": "scan",
       "pose": "down",
+      "frames": 90,
+      "fps": 25,
       "durationMs": 3600
     },
     {
@@ -645,6 +739,8 @@
       ],
       "motion": "idle",
       "pose": "down",
+      "frames": 99,
+      "fps": 25,
       "durationMs": 3960
     },
     {
@@ -657,6 +753,8 @@
       ],
       "motion": "set",
       "pose": "lowfist",
+      "frames": 81,
+      "fps": 25,
       "durationMs": 3240
     },
     {
@@ -669,6 +767,8 @@
       ],
       "motion": "exhale",
       "pose": "down",
+      "frames": 99,
+      "fps": 25,
       "durationMs": 3960
     },
     {
@@ -682,7 +782,9 @@
       ],
       "motion": "walk",
       "pose": "down",
-      "durationMs": 2520
+      "frames": 64,
+      "fps": 25,
+      "durationMs": 2560
     },
     {
       "id": "dancing",
@@ -695,7 +797,9 @@
       ],
       "motion": "dance",
       "pose": "dance",
-      "durationMs": 2520
+      "frames": 64,
+      "fps": 25,
+      "durationMs": 2560
     },
     {
       "id": "pointing",
@@ -708,6 +812,8 @@
       ],
       "motion": "point",
       "pose": "pointer",
+      "frames": 81,
+      "fps": 25,
       "durationMs": 3240
     },
     {
@@ -721,7 +827,9 @@
       ],
       "motion": "flag",
       "pose": "raise",
-      "durationMs": 2520
+      "frames": 64,
+      "fps": 25,
+      "durationMs": 2560
     },
     {
       "id": "typing",
@@ -735,7 +843,9 @@
       ],
       "motion": "type",
       "pose": "type",
-      "durationMs": 2520
+      "frames": 64,
+      "fps": 25,
+      "durationMs": 2560
     },
     {
       "id": "peeking",
@@ -748,6 +858,8 @@
       ],
       "motion": "peek",
       "pose": "peek",
+      "frames": 90,
+      "fps": 25,
       "durationMs": 3600
     },
     {
@@ -761,7 +873,9 @@
       ],
       "motion": "stumble",
       "pose": "balance",
-      "durationMs": 2520
+      "frames": 64,
+      "fps": 25,
+      "durationMs": 2560
     },
     {
       "id": "foot-tap",
@@ -774,6 +888,8 @@
       ],
       "motion": "tap",
       "pose": "down",
+      "frames": 81,
+      "fps": 25,
       "durationMs": 3240
     }
   ],
