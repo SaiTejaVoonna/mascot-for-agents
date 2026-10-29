@@ -7,6 +7,49 @@ from functools import lru_cache
 from PIL import Image, ImageDraw
 FRAMES=36
 FRAME_MS=70
+PILOT={'neutral','happy','laughing','crying','love','thanks','hello','thinking',
+       'shrug','thumbs-up','pointing','clapping'}
+def frame_ms(spec):
+    return 110 if spec[0] in ('neutral','thinking','sleeping','sleepy') else 70
+
+def performance_face(name,style,p,animated):
+    """Replacement pixel poses: facial acting without rotating the finished face."""
+    from build_collection import face,DARK,PINK,BLUE
+    blink=animated and .80<p<.88
+    f=face(style,blink)
+    if name not in PILOT: return f
+    d=ImageDraw.Draw(f)
+    beat=(1-math.cos(4*math.pi*p))/2 if animated else 1
+    if name in ('happy','laughing','love','thanks','clapping'):
+        d.rectangle((0,5,23,25),fill=(0,0,0,0))
+        for x in (3,15):
+            if blink: line(d,[(x,12),(x+5,12)],DARK,2)
+            else: line(d,[(x,12),(x+2,10),(x+5,12)],DARK,2)
+        if name=='laughing':
+            h=4+round(4*beat)
+            d.rectangle((7,17,16,17+h),fill=DARK)
+            d.rectangle((9,18+h-2,14,17+h),fill=PINK)
+        elif name=='happy':
+            h=2+round(2*beat);d.rectangle((8,19,15,19+h),fill=DARK)
+        else: line(d,[(8,20),(11,22),(15,20)],DARK,1)
+        if name=='love':
+            d.rectangle((1,17,4,18),fill=PINK);d.rectangle((18,17,21,18),fill=PINK)
+    if name=='thinking':
+        d.rectangle((0,5,23,25),fill=(0,0,0,0))
+        gaze=round(2*math.sin(2*math.pi*p)) if animated else 2
+        for x in (3,15):
+            d.rectangle((x+gaze,9,x+gaze+3,14),fill=DARK)
+        line(d,[(2,5),(8,4)],DARK,1);line(d,[(14,5),(20,7)],DARK,1)
+        line(d,[(9,21),(14,21)],DARK,1)
+    if name=='crying':
+        d.rectangle((0,5,23,25),fill=(0,0,0,0))
+        for x in (3,15):
+            line(d,[(x,12),(x+2,14),(x+5,12)],DARK,2)
+        line(d,[(2,8),(8,5)],DARK,1);line(d,[(14,5),(20,8)],DARK,1)
+        line(d,[(8,23),(11,20),(15,23)],DARK,2)
+        fall=round(6*beat)
+        for x in (5,18):d.rectangle((x,15,x+1,17+fall),fill=BLUE)
+    return f
 def lerp(a,b,t): return tuple(round(x+(y-x)*t) for x,y in zip(a,b))
 def line(d,points,color,width): d.line(points,fill=color,width=width)
 @lru_cache(maxsize=1)
@@ -34,18 +77,24 @@ def targets(pose,mascot):
     }.get(pose,rest)
 def draw_hand(d,elbow,end,color,gpt,pose,index):
     x,y=end
-    if gpt:
-        d.rectangle((x-3,y-2,x+3,y+3),fill=color)
-        if pose in ('up','raise','shrug'): d.rectangle((x-2,y-5,x,y),fill=color)
-    else:
-        d.rectangle((x-4,y-4,x+4,y+4),fill=color)
-        if pose in ('up','raise','shrug'): d.rectangle((x-4,y-7,x-1,y),fill=color)
+    r=3 if gpt else 4
+    # Closed, broad silhouette; generic poses never grow an isolated digit.
+    d.polygon([(x-r+1,y-r),(x+r-1,y-r),(x+r,y-r+1),
+               (x+r,y+r-1),(x+r-1,y+r),(x-r+1,y+r),
+               (x-r,y+r-1),(x-r,y-r+1)],fill=color)
+    if pose=='thumb' and index==1:
+        # Named gesture only: thumb sits on the side of a broad palm.
+        d.rectangle((x-r,y-r-4,x-r+2,y),fill=color)
+    if pose=='pointer' and index==1:
+        d.rectangle((x+1,y-2,x+7,y),fill=color)
+        d.rectangle((x-2,y+1,x,y+5),fill=color)
 def render(mascot,spec,k=0,animated=False):
     # Import at call time so build_collection can use this renderer as its public entry.
     from build_collection import ROOT,MINT,ORANGE,DARK,PINK,face,fx
     name,style,pose,effect,motion,category,tags=spec
     gpt=mascot=='gpt';color=MINT if gpt else ORANGE
-    p=k/FRAMES if animated else .42
+    pilot=name in PILOT
+    p=k/(FRAMES-1) if animated and pilot else k/FRAMES if animated else .25 if pilot else .42
     wave=math.sin(2*math.pi*p)
     # Ease into a clear held performance, then recover to the resting silhouette.
     if animated:
@@ -54,6 +103,7 @@ def render(mascot,spec,k=0,animated=False):
         elif p<.92: energy=math.cos((p-.66)/.26*math.pi/2)**2
         else: energy=0
     else: energy=1
+    if pilot: energy=1 # First and last poses retain the reaction's meaning.
     body=Image.new('RGBA',(96,96));d=ImageDraw.Draw(body)
     if gpt:
         layer=Image.new('RGBA',(78,78),color);layer.putalpha(gpt_mask(ROOT))
@@ -61,18 +111,23 @@ def render(mascot,spec,k=0,animated=False):
     else:
         d.rectangle((24,24,71,59),fill=color)
         facebox=(29,27,38,30)
-    f=face(style,animated and k in (28,29))
+    f=performance_face(name,style,p,animated) if pilot else face(style,animated and k in (28,29))
     fd=ImageDraw.Draw(f)
     if style=='sad':
         fd.rectangle((0,5,23,10),fill=(0,0,0,0))
         line(fd,[(2,9),(8,6)],DARK,1);line(fd,[(14,6),(20,9)],DARK,1)
     if name=='angry':
         line(fd,[(1,7),(8,11)],DARK,3);line(fd,[(14,11),(21,7)],DARK,3)
-    if name=='laughing':
-        fd.rectangle((8,19,15,24),fill=DARK);fd.rectangle((10,23,13,24),fill=PINK)
+    if name=='thanks' and animated:
+        # Lowered gaze/face is a forward gratitude cue, never a sideways roll.
+        dip=round(2*(1-math.cos(2*math.pi*p))/2)
+        facebox=(facebox[0],facebox[1]+dip,facebox[2],facebox[3])
     body.alpha_composite(f.resize(facebox[2:],Image.Resampling.NEAREST),facebox[:2])
     rest=targets('down',mascot);ends=[lerp(a,b,energy) for a,b in zip(rest,targets(pose,mascot))]
     origins=[(25,56),(71,56)] if gpt else [(26,42),(69,42)]
+    if name=='shrug':
+        lift=round(2*(1-math.cos(2*math.pi*p))/2) if animated else 2
+        ends=[(14,43-lift),(81,43-lift)]
     # Only greetings wave. Other raised-hand expressions hold their gesture.
     if animated and name in ('hello','goodbye'):
         ends[1]=(ends[1][0]+round(3*math.sin(4*math.pi*p)*energy),ends[1][1]-round(2*max(0,math.cos(4*math.pi*p))*energy))
@@ -84,7 +139,15 @@ def render(mascot,spec,k=0,animated=False):
         ends=[(17,55+stride),(78,55-stride)]
     if name=='dancing':
         ends=[(16,34+round(8*wave)),(79,34-round(8*wave))]
-    if name=='pointing': ends=[rest[0],lerp(rest[1],(84,38),energy)]
+    if name=='pointing':
+        reach=round(2*(1-math.cos(2*math.pi*p))/2) if animated else 2
+        ends=[rest[0],(79+reach,48)]
+    if name=='love':
+        squeeze=round(2*(1-math.cos(2*math.pi*p))/2) if animated else 2
+        ends=[(40+squeeze,61),(57-squeeze,61)]
+    if name=='crying':
+        wipe=round(3*(1-math.cos(2*math.pi*p))/2) if animated else 2
+        ends=[rest[0],(60-wipe,49)]
     if name=='flag-waving':
         ends=[rest[0],(75+round(3*wave*energy),30)]
     if name=='typing':
@@ -99,8 +162,8 @@ def render(mascot,spec,k=0,animated=False):
         if not gpt and end[0] in range(35,63):
             line(d,[origin,elbow,end],'#ad6247',10)
         line(d,[origin,elbow,end],color,4 if gpt else 8)
-        draw_hand(d,elbow,end,color,gpt,pose,i)
-        if name=='pointing' and i==1:d.rectangle((end[0],end[1]-2,end[0]+5,end[1]),fill=color)
+        hand_pose='thumb' if name=='thumbs-up' else 'pointer' if name=='pointing' else pose
+        draw_hand(d,elbow,end,color,gpt,hand_pose,i)
     # Independently articulated feet stay connected to the body on the ground.
     walking=name in ('walking','dancing','stumbling')
     for i,x in enumerate((37,53) if gpt else (24,38,52,66)):
@@ -159,6 +222,7 @@ def render(mascot,spec,k=0,animated=False):
             y=(82 if gpt else 69)-round(3*abs(math.sin(4*math.pi*p)))
             d.rectangle((x-3,y-5,x+3,y+2),fill=color)
         if name=='stumbling':angle=-5*wave;dx=round(wave)
+    if pilot: dx=dy=angle=0 # Face and hand tracks lead; planted feet remain still.
     if angle:body=body.rotate(angle,resample=Image.Resampling.NEAREST,center=(48,55))
     im=Image.new('RGBA',(96,96));im.alpha_composite(body,(dx,dy))
     if name=='flag-waving':
@@ -167,5 +231,7 @@ def render(mascot,spec,k=0,animated=False):
         q=ImageDraw.Draw(im);line(q,[(x,y),(x,y-17)],DARK,2)
         flutter=round(2*math.sin(6*math.pi*p))
         q.polygon([(x+1,y-17),(x+14,y-16+flutter),(x+14,y-7+flutter),(x+1,y-8)],fill='#4386e6')
-    else:fx(im,'check' if not gpt and effect=='thumb' else effect,round(p*11))
+    else:
+        if pilot: effect='none' # No floating duplicate gesture icons or text labels.
+        fx(im,'check' if not gpt and effect=='thumb' else effect,round(p*11))
     return im

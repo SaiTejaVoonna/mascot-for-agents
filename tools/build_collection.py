@@ -9,16 +9,16 @@ ROOT=Path(__file__).resolve().parents[1]
 # id, face, pose, effect, motion, category, search aliases
 SPECS=[
 ('neutral','open','down','none','breathe','Everyday','calm 😐'),
-('happy','happy','up','none','bounce','Joy','smile 😊 😄'),
-('thinking','side','chin','dots','tilt','Everyday','hmm 🤔'),
+('happy','happy','down','none','breathe','Joy','smile 😊 😄'),
+('thinking','side','chin','none','tilt','Everyday','hmm 🤔'),
 ('confused','uneven','shrug','question','tilt','Everyday','what 😕'),
 ('skeptical','skeptic','raise','none','tilt','Everyday','doubt 🤨'),
 ('surprised','wide','up','rays','pop','Surprise','wow 😮'),
 ('smug','half','hips','spark','tilt','Attitude','heh 😏'),
 ('embarrassed','shy','down','blush','sway','Shy','oops 😳'),
 ('annoyed','angry','hips','anger','shake','Attitude','irritated 😒'),
-('jealous','side','hips','envy','sway','Attitude','envy jealous'),
-('laughing','happy','up','laugh','shake','Joy','lol 😂'),
+('jealous','side','hips','none','sway','Attitude','envy jealous'),
+('laughing','happy','down','none','laugh','Joy','lol 😂'),
 ('love','heart','hug','none','sway','Joy','love ❤️ 🥰'),
 ('sad','sad','down','none','breathe','Sad','unhappy 🙁'),
 ('crying','sad','wipe','tears','sob','Sad','cry 😢'),
@@ -26,7 +26,7 @@ SPECS=[
 ('excited','star','up','confetti','bounce','Joy','yay 🤩'),
 ('sleepy','half','down','zzz','breathe','Everyday','tired 🥱'),
 ('sleeping','closed','hug','zzz','breathe','Everyday','sleep 😴'),
-('wink','wink','raise','spark','wave','Everyday','😉'),
+('wink','wink','down','none','breathe','Everyday','😉'),
 ('cool','shades','hips','none','sway','Attitude','sunglasses 😎'),
 ('shocked','wide','shrug','bolt','pop','Surprise','😱 shock'),
 ('worried','sad','hug','sweat','sway','Sad','anxious 😟'),
@@ -43,7 +43,7 @@ SPECS=[
 ('facepalm','closed','face','sweat','tilt','Attitude','🤦 fail'),
 ('shrug','uneven','shrug','none','sway','Gestures','idk 🤷'),
 ('clapping','happy','clap','rays','clap','Gestures','applause 👏'),
-('thumbs-up','wink','raise','thumb','wave','Gestures','good 👍'),
+('thumbs-up','wink','raise','none','hold','Gestures','good 👍'),
 ('victory','happy','up','trophy','bounce','Joy','win 🏆'),
 ('mind-blown','wide','shrug','burst','pop','Surprise','🤯 mind blown'),
 ('dizzy','spiral','down','stars','sway','Surprise','😵 dizzy'),
@@ -172,23 +172,24 @@ def gif_frame(im):
 def main():
     (ROOT/'packs').mkdir(parents=True,exist_ok=True)
     (ROOT/'site').mkdir(parents=True,exist_ok=True)
-    from animate_mascots import FRAMES, FRAME_MS
-    catalog={'version':3,'expressions':[],'mascots':[]}
+    from animate_mascots import FRAMES, FRAME_MS, frame_ms, PILOT
+    catalog={'version':3,'revision':6,'redesigned':sorted(PILOT),'expressions':[],'mascots':[]}
     expressions=[{'id':s[0],'name':s[0].replace('-',' ').title(),'category':s[5],'tags':s[6].split(),'motion':s[4]} for s in SPECS]
     catalog['expressions']=expressions
     for mascot in ['gpt','claude']:
         folder=f'{mascot}-v5'
         out=ROOT/'assets'/'collection'/folder;out.mkdir(parents=True,exist_ok=True)
         for spec in SPECS:
+            duration=frame_ms(spec)
             still=render(mascot,spec)
             still.resize((384,384),Image.Resampling.NEAREST).save(out/f'{spec[0]}.png')
             frames=[render(mascot,spec,k,True) for k in range(FRAMES)]
             gifs=[gif_frame(f) for f in frames]
-            gifs[0].save(out/f'{spec[0]}.gif',save_all=True,append_images=gifs[1:],duration=FRAME_MS,loop=0,transparency=0,disposal=2,optimize=False)
+            gifs[0].save(out/f'{spec[0]}.gif',save_all=True,append_images=gifs[1:],duration=duration,loop=0,transparency=0,disposal=2,optimize=False)
             webps=[f.resize((288,288),Image.Resampling.NEAREST) for f in frames]
             from io import BytesIO
             buffer=BytesIO()
-            webps[0].save(buffer,format='WEBP',save_all=True,append_images=webps[1:],duration=FRAME_MS,loop=0,lossless=True,method=4)
+            webps[0].save(buffer,format='WEBP',save_all=True,append_images=webps[1:],duration=duration,loop=0,lossless=True,method=4)
             payload=buffer.getvalue()
             assert len(payload)>20, spec[0]
             (out/f'{spec[0]}.webp').write_bytes(payload)
@@ -199,13 +200,13 @@ def main():
             sprite=render(mascot,spec).resize((110,110),Image.Resampling.NEAREST)
             sheet.paste(sprite,(x+7,y+10),sprite);d.text((x+5,y+126),spec[0],fill=DARK,font=ImageFont.load_default(size=12))
         sheet.save(out/'contact-sheet.jpg',quality=90)
-        manifest={'id':mascot,'name':'GPT' if mascot=='gpt' else 'Claude','status':'Community expression study','source':'tools/build_collection.py','formats':['png','gif','webp'],'expressions':expressions,'revision':'v5','frames':FRAMES,'durationMs':FRAMES*FRAME_MS,'canvas':[96,96]}
+        manifest={'id':mascot,'name':'GPT' if mascot=='gpt' else 'Claude','status':'Community expression study','source':'tools/build_collection.py','formats':['png','gif','webp'],'expressions':expressions,'revision':'v6','frames':FRAMES,'durationMsByExpression':{s[0]:FRAMES*frame_ms(s) for s in SPECS},'redesigned':sorted(PILOT),'canvas':[96,96]}
         (out/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
         with zipfile.ZipFile(ROOT/'packs'/f'{mascot}-58-emotes-v5.zip','w',zipfile.ZIP_DEFLATED) as z:
             for f in out.iterdir():z.write(f,f'{mascot}/{f.name}')
             for f in [ROOT/'tools/animate_mascots.py',ROOT/'tools/build_collection.py',ROOT/'tools/build_mascot.py',ROOT/'requirements.txt',ROOT/'README.md',ROOT/'tools/validate_catalog.py',ROOT/'tools/check_claude_shape.py',ROOT/'AGENTS.md',ROOT/'docs/CLAUDE_REFERENCE.md',ROOT/'index.html',ROOT/'site/index.html',ROOT/'site/app.js',ROOT/'site/style.css',ROOT/'assets/README.md',ROOT/'assets/mascots/gpt/silhouette.json']:
                 z.write(f,f.relative_to(ROOT))
         catalog['mascots'].append({'id':mascot,'name':'GPT' if mascot=='gpt' else 'Claude','base':f'../assets/collection/{folder}/','pack':f'../packs/{mascot}-58-emotes-v5.zip'})
-    (ROOT/'site/catalog.json').write_text(json.dumps(catalog,ensure_ascii=False,indent=2)+'\n')
+    (ROOT/'site/catalog.json').write_text(json.dumps(catalog,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     print('Built 116 PNGs, 116 GIF loops, 116 animated WebPs and two source packs.')
 if __name__=='__main__':main()

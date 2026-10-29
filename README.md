@@ -1,5 +1,22 @@
 # Mascot for Agents
 
+## Expression revision 6
+
+The main gallery includes a redesigned 12-reaction pilot for both characters:
+neutral, happy, laughing, crying, love, thanks, hello, thinking, shrug,
+thumbs-up, pointing and clapping. General hands use broad mitten silhouettes;
+only the named thumbs-up and pointing reactions have an explicit digit.
+Laughing changes mouth shape, crying animates cheek tears and a wipe, and
+gratitude uses a lowered gaze rather than a sideways body roll. Quiet reactions
+have longer timing. Pilot loops start and end with the same meaningful pose.
+
+The complete collection still has 58 reactions per character. Revision 6 is
+served at the existing v5 asset/ZIP paths with updated cache keys; manifests
+and the catalog identify the new revision. Previous artwork remains in Git
+history. Website downloads are not installable WhatsApp or iMessage packs.
+The remaining reactions retain their earlier acting with the new general hand
+silhouettes. This is an incremental art redesign, not a user-study-certified set.
+
 **[Open the live gallery](https://saitejavoonna.github.io/mascot-for-agents/)**
 
 A shared character toolkit for reactions, stickers and short animations. Browse 50 matching expressions for GPT and Claude: **100 transparent PNGs, 100 GIF loops and 100 animated WebPs**. Download individual files or a complete character ZIP with editable Python source.
