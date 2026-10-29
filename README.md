@@ -1,6 +1,13 @@
 # Mascot for Agents
 
-## Expression revision 7
+## Expression revision 8
+
+Claude's original side tabs now articulate as thick overlapping blocks without
+long outlined forearms. Four separate leg contacts support torso leans; the
+near-side knees bend more under a weight shift. Greetings and flag waving keep
+their toes planted. Excitement and celebration use timed crouch, takeoff,
+flight, landing compression and delayed hand follow-through. This is a community
+interpretation of reference motion, not Anthropic's source rig or official art.
 
 All 58 reactions for both characters now have explicit face, hand, accent and
 action directions in `PERFORMANCES` and `FACES` in tools/animate_mascots.py.
@@ -13,14 +20,14 @@ uses a real occluding barrier, and the flag stays attached to its grip.
 Every animation returns exactly to its meaningful opening pose. Static exports
 use an intentional key pose. Each loop has 36 rendered frames; per-reaction
 timing ranges from 2.52 to 3.96 seconds. Catalog and manifests record timings.
-The main gallery and ZIP downloads use revision-7 cache keys at the existing
+The main gallery and ZIP downloads use revision-8 cache keys at the existing
 v5 paths. Earlier artwork remains in Git history. These web downloads are not
 installable WhatsApp or iMessage packs, and the art has not undergone a formal
 user comprehension study.
 
 **[Open the live gallery](https://saitejavoonna.github.io/mascot-for-agents/)**
 
-A shared character toolkit for reactions, stickers and short animations. Browse 50 matching expressions for GPT and Claude: **100 transparent PNGs, 100 GIF loops and 100 animated WebPs**. Download individual files or a complete character ZIP with editable Python source.
+A shared character toolkit for reactions, stickers and short animations. Browse 58 matching expressions for GPT and Claude: **116 transparent PNGs, 116 GIF loops and 116 animated WebPs**. Download individual files or a complete character ZIP with editable Python source.
 
 ## Quick start
 

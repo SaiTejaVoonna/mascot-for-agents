@@ -225,6 +225,95 @@ def draw_hand(d,end,color,gpt,kind='mitten'):
         d.rectangle((x+1,y-2,x+7,y),fill=color)
         d.rectangle((x-2,y+1,x,y+5),fill=color)
 
+def keyed(p,keys):
+    """Uneven action beats with eased transitions, including a held crouch."""
+    for (a,x),(b,y) in zip(keys,keys[1:]):
+        if a<=p<=b:
+            t=(p-a)/(b-a);t=t*t*(3-2*t)
+            return x+(y-x)*t
+    return keys[-1][1]
+
+def claude_rig(name,p):
+    """Weighted rectangular torso, attached tabs and four independent contacts.
+
+    A community interpretation of the reference motion, not Anthropic's rig.
+    Coordinates are absolute on the 96 px drawing grid. Planted toes stay at 71.
+    """
+    b=bell(p);wave=math.sin(2*math.pi*p)
+    x=top=bottom=air=hand_lag=0
+    if name in ('hello','goodbye','shrug','confused','skeptical','thinking'):
+        x=round(2*wave)
+    elif name=='flag-waving':x=-round(2*wave)
+    elif name in ('thanks','sorry'):
+        top=round(3*b);bottom=round(b)
+    elif name in ('love','please','nervous'):
+        top=bottom=round(b)
+    elif name in ('proud','victory'):
+        top=bottom=-round(b)
+    elif name in ('sleeping','sick','relieved'):
+        top=round(b)
+    elif name in ('dizzy','stumbling'):
+        x=round((3 if name=='stumbling' else 2)*wave)
+        top=bottom=round(b)
+    elif name=='walking':
+        top=bottom=-round(abs(math.sin(4*math.pi*p)))
+    elif name=='dancing':
+        x=round(3*wave);top=bottom=-round(pulse(p))
+    elif name in ('excited','celebrating'):
+        flight=[(0,0),(.10,0),(.25,-7),(.32,-8),(.47,0),(1,0)]
+        compress=[(0,0),(.06,3),(.10,3),(.20,0),(.45,0),(.54,3),(.68,0),(1,0)]
+        air=round(keyed(p,flight))
+        top=bottom=round(keyed(p,compress))
+        # Tabs follow the crouch/flight a beat later, then settle after landing.
+        lag_p=(p-.035)%1
+        hand_lag=round(keyed(lag_p,flight)+keyed(lag_p,compress))-air-bottom
+    shoulder=round((top+bottom)/2)+air
+    feet=[]
+    for i,base in enumerate((24,38,52,66)):
+        toe_x=base+2;toe_y=71+air
+        if name in ('walking','dancing'):
+            phase=2*math.pi*p+(0,math.pi,.35,math.pi+.35)[i]+math.pi/4
+            toe_x+=round((4 if name=='walking' else 2)*math.cos(phase))
+            toe_y-=round(3*max(0,math.sin(phase)))
+        elif name=='stumbling':
+            recovering=(i==3 and wave>0) or (i==0 and wave<0)
+            if recovering:
+                toe_x+=round(3*wave);toe_y-=round(2*abs(wave))
+        elif name=='foot-tap' and i==3:toe_y-=round(3*pulse(p))
+        feet.append((toe_x,toe_y))
+    return {'x':x,'top':24+top+air,'bottom':59+bottom+air,
+            'face_y':top+air,'shoulder':shoulder,'hand_y':shoulder+hand_lag,
+            'feet':feet,'air':air}
+
+def draw_claude_tab(d,origin,end,color,kind='mitten'):
+    """The original side tab articulates as one thick block, without an elbow."""
+    x,y=end;ox,oy=origin
+    # Outside the torso, a broad rectangular bridge overlaps both body and tab.
+    # Inside the torso, the tab overlaps the body; no long forearm is drawn.
+    if x<24 or x>71:
+        d.rectangle((min(ox,x)-2,min(oy,y)-4,max(ox,x)+2,max(oy,y)+4),fill=color)
+    d.rectangle((x-5,y-5,x+5,y+5),fill=color)
+    if 30<=x<=65:
+        # A small contact edge separates the block hand from the same-color body.
+        d.rectangle((x-4,y+4,x+4,y+5),fill='#ad6247')
+        line(d,[(x-5,y-2),(x-5,y+4)],'#ad6247',1)
+    if kind=='thumb':d.rectangle((x-5,y-9,x-2,y),fill=color)
+    elif kind=='pointer':
+        d.rectangle((x+2,y-2,x+8,y),fill=color)
+        d.rectangle((x-2,y+2,x,y+6),fill=color)
+
+def draw_claude_legs(d,rig,color):
+    for i,base in enumerate((24,38,52,66)):
+        hip_x=base+2+rig['x'];hip_y=rig['bottom']
+        toe_x,toe_y=rig['feet'][i]
+        # Six-pixel-wide leg; hip follows the torso while the toe retains contact.
+        near=i/3 if rig['x']>0 else (3-i)/3
+        knee_x=round((hip_x+toe_x)/2+rig['x']*.65*near)
+        knee_y=round((hip_y+toe_y)/2)
+        d.polygon([(hip_x-2,hip_y),(hip_x+3,hip_y),
+                   (knee_x+3,knee_y),(toe_x+3,toe_y),
+                   (toe_x-2,toe_y),(knee_x-2,knee_y)],fill=color)
+
 def render(mascot,spec,k=0,animated=False):
     from build_collection import ROOT,MINT,ORANGE,DARK,GOLD,BLUE,fx
     name,style,pose,effect,motion,category,tags=spec
@@ -235,6 +324,7 @@ def render(mascot,spec,k=0,animated=False):
     p=(k if animated else static_frame)/(FRAMES-1)
     b=bell(p);q=pulse(p);wave=math.sin(2*math.pi*p)
     gpt=mascot=='gpt';color=MINT if gpt else ORANGE
+    rig=None if gpt else claude_rig(name,p)
     rest=targets('down',mascot);ends=list(targets(pose,mascot))
     origins=[(25,56),(71,56)] if gpt else [(26,42),(69,42)]
     body=Image.new('RGBA',(96,96));d=ImageDraw.Draw(body)
@@ -244,8 +334,8 @@ def render(mascot,spec,k=0,animated=False):
         layer=Image.new('RGBA',(78,78),color);layer.putalpha(gpt_mask(ROOT))
         body.alpha_composite(layer,(9,9));facebox=(37,34+dip,24,26)
     else:
-        d.rectangle((24,24+dip+breathe,71,59),fill=color)
-        facebox=(29,27+dip,38,30)
+        d.rectangle((24+rig['x'],rig['top'],71+rig['x'],rig['bottom']),fill=color)
+        facebox=(29+rig['x'],27+dip+rig['face_y'],38,30)
     f=performance_face(name,p)
     if name=='proud':facebox=(facebox[0],facebox[1]-round(b),facebox[2],facebox[3])
     gaze_shift=round(wave) if name=='no' else 0
@@ -280,22 +370,33 @@ def render(mascot,spec,k=0,animated=False):
         tap=round(2*math.sin(6*math.pi*p))
         ends=[(40,66+tap),(56,66-tap)]
     elif name=='stumbling':ends=[(13,36+round(3*wave)),(81,43-round(3*wave))]
+    if not gpt:
+        if name=='walking':
+            swing=round(3*math.sin(2*math.pi*p+math.pi/4))
+            ends=[(17,42+swing),(78,42-swing)]
+        elif name=='flag-waving':ends[0]=(17,42+round(b))
+        origins=[(26+rig['x'],42+rig['shoulder']),(69+rig['x'],42+rig['shoulder'])]
+        ends=[(x+rig['x'],y+rig['hand_y']) for x,y in ends]
     for i,(origin,end) in enumerate(zip(origins,ends)):
-        if not gpt and end==rest[i]:
-            x=12 if i==0 else 72;d.rectangle((x,36,x+11,47),fill=color);continue
+        kind='thumb' if name=='thumbs-up' and i==1 else 'pointer' if name=='pointing' and i==1 else 'mitten'
+        if not gpt:
+            rest_end=(rest[i][0]+rig['x'],rest[i][1]+rig['hand_y'])
+            if end==rest_end:
+                x=(12 if i==0 else 72)+rig['x'];y=36+rig['hand_y']
+                d.rectangle((x,y,x+11,y+11),fill=color)
+            else:draw_claude_tab(d,origin,end,color,kind)
+            continue
         elbow=(round(origin[0]+(end[0]-origin[0])*.55),
                round((origin[1]+end[1])*.5+3))
-        if not gpt and 35<=end[0]<63:
-            line(d,[origin,elbow,end],'#ad6247',10)
         line(d,[origin,elbow,end],color,4 if gpt else 8)
-        kind='thumb' if name=='thumbs-up' and i==1 else 'pointer' if name=='pointing' and i==1 else 'mitten'
         draw_hand(d,end,color,gpt,kind)
-    for i,x in enumerate((37,53) if gpt else (24,38,52,66)):
+    if not gpt:draw_claude_legs(d,rig,color)
+    for i,x in enumerate((37,53) if gpt else ()):
         stride=round(3*math.sin(2*math.pi*p+i*math.pi+math.pi/4)) if name in ('walking','dancing','stumbling') else 0
         lift=max(0,-stride);top=74 if gpt else 59;bottom=84 if gpt else 71
         line(d,[(x+2,top),(x+2+stride,bottom-lift)],color,6)
         if gpt:d.rectangle((x-5+stride,bottom-3-lift,x+3+stride,bottom-lift),fill=color)
-    if name=='foot-tap':
+    if name=='foot-tap' and gpt:
         x=56 if gpt else 69;bottom=84 if gpt else 71
         d.rectangle((x-3,bottom-12,x+4,bottom+1),fill=(0,0,0,0))
         lift=round(3*q)
@@ -308,6 +409,7 @@ def render(mascot,spec,k=0,animated=False):
     elif name=='dizzy':angle=2*wave
     elif name=='stumbling':angle=-3*wave
     elif name=='peeking':dy=round(6*(1-b))
+    if not gpt and name!='peeking':dx=dy=angle=0
     if angle:body=body.rotate(angle,resample=Image.Resampling.NEAREST,center=(48,55))
     im=Image.new('RGBA',(96,96));im.alpha_composite(body,(dx,dy));a=ImageDraw.Draw(im)
     if name=='peeking':
@@ -319,10 +421,11 @@ def render(mascot,spec,k=0,animated=False):
         a.polygon([(x+1,y-17),(x+14,y-16+flutter),(x+14,y-7+flutter),(x+1,y-8)],fill=BLUE)
     elif effect=='trophy':
         y=60 if gpt else 54
-        a.rectangle((43,y,53,y+8),fill=GOLD)
-        line(a,[(43,y+2),(39,y+2),(39,y+6),(43,y+7)],GOLD,2)
-        line(a,[(53,y+2),(57,y+2),(57,y+6),(53,y+7)],GOLD,2)
-        line(a,[(48,y+8),(48,y+15),(42,y+15),(54,y+15)],GOLD,2)
+        tx=0 if gpt else rig['x'];y+=0 if gpt else rig['hand_y']
+        a.rectangle((43+tx,y,53+tx,y+8),fill=GOLD)
+        line(a,[(43+tx,y+2),(39+tx,y+2),(39+tx,y+6),(43+tx,y+7)],GOLD,2)
+        line(a,[(53+tx,y+2),(57+tx,y+2),(57+tx,y+6),(53+tx,y+7)],GOLD,2)
+        line(a,[(48+tx,y+8),(48+tx,y+15),(42+tx,y+15),(54+tx,y+15)],GOLD,2)
     elif effect=='thermo':
         line(a,[(65,48),(65,59)],'#d75353',2)
         a.ellipse((62,56,68,62),fill='#d75353')
@@ -335,9 +438,12 @@ def render(mascot,spec,k=0,animated=False):
         for x,y in ((14,15),(80,17)):
             y+=round(2*wave);line(a,[(x-2,y),(x+2,y)],GOLD);line(a,[(x,y-2),(x,y+2)],GOLD)
     elif effect=='confetti':
-        if b>.2:
-            for x,y,c in ((12,14,GOLD),(82,18,BLUE)):
-                yy=y+round(3*b);a.rectangle((x,yy,x+1,yy+2),fill=c)
+        if .25<p<.80:
+            for i,c in ((0,GOLD),(1,BLUE)):
+                x,y=ends[i];x+=dx;y+=dy
+                yy=y-8+round(5*math.sin(2*math.pi*(p-.25)))
+                for sx,sy in ((-3,0),(2,-3),(4,2)):
+                    a.rectangle((x+sx,yy+sy,x+sx+1,yy+sy+1),fill=c)
     elif effect=='burst':
         h=round(2*b)
         a.polygon([(40,13),(43,5-h),(47,10),(52,4-h),(55,13)],fill=GOLD)

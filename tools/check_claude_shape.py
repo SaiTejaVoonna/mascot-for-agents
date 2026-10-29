@@ -1,7 +1,7 @@
 """Reference shape, motion and clipping checks for the two articulated rigs."""
 from PIL import Image, ImageChops, ImageDraw
 from build_collection import SPECS, ORANGE, render
-from animate_mascots import FRAMES
+from animate_mascots import FRAMES, claude_rig
 neutral=next(s for s in SPECS if s[0]=='neutral')
 im=render('claude',neutral)
 color=tuple(bytes.fromhex(ORANGE[1:]))
@@ -29,4 +29,15 @@ for mascot in ('gpt','claude'):
         spec=next(s for s in SPECS if s[0]==name)
         frames=[render(mascot,spec,k,True) for k in range(FRAMES)]
         assert len({f.tobytes() for f in frames})>=6,(mascot,name)
-print('Reference Claude block, both moving rigs and 4,176 animation poses verified without canvas clipping.')
+for name in ('hello','goodbye','thinking','shrug','flag-waving'):
+    for k in range(FRAMES):
+        rig=claude_rig(name,k/(FRAMES-1))
+        assert len(rig['feet'])==4
+        assert all(y==71 for x,y in rig['feet']),('Planted foot drift',name,k)
+crouch=claude_rig('excited',.08)
+flight=claude_rig('excited',.32)
+landing=claude_rig('excited',.54)
+assert crouch['bottom']>59 and all(y==71 for x,y in crouch['feet'])
+assert flight['air']<0 and all(y<71 for x,y in flight['feet'])
+assert landing['bottom']>59 and all(y==71 for x,y in landing['feet'])
+print('Reference block, 4,176 unclipped poses, loop seams, four planted contacts and jump phases verified.')

@@ -177,7 +177,7 @@ def main():
     (ROOT/'packs').mkdir(parents=True,exist_ok=True)
     (ROOT/'site').mkdir(parents=True,exist_ok=True)
     from animate_mascots import FRAMES, frame_ms, REDESIGNED
-    catalog={'version':3,'revision':7,'redesigned':sorted(REDESIGNED),'expressions':[],'mascots':[]}
+    catalog={'version':3,'revision':8,'redesigned':sorted(REDESIGNED),'expressions':[],'mascots':[]}
     expressions=[{'id':s[0],'name':s[0].replace('-',' ').title(),'category':s[5],'tags':s[6].split(),'motion':s[4],'pose':s[2],'durationMs':FRAMES*frame_ms(s)} for s in SPECS]
     catalog['expressions']=expressions
     for mascot in ['gpt','claude']:
@@ -204,7 +204,7 @@ def main():
             sprite=render(mascot,spec).resize((110,110),Image.Resampling.NEAREST)
             sheet.paste(sprite,(x+7,y+10),sprite);d.text((x+5,y+126),spec[0],fill=DARK,font=ImageFont.load_default(size=12))
         sheet.save(out/'contact-sheet.jpg',quality=90)
-        manifest={'id':mascot,'name':'GPT' if mascot=='gpt' else 'Claude','status':'Community expression study','source':'tools/build_collection.py','formats':['png','gif','webp'],'expressions':expressions,'revision':'v7','frames':FRAMES,'durationMsByExpression':{s[0]:FRAMES*frame_ms(s) for s in SPECS},'redesigned':sorted(REDESIGNED),'canvas':[96,96]}
+        manifest={'id':mascot,'name':'GPT' if mascot=='gpt' else 'Claude','status':'Community expression study','source':'tools/build_collection.py','formats':['png','gif','webp'],'expressions':expressions,'revision':'v8','frames':FRAMES,'durationMsByExpression':{s[0]:FRAMES*frame_ms(s) for s in SPECS},'redesigned':sorted(REDESIGNED),'canvas':[96,96]}
         (out/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
         with zipfile.ZipFile(ROOT/'packs'/f'{mascot}-58-emotes-v5.zip','w',zipfile.ZIP_DEFLATED) as z:
             for f in out.iterdir():z.write(f,f'{mascot}/{f.name}')
