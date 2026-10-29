@@ -1,5 +1,11 @@
 # Mascot for Agents
 
+## Gallery revision 10
+
+The main website now uses the refined Expression Studio layout: self-hosted Sora typography, light and dark themes, local favourites, shareable search and filters, a desktop preview desk and a native phone preview dialog. PNG, GIF and WebP downloads retain the revision-9 artwork and animation timing.
+
+See PRODUCT.md and DESIGN.md for the product constraints and visual system.
+
 ## Expression revision 9
 
 Animated motion is now calculated at the 288 px export resolution, retaining
@@ -104,3 +110,4 @@ python tools/check_claude_shape.py
 ```
 
 The workflow `.github/workflows/build-collection.yml` runs these checks before committing generated v5 assets and packs. Render code is in `tools/animate_mascots.py`; the catalog is generated from `SPECS` in `tools/build_collection.py`. PNG stickers are 384 px; GIF and animated WebP are 288 px with transparency. Keep the pixel grid crisp when scaling.
+
