@@ -5,7 +5,7 @@ description: Draft a Mascot for Agents dialogue scene using its proposed JSON sc
 
 # Theatre scene authoring draft
 
-Status: format 0.1 is a design contract. The live gallery does not yet compile or play these files. Create authoring artifacts and identify them as drafts; do not claim successful playback, installation, speech generation or validation that has not occurred.
+Status: an initial 2D Hello Studio player is implemented on feature/video-theatre at theatre/index.html. The public main gallery is unchanged. The prototype supports browser speech or estimated captions-only playback for the seated-dialogue subset; it does not implement a 3D campfire, prepared audio or precise lip sync. Do not claim successful playback, installation or validation that has not occurred.
 
 Read [the format contract](../../docs/PERFORMANCE_FORMAT_V0.md) for fields, sequencing and timing. Use [the reference scene](../../theatre/examples/campfire-hello.scene.json) as the starting shape. These paths assume the repository layout; standalone distribution must bundle or correctly resolve those references before release.
 

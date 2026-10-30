@@ -2,6 +2,8 @@
 
 Draft, 30 October 2026. This is the next implementation specification, not a supported live upload format. It narrows THEATRE_PLATFORM_PLAN.md into a single buildable contract. The accompanying scene and skill are authoring drafts. There is no compiler/player for them yet.
 
+Implementation update: feature/video-theatre now includes theatre/index.html, a 2D Hello Studio prototype with text editing, browser speech, caption preview and JSON import/export. It provides the initial seated-dialogue validation/execution path. Prepared-audio compilation, accurate timing, 3D staging and public main-site deployment remain unimplemented. See theatre/README.md for supported behavior and verification limits; the original specification below records the intended broader contract.
+
 ## Decision
 
 Use a **small JSON screenplay** as the language. It captures dialogue, intentional pauses, expressions, gaze and a limited number of reactions. Agents already produce JSON; we do not need a programming-language ecosystem or a new compiler toolchain. A future readable screenplay editor must serialize this same model rather than create a second public language.

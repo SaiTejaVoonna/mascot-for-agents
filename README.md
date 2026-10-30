@@ -1,5 +1,9 @@
 # Mascot for Agents
 
+## Video/theatre development branch
+
+The first [Hello Studio prototype](theatre/) lives on feature/video-theatre: editable Claude/GPT dialogue, browser voices, captions, speaking/listening states and scene JSON import/export. See [the prototype notes](theatre/README.md). This is a 2D rehearsal; 3D stages, prepared voices and precise lip sync are future work. The deployed main gallery remains revision 11.
+
 ## Gallery revision 11
 
 A neutral pixel speech-bubble identity, live two-character mood selector and a scroll-linked reaction deck make the existing artwork the focus. The main collection retains search, filters, saved items, theme preferences, shareable URLs and format downloads. Native scroll motion has a still/reduced-motion fallback and a compact phone layout. Preview links can be copied directly from the preview desk.
