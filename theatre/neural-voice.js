@@ -139,9 +139,10 @@ export class NeuralVoice {
       source.buffer=data.audio; source.connect(warmth).connect(presence).connect(gain).connect(this.context.destination);
       const envelope=this.envelope(data.audio),duration=data.audio.duration*1000;
       const start=this.context.currentTime+.025;
-      let frame=0,index=0,wordIndex=-1,done=false,started=false,endedAt=0,level=0,previous=performance.now();
+      let frame=0,timer=0,index=0,wordIndex=-1,done=false,started=false,endedAt=0,level=0,previous=performance.now();
       const finish=(reason) => {
-        if (done) return; done=true; cancelAnimationFrame(frame);
+        if (done) return; done=true; cancelAnimationFrame(frame); clearTimeout(timer);
+        document.removeEventListener('visibilitychange',reschedule);
         signal.removeEventListener('abort',cancel); source.onended=null;
         try { source.stop(); } catch {}
         source.disconnect(); warmth.disconnect(); presence.disconnect(); gain.disconnect();
@@ -149,6 +150,12 @@ export class NeuralVoice {
       };
       const cancel=()=>finish(stopped());
       signal.addEventListener('abort',cancel,{once:true});
+      const schedule=()=>{
+        if (document.hidden) timer=setTimeout(tick,100);
+        else frame=requestAnimationFrame(tick);
+      };
+      const reschedule=()=>{ cancelAnimationFrame(frame); clearTimeout(timer); if (!done) schedule(); };
+      document.addEventListener('visibilitychange',reschedule);
       const tick=()=>{
         if (done) return;
         const now=performance.now(),elapsed=(this.audibleTime()-start)*1000;
@@ -171,9 +178,9 @@ export class NeuralVoice {
         previous=now;
         // Keep the last phoneme until audio has reached the output device.
         if (endedAt && (elapsed>=duration || now-endedAt>500)) return finish();
-        frame=requestAnimationFrame(tick);
+        schedule();
       };
-      source.onended=()=>{endedAt=performance.now();};
+      source.onended=()=>{endedAt=performance.now(); reschedule();};
       try { source.start(start); tick(); } catch (reason) { finish(reason); }
     });
   }

@@ -10,6 +10,8 @@ The upstream [voice notes](https://huggingface.co/hexgrad/Kokoro-82M/blob/main/V
 
 ## Mouth and timing
 
+Explicitly started speech/preparation now continues when switching between chat and the browser. Stop, edits and page navigation still cancel it. While hidden, an inexpensive timer advances the audio-clock player because browsers can pause animation frames; returning to the stage restores animation-frame updates. Browser or OS audio policies can still interrupt sound.
+
 The player combines HeadTTS's millisecond phoneme/viseme timing with a cached 10 ms RMS envelope of the actual AudioBuffer. Opening is smoothed; silence closes the mouth; PP retains closed lips; rounded and teeth shapes are distinct. The overlay covers the baked-in mouth during speaking silence. Rest restores the original expression; reduced movement disables the overlay.
 
 Captions and mouth updates use estimated audible output time from `AudioContext.getOutputTimestamp()`, with reported latency as fallback. This cannot guarantee physical synchronization across all Bluetooth/headphone/device paths. It remains a simplified pixel mouth.

@@ -1,4 +1,4 @@
-import {NeuralVoice, neuralVoices, recordedVocals} from './neural-voice.js?v=speech-2';
+import {NeuralVoice, neuralVoices, recordedVocals} from './neural-voice.js?v=speech-3';
 import {StageSound, soundNames} from './stage-sound.js';
 const neural = new NeuralVoice();
 const stageSound = new StageSound();
@@ -552,7 +552,8 @@ $('upload').addEventListener('change', async (event) => {
   } catch (reason) { error(reason.message); message('Could not open scene. Your previous script is preserved.'); }
   event.target.value = '';
 });
-document.addEventListener('visibilitychange', () => { if (document.hidden && controller) stop('Stopped because the page was hidden. Press Play to restart.'); });
+// Explicitly started playback continues when switching between chat and the stage.
+// Stop, page navigation and edits still cancel the active run.
 window.addEventListener('pagehide', () => stop(''));
 for (const id of ['setting','pace','ambience','effects']) $(id).addEventListener('change', () => { stop('Scene settings changed. Ready to play.'); updateStage(); });
 for (const id of ['voice-volume','effects-volume','ambience-volume','sound-pitch','light']) $(id).addEventListener('input', updateStage);
