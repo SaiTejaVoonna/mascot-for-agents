@@ -1,0 +1,18 @@
+{
+  "format": "mascot-scene",
+  "version": "0.1",
+  "stage": "campfire",
+  "seed": 42,
+  "targetDurationMs": 30000,
+  "cast": [
+    {"id": "a", "character": "claude", "voice": "warm", "slot": "seat-left"},
+    {"id": "b", "character": "gpt", "voice": "bright", "slot": "seat-right"}
+  ],
+  "beats": [
+    {"id": "hello", "type": "say", "actor": "a", "text": "Hello! I saved you a seat.", "expression": "happy", "lookAt": "b", "afterMs": 350},
+    {"id": "reply", "type": "say", "actor": "b", "text": "Thanks. What are we making tonight?", "expression": "curious", "lookAt": "a", "afterMs": 350, "listener": {"actor": "a", "reaction": "nod"}},
+    {"id": "thought", "type": "pause", "durationMs": 600},
+    {"id": "idea", "type": "say", "actor": "a", "text": "A little theatre. You bring the story, and we bring it to life.", "expression": "happy", "lookAt": "b", "afterMs": 350},
+    {"id": "ending", "type": "say", "actor": "b", "text": "Then let's start with hello.", "expression": "happy", "lookAt": "viewer", "afterMs": 500}
+  ]
+}
