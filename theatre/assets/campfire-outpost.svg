@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" fill="none">
+  <title>Little Theatre — campfire outpost</title>
+  <desc>Original code-drawn campsite: a small tent, landing pod, mountain silhouettes and a stone fire ring. Character contact points are 283,351 and 710,351; fire centre is 480,350.</desc>
+  <defs>
+    <g id="star" fill="#d2d5df"><path d="M0-5h2v4h4v2H2v4H0V1h-4v-2h4Z"/></g>
+    <g id="pine" stroke="#181d31" stroke-width="5" stroke-linejoin="round">
+      <path d="M-5 0H5V-76H-5Z" fill="#252b3d"/>
+      <path d="M0-156 24-119H14l23 37H21L47-41H-47l26-41h-16l23-37h-10Z" fill="#2f454b"/>
+      <path d="m0-156 1 115h46L21-82h16l-23-37h10Z" fill="#263b43" stroke="none"/>
+    </g>
+  </defs>
+  <!-- Sky and distant silhouettes: broad, flat colour instead of a raster backdrop. -->
+  <path fill="#252940" d="M0 0h960v540H0Z"/>
+  <path fill="#30354d" d="M0 128h960v220H0Z"/>
+  <g opacity=".7">
+    <use href="#star" x="80" y="65"/><use href="#star" x="236" y="42"/>
+    <use href="#star" x="364" y="97"/><use href="#star" x="539" y="46"/>
+    <use href="#star" x="649" y="105"/><use href="#star" x="888" y="37"/>
+    <g fill="#929db4"><path d="M145 112h4v4h-4zM297 69h3v3h-3zM473 122h4v4h-4zM700 38h3v3h-3zM914 132h4v4h-4z"/></g>
+  </g>
+  <g id="moon" stroke="#1b2136" stroke-width="5">
+    <circle cx="796" cy="77" r="35" fill="#c1c4cf"/>
+    <path d="M819 51a35 35 0 0 1-43 51 35 35 0 0 0 43-51Z" fill="#8995ac" stroke="none"/>
+    <path d="M777 69h9m15 17h7m-15-30h4" stroke="#9ca7bb" stroke-linecap="round"/>
+  </g>
+  <path d="m0 235 86-67 65 38 106-91 68 60 59-30 103 94 106-81 86 57 63-39 118 61v109H0Z" fill="#45465f"/>
+  <path d="m194 171 63-56 68 60-42-12-21 8-15-21-20 25Z" fill="#727085"/>
+  <path d="m0 260 100-42 104 36 111-49 107 60 120-61 102 47 83-28 133 43v110H0Z" fill="#303d50"/>
+  <path d="M0 293 145 271l140 27 140-15 131 20 176-32 228 25v244H0Z" fill="#263641"/>
+  <g opacity=".75">
+    <use href="#pine" transform="translate(66 329) scale(.74)"/>
+    <use href="#pine" transform="translate(155 307) scale(.48)"/>
+    <use href="#pine" transform="translate(408 287) scale(.39)"/>
+    <use href="#pine" transform="translate(575 292) scale(.44)"/>
+    <use href="#pine" transform="translate(877 327) scale(.8)"/>
+  </g>
+  <!-- Raised clearing; the lower silhouette gives a quiet game-like depth. -->
+  <path d="M73 346c1-57 150-91 391-94 239-3 423 36 426 99l-5 43c-13 60-192 105-409 105-218 0-389-44-401-102Z" fill="#292d40" stroke="#171c2e" stroke-width="7"/>
+  <path d="M73 346c0-58 173-99 407-99s410 41 410 99-176 112-410 112S73 404 73 346Z" fill="#514b59" stroke="#171c2e" stroke-width="7"/>
+  <path d="M122 362c103 50 235 69 354 69 148 0 280-27 366-72-37 62-186 98-362 98-165 0-302-33-358-95Z" fill="#424452"/>
+  <ellipse cx="480" cy="352" rx="192" ry="69" fill="#9b7154" opacity=".26"/>
+  <ellipse cx="480" cy="352" rx="107" ry="37" fill="#d49b60" opacity=".12"/>
+  <path d="m402 460 36-39 82-1 45 38" fill="#5a5260"/>
+  <g fill="#74707c" stroke="#313344" stroke-width="3" stroke-linejoin="round">
+    <path d="m366 403 14-3 8 8-8 4h-15Z"/><path d="m582 401 16 1 5 9-19 1-6-5Z"/>
+    <path d="m420 438 20-3 10 7-13 7-18-3Z"/><path d="m504 450 18-5 12 8-4 7-26-1Z"/>
+    <path d="m158 380 16-3 7 7-7 4h-16Z"/><path d="m774 381 19-2 8 9-19 3Z"/>
+  </g>
+  <!-- Orange tent echoes Claude; its opening is an actual dark triangular cutout. -->
+  <g id="tent" stroke="#1a2032" stroke-width="6" stroke-linejoin="round">
+    <path d="m99 309 83-112 99 113-47 17H121Z" fill="#b96554"/>
+    <path d="m182 197 52 130H99Z" fill="#e09a70"/>
+    <path d="m182 232 36 91h-77Z" fill="#292b40"/>
+    <path d="m182 232-6 91" stroke="#a86755" stroke-width="4"/>
+    <path d="m99 309-15 16m150 2 17 6" stroke="#9ca8a8" stroke-width="4"/>
+    <path d="M80 323v10m175-4v11" stroke="#293345" stroke-width="5"/>
+  </g>
+  <!-- Original landing pod with a mint observation window and a small antenna. -->
+  <g id="landing-pod" stroke="#1a2032" stroke-width="6" stroke-linejoin="round">
+    <path d="m728 280-9 19m111-19 12 19" stroke="#a4adb3"/>
+    <path d="M708 243c0-37 26-62 66-62 43 0 68 25 68 62v27l-24 17h-88l-22-17Z" fill="#a7b2b9"/>
+    <path d="M774 181c43 0 68 25 68 62v27l-24 17h-44Z" fill="#7e929e" stroke="none"/>
+    <path d="M708 245h134v25l-24 17h-88l-22-17Z" fill="#5f7c86"/>
+    <path d="M746 207h54l12 10v28h-76v-28Z" fill="#79c8bc"/>
+    <path d="M747 217h31" stroke="#b3e3d3" stroke-width="5" stroke-linecap="round"/>
+    <path d="M768 180v-24m0 0 18-10" stroke="#a1adb5" stroke-width="4"/>
+    <circle cx="789" cy="143" r="5" fill="#e5b76a" stroke-width="3"/>
+    <path d="M757 285v15h34v-15" fill="#66727f" stroke-width="4"/>
+    <path d="M746 300h57v10h-57Z" fill="#8b99a6" stroke-width="4"/>
+    <circle cx="724" cy="263" r="4" fill="#e9bb70" stroke="none"/>
+    <circle cx="825" cy="263" r="4" fill="#e9bb70" stroke="none"/>
+  </g>
+  <path d="M802 310q22 24-4 31h-36" stroke="#292f42" stroke-width="7" stroke-linecap="round"/>
+  <!-- Supplies and stools share the same chunky outline and simple materials. -->
+  <g id="supplies" stroke="#1c2335" stroke-width="5" stroke-linejoin="round">
+    <path d="m106 330 35-9 35 16v40l-34 11-36-15Z" fill="#617b7a"/>
+    <path d="m106 330 36 15 34-8m-34 8v43"/>
+    <path d="m116 349 17 7m20 3 13-5" stroke="#93afa3" stroke-width="4"/>
+    <path d="M188 342v-21h20v21" fill="#d7ba78"/>
+    <path d="m184 342 5 20h19l5-20Z" fill="#47505b"/>
+    <path d="M198 321v-6" stroke-width="3"/>
+  </g>
+  <g id="camp-stools" stroke="#242635" stroke-width="5">
+    <path d="M228 352v22c0 13 111 13 111 0v-22" fill="#785d58"/>
+    <ellipse cx="283" cy="352" rx="55" ry="12" fill="#ab8270"/>
+    <path d="M667 352v22c0 12 87 12 87 0v-22" fill="#785d58"/>
+    <ellipse cx="710" cy="352" rx="44" ry="11" fill="#ab8270"/>
+    <path d="M242 365v12m24-9v14m57-17v12m-83-25 27 4m425 10v12m44-13v11m-40-25 25 4" stroke="#594951" stroke-width="3"/>
+  </g>
+  <g id="contact-shadows" fill="#2b2739" opacity=".4">
+    <ellipse cx="283" cy="351" rx="43" ry="7"/><ellipse cx="710" cy="351" rx="35" ry="6"/>
+  </g>
+  <!-- Fire ring matches the animated HTML fire's anchor at 50%,65%. -->
+  <g id="fire-ring" fill="#85818b" stroke="#282b3b" stroke-width="4" stroke-linejoin="round">
+    <path d="m431 344 10-10 13 1 5 9-11 8Z"/><path d="m455 332 15-6 10 5-2 10-17 2Z"/>
+    <path d="m486 329 16 1 7 9-10 7-15-6Z"/><path d="m512 336 13 4 5 12-12 5-12-12Z"/>
+    <path d="m508 356 17 1-2 12-17 1-6-8Z"/><path d="m480 363 18-2 6 9-13 8-16-4Z"/>
+    <path d="m450 359 19 3 3 10-20 3-10-8Z"/><path d="m431 348 14 6-3 13-15-3-3-9Z"/>
+  </g>
+  <!-- Foreground silhouettes frame the clearing without covering the dialogue. -->
+  <g fill="#1b2935" stroke="#171d2e" stroke-width="5" stroke-linejoin="round">
+    <path d="M0 401 33 382l19 34 30-6 24 36 30 3 21 53H0Z"/>
+    <path d="m960 392-33 7-15 37-31-4-23 45-31 9-16 54h149Z"/>
+  </g>
+  <path d="M0 488q230 30 480 27t480-27v52H0Z" fill="#20263b"/>
+  <g stroke="#719184" stroke-width="3" stroke-linecap="round" opacity=".6">
+    <path d="m163 403 3-12 5 13m589 11 5-13 2 11m-136-14 2-9 5 8m-279-8 3-8 3 9"/>
+  </g>
+</svg>

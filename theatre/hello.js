@@ -57,10 +57,11 @@ function approximateMouth(character) {
 }
 const message = (text) => { $('status').textContent = text; };
 function error(text = '') { $('error').textContent = text; $('error').hidden = !text; }
-let captionWords = [], currentWord = -1, captionFallback = null;
+let captionWords = [], currentWord = -1, captionFallback = null, captionPageSize = 12;
 function caption(speaker, text) {
   $('caption-speaker').textContent = speaker;
   const target = $('caption-text'); target.replaceChildren(); captionWords = []; currentWord = -1;
+  captionPageSize = $('stage').clientWidth < 420 ? 6 : $('stage').clientWidth < 640 ? 9 : 12;
   clearInterval(captionFallback);
   let offset = 0;
   for (const token of text.split(/(\s+)/)) {
@@ -70,8 +71,8 @@ function caption(speaker, text) {
     offset += token.length;
   }
   target.classList.remove('caption-enter');
-  if (captionWords.length > 12) {
-    captionWords.forEach((word,index) => { word.span.hidden = index >= 12; });
+  if (captionWords.length > captionPageSize) {
+    captionWords.forEach((word,index) => { word.span.hidden = index >= captionPageSize; });
     let estimated = 0;
     captionFallback = setInterval(() => {
       if (estimated >= captionWords.length - 1) { clearInterval(captionFallback); return; }
@@ -85,7 +86,7 @@ function highlightWord(index,approximate = false) {
   if (currentWord === index) return;
   captionWords[currentWord]?.span.classList.remove('is-current');
   captionWords[index]?.span.classList.add('is-current'); currentWord = index;
-  if (index >= 0 && captionWords.length > 12) { const page = Math.floor(index/12); captionWords.forEach((word,i) => { word.span.hidden = Math.floor(i/12) !== page; }); }
+  if (index >= 0 && captionWords.length > captionPageSize) { const page = Math.floor(index/captionPageSize); captionWords.forEach((word,i) => { word.span.hidden = Math.floor(i/captionPageSize) !== page; }); }
 }
 function highlightChar(index) { highlightWord(captionWords.findIndex((word) => index >= word.start && index < word.end)); }
 function progress(line = 0, total = 0) { $('line-progress').textContent = line ? `Line ${line} / ${total}` : 'Ready'; }
@@ -162,7 +163,7 @@ function speak(text, character, signal) {
   });
 }
 let activeExpression = 'neutral', activeGaze = 'viewer';
-const settingNames = {campfire:'Campfire after dark', podcast:'The podcast room', room:'Rehearsal room'};
+const settingNames = {campfire:'Campfire outpost', podcast:'The podcast room', room:'Rehearsal room'};
 function settings() {
   return {pace:$('pace').value, textMode:$('stage').dataset.textmode || 'story', ambience:$('ambience').checked, effects:$('effects').checked,
     voiceVolume:Number($('voice-volume').value), effectsVolume:Number($('effects-volume').value),

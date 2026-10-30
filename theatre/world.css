@@ -1,0 +1,29 @@
+/* Campfire outpost. World geometry is authored at 960 × 540 in campfire-outpost.svg. */
+.camp-world{display:none}
+.stage[data-scene=campfire]{background:#252940;background-image:none}
+.stage[data-scene=campfire] .camp-world{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.stage[data-scene=campfire] .cast #actor-claude{left:17%;right:auto;top:31.5%;width:25%}
+.stage[data-scene=campfire] .cast #actor-gpt{left:auto;right:16%;top:32.6%;width:20%}
+.stage[data-scene=campfire] .cast figure::before{display:none}
+.stage[data-scene=campfire] .actor-art{filter:drop-shadow(0 3px 0 #20233555)}
+.stage[data-scene=campfire] #actor-claude .actor-art{transform-origin:50% 75%}
+.stage[data-scene=campfire] #actor-gpt .actor-art{transform-origin:50% 90%}
+.stage[data-scene=campfire] .cast figure[data-state=speaking] .actor-art{filter:drop-shadow(0 3px 0 #20233555)}
+.stage[data-scene=campfire] .campfire{left:46%;top:49%;width:8%;height:18%;transform:none}
+.stage[data-scene=campfire] .wood{left:8%;bottom:9%;width:85%;height:14%;border:2px solid #352c37;border-radius:3px;background:#a16c48;transform:rotate(15deg)}
+.stage[data-scene=campfire] .wood.two{transform:rotate(-15deg)}
+.stage[data-scene=campfire] .flame{left:23%;bottom:22%;width:52%;height:70%;border-radius:0;background:#ed9954;clip-path:polygon(44% 0,61% 22%,68% 12%,81% 38%,77% 53%,94% 65%,84% 86%,65% 100%,26% 98%,5% 79%,8% 57%,26% 38%,29% 15%,40% 32%);transform:rotate(-3deg);transform-origin:50% 95%}
+.stage[data-scene=campfire] .flame.inner{left:36%;bottom:22%;width:29%;height:44%;background:#f5d990;clip-path:polygon(52% 0,71% 31%,68% 48%,91% 67%,73% 93%,45% 100%,12% 84%,7% 57%,31% 34%);transform:rotate(3deg)}
+.stage[data-scene=campfire] .ember{left:64%;top:4%;width:4%;height:4%;background:#f3ca7c}
+.stage[data-scene=campfire] .firelight{inset:38% 27% 22%;opacity:calc(var(--firelight,.6) * .5);mix-blend-mode:screen}
+.stage[data-scene=campfire] .caption{left:10%;width:80%;bottom:4%;max-height:20%;text-shadow:0 2px 2px #171c2e}
+.stage[data-scene=campfire] .caption p{font-size:clamp(16px,2.05vw,27px);line-height:1.25;letter-spacing:-.025em}
+.stage[data-scene=campfire][data-textmode=story] .caption p{border-left:0;padding-left:0}
+.stage[data-scene=campfire] .caption span#caption-speaker{font-size:11px;color:#efcd8c}
+.stage[data-scene=campfire] .stage-note{background:#20263bcc;border:1px solid #63708466;border-radius:5px;color:#d9deea}
+.stage[data-scene=campfire]:not([data-playing=true]) .flame{animation:outpost-idle-fire 1.6s ease-in-out infinite alternate}
+.stage[data-scene=campfire]:not([data-playing=true]) .flame.inner{animation-duration:1.15s;animation-delay:-.5s}
+@keyframes outpost-idle-fire{from{transform:rotate(-2deg) scale(.97,1)}to{transform:rotate(2deg) scale(1.02,.94)}}
+.stage[data-scene=campfire][data-textmode=subtitles] .caption p{font-size:clamp(14px,1.6vw,21px)}
+@media(max-width:800px){.stage[data-scene=campfire] .caption p{font-size:clamp(15px,3vw,23px)}}
+@media(max-width:420px){.stage[data-scene=campfire] .caption{bottom:3%;max-height:33%}.stage[data-scene=campfire] .caption p{font-size:13px}.stage[data-scene=campfire] .caption span#caption-speaker{font-size:9px}.stage[data-scene=campfire] .stage-note{font-size:9px;top:8px;left:8px}.stage[data-scene=campfire] .wood{border-width:1px}}

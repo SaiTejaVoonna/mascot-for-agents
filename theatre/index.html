@@ -9,7 +9,8 @@
   <link rel="stylesheet" href="stage.css">
   <link rel="stylesheet" href="voice-tuning.css">
   <link rel="stylesheet" href="director.css">
-  <script type="module" src="hello.js?v=speech-5"></script>
+  <link rel="stylesheet" href="world.css?v=2">
+  <script type="module" src="hello.js?v=outpost-1"></script>
 </head>
 <body>
 <a class="skip" href="#script">Skip to dialogue</a>
@@ -18,8 +19,9 @@
   <div class="heading"><div><h1>Little Theatre</h1><p>Your story. Their little world.</p></div><button id="load-example" class="secondary">Load Hello example</button></div>
   <div class="workspace">
     <section class="performance" aria-label="Conversation preview">
-      <div class="stage" id="stage" data-scene="campfire" data-playing="false"><span class="stage-note" id="stage-name">Campfire after dark</span>
+      <div class="stage" id="stage" data-scene="campfire" data-playing="false"><span class="stage-note" id="stage-name">Campfire outpost</span>
         <div class="scenery" aria-hidden="true">
+          <img class="camp-world" src="assets/campfire-outpost.svg" alt="" width="960" height="540">
           <svg class="forest" viewBox="0 0 700 360" preserveAspectRatio="xMidYMax slice"><path fill="#253e45" d="M0 205 70 90 100 150 150 40 230 190 280 105 350 230 420 100 500 200 570 50 650 190 700 125V360H0Z"/><path fill="#132f37" d="m0 245 45-90 55 100 55-100 60 110 65-85 70 100 90-150 70 140 60-100 75 120V360H0Z"/></svg>
           <div class="stars"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="moon"></div><div class="ground"></div>
           <div class="firelight"></div><div class="bench left"></div><div class="bench right"></div>
@@ -32,7 +34,7 @@
       </div><div class="caption"><span id="caption-speaker">Your stage is ready</span><p id="caption-text">Start with Hello, or write your own exchange.</p></div></div>
       <div class="transport"><button id="play" class="primary">Play conversation</button><button id="stop" class="secondary" disabled>Stop</button><span id="line-progress" class="line-progress">Ready</span><div class="text-modes" role="group" aria-label="On-screen text"><button data-textmode="off" aria-pressed="false">Off</button><button data-textmode="subtitles" aria-pressed="false">Subtitles</button><button data-textmode="story" aria-pressed="true">Story text</button></div><label class="check"><input id="silent" type="checkbox">Silent preview</label></div>
       <p id="status" role="status" aria-live="polite">Preparing available browser voices…</p>
-      <details class="scene-settings"><summary>Scene &amp; pacing</summary><div class="scene-controls"><label>Setting<select id="setting"><option value="campfire">Campfire after dark</option><option value="podcast">The podcast room</option><option value="room">Rehearsal room</option></select></label><label>Conversation pace<select id="pace"><option value="relaxed">Relaxed</option><option value="natural" selected>Natural</option><option value="snappy">Snappy</option></select></label></div></details>
+      <details class="scene-settings"><summary>Scene &amp; pacing</summary><div class="scene-controls"><label>Setting<select id="setting"><option value="campfire">Campfire outpost</option><option value="podcast">The podcast room</option><option value="room">Rehearsal room</option></select></label><label>Conversation pace<select id="pace"><option value="relaxed">Relaxed</option><option value="natural" selected>Natural</option><option value="snappy">Snappy</option></select></label></div></details>
       <details class="sound-settings"><summary>Sound &amp; atmosphere</summary><div class="voice-grid"><label class="check"><input id="ambience" type="checkbox" checked>Fireplace ambience (campfire)</label><label class="check"><input id="effects" type="checkbox" checked>Scripted sound effects</label><label>Voice volume<input id="voice-volume" type="range" min="0" max="1" step="0.05" value="1"></label><label>Effects volume<input id="effects-volume" type="range" min="0" max="1" step="0.05" value="0.25"></label><label>Ambience volume<input id="ambience-volume" type="range" min="0" max="1" step="0.05" value="0.4"></label><label>Effect pitch<input id="sound-pitch" type="range" min="0.5" max="1.5" step="0.05" value="1"></label><label>Firelight<input id="light" type="range" min="0" max="1" step="0.05" value="0.6"></label></div><p class="hint">Recorded fireplace ambience and CC0 uisfx cues from Real SFX. Podcast and room have no background recording yet. Sound starts only when you play or preview. Voice volume controls generated neural audio; device voices may apply volume differently.</p><div class="sound-palette" role="group" aria-label="Preview a sound"><button data-sound="whoosh">Whoosh</button><button data-sound="pop">Pop</button><button data-sound="tap">Tap</button><button data-sound="chime">Chime</button><button data-sound="click">Click</button><button data-sound="success">Success</button><button id="preview-ambience">Preview fire · 5s</button></div><p class="hint">Try <code>Sound: whoosh</code> in your script. Sound cues play between dialogue lines. Ambience lowers while a character speaks. Previewing a sound stops the conversation.</p></details>
       <details class="voice-settings" open><summary>Voices &amp; delivery</summary>
         <div class="voice-engine"><label>Voice engine<select id="engine"><option value="neural" selected>Kokoro neural · recommended</option><option value="device">Device voices · fallback</option></select></label><button id="load-neural" class="secondary">Load neural voices</button></div>

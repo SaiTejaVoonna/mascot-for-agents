@@ -1,5 +1,9 @@
 # Hello Studio
 
+## Coded campfire world
+
+The campfire stage now uses an original SVG space outpost: flat outlined scenery, tent, landing pod, supplies, stools and a shared ground plane around the live fire. It replaces the raster forest in this stage. World geometry and proportional placement are editable in [the SVG](assets/campfire-outpost.svg) and world.css. Voice choices remain unchanged. See [world design notes](../docs/THEATRE_WORLD.md). This is a 2D set, with standing character artwork and existing dialogue playback.
+
 ## Speech and mouth update
 
 Neural speech is now the initial engine, with female Heart for Claude and Bella/Nicole/Sarah alternatives. Device voices remain an explicit fallback. Mouth animation combines generated phoneme timing with the actual audio envelope and output-clock latency estimates; silence closes the speaking mouth. Play prepares neural dialogue before the scene starts, showing progress, so generation does not interrupt the conversation. A separately performed, credited CC0 female hmm is available as an optional cue. See [speech details and limitations](../docs/THEATRE_SPEECH.md). These are Kokoro voices; the sound-design skills do not contain a replacement TTS model.
