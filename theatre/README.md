@@ -1,5 +1,11 @@
 # Hello Studio
 
+## Prepared sound update
+
+The player now uses Real SFX's bundled uisfx Zen cues (CC0) and a public-domain fireplace recording, prepared with real-sound functions and measured with earshot's model-free path. This replaces the procedural effects and filtered-noise ambience described in older notes below. Fire ambience is enabled by default for new campfire scenes, starts only on Play, ducks under speech and fades on Stop. A five-second fire audition does not need the speech model. Podcast/room have no background recording yet.
+
+See [audio preparation](../docs/THEATRE_AUDIO.md), [credits](assets/audio/CREDITS.md), and [asset measurements](assets/audio/measurements.json). Skills/runtime are installed in the agent workspace, not in the visitor's browser. Global skill registration and earshot's larger analysis models are not installed. This is an effects/ambience change; it does not replace or improve the speech model.
+
 ## Director layout
 
 A wide scene with a new original generated twilight background, smaller grounded mascot layers, compact Dialogue/Source editing and collapsed settings replaces the earlier oversized rehearsal layout. Off/Subtitles/Story text controls stage typography separately from Silent preview. Neural captions start with actual audio; active words use provided timing, with approximate fallback when unavailable. Text mode is included in scene 0.2 settings. See docs/THEATRE_DIRECTOR_DESIGN.md.
@@ -12,13 +18,13 @@ Voice audition now reads the first actual script line for that actor. A six-entr
 
 Engine choice, voice IDs, rate, tone and device pitch stay in localStorage when available. A remembered neural preference loads on the next Play/Preview action rather than silently playing a device voice. Page load itself does not download the model. These voice preferences remain browser-local and are not serialized into scene 0.2. Preview and full playback share voice-volume handling.
 
-These tuning changes have not had an audio-quality or playback review in this implementation turn. Sound-engine references in the Credits panel provide effects/analysis, not replacement speech synthesis.
+These earlier tuning changes did not have an audio-quality review when implemented. The sound tools now prepare effects and ambience; they do not provide replacement speech synthesis.
 
 ## Little Theatre: first scene version
 
 The current stage selector offers an illustrated campfire, a podcast room and the original rehearsal room. These are original HTML/CSS/SVG environments around the existing 2D mascots. Character rigging, walking and 3D environments remain future work.
 
-Conversation pace is separate from speaking speed. Optional original Web Audio effects (whoosh/pop/tap/chime/click/success), synthetic ambience, volume controls, effect pitch and firelight are editable. Sound: whoosh adds a serial effect cue to the script. Ambience ducks under dialogue. No recordings from the screenshot resources are bundled; those projects are linked as workflow references in Credits.
+Conversation pace is separate from speaking speed. Prepared effects (whoosh/pop/tap/chime/click/success), fireplace ambience, volume controls, effect pitch and firelight are editable. Sound: whoosh adds a serial effect cue to the script. Ambience ducks under dialogue. Credits now identify the actual bundled recordings/cues, rather than linking to the tools only as references.
 
 New saves use scene format 0.2, including scene and sound settings. Earlier 0.1 imports remain supported. See docs/PERFORMANCE_FORMAT_V02.md and theatre/examples/podcast.scene.json. Voice choices and generated speech are still not embedded in exported files.
 

@@ -1,77 +1,85 @@
-// Original small procedural sound palette. No recordings or external sound model.
+// Prepared CC0 UI samples and a public-domain fire recording. See assets/audio/CREDITS.md.
 export const soundNames = ['whoosh', 'pop', 'tap', 'chime', 'click', 'success'];
 export class StageSound {
-  context = null; ambience = null; effectsBus = null; sources = new Set();
-  gain = 0.25; ambienceLevel = 0.2; pitch = 1; ducked = false;
-  async ready() {
+  context = null; ambience = null; effectsBus = null;
+  sources = new Map(); buffers = new Map(); pending = new Map(); generation = 0;
+  gain = .25; ambienceLevel = .4; pitch = 1; ducked = false;
+  async load(name) {
+    if (this.buffers.has(name)) return;
+    if (!this.pending.has(name)) {
+      const task = (async () => {
+        const response = await fetch(new URL(`./assets/audio/${name}.mp3`, import.meta.url));
+        if (!response.ok) throw new Error(`Could not load the ${name} sound. Reload and try again.`);
+        const buffer = await this.context.decodeAudioData(await response.arrayBuffer());
+        this.buffers.set(name, buffer);
+      })().finally(() => this.pending.delete(name));
+      this.pending.set(name, task);
+    }
+    await this.pending.get(name);
+  }
+  async ready(names = soundNames, stage = null) {
+    const generation = this.generation;
     this.context ||= new AudioContext();
-    if (!this.effectsBus) { this.effectsBus = this.context.createGain(); this.effectsBus.connect(this.context.destination); this.updateEffects(); }
+    if (!this.effectsBus) {
+      this.effectsBus = this.context.createGain();
+      this.effectsBus.connect(this.context.destination); this.updateEffects();
+    }
     await this.context.resume();
+    const needed = [...new Set(names.filter((name) => soundNames.includes(name)))];
+    if (stage === 'campfire') needed.push('fireplace');
+    await Promise.all(needed.map((name) => this.load(name)));
+    return generation === this.generation;
   }
   configure(settings) {
-    this.gain = settings.effectsVolume; this.ambienceLevel = settings.ambienceVolume; this.pitch = settings.soundPitch;
-    this.updateAmbience();
-    this.updateEffects();
+    this.gain = settings.effectsVolume; this.ambienceLevel = settings.ambienceVolume;
+    this.pitch = settings.soundPitch; this.updateAmbience(); this.updateEffects();
+  }
+  target(parameter, value, seconds) {
+    const now = this.context.currentTime;
+    parameter.cancelScheduledValues(now); parameter.setTargetAtTime(value, now, seconds);
   }
   duck(on) { this.ducked = on; this.updateAmbience(); this.updateEffects(); }
-  updateEffects() { if (this.effectsBus) this.effectsBus.gain.setTargetAtTime(this.gain * (this.ducked ? .3 : 1), this.context.currentTime, .07); }
+  updateEffects() {
+    if (this.effectsBus) this.target(this.effectsBus.gain, this.gain * (this.ducked ? .3 : 1), .07);
+  }
   updateAmbience() {
-    if (!this.ambience) return;
-    this.ambience.gain.gain.setTargetAtTime(this.ambienceLevel * (this.ducked ? 0.16 : 0.4), this.context.currentTime, 0.12);
-  }
-  noise(seconds, seed = 42) {
-    const length = Math.ceil(this.context.sampleRate * seconds);
-    const buffer = this.context.createBuffer(1, length, this.context.sampleRate), data = buffer.getChannelData(0);
-    let state = seed;
-    for (let i = 0; i < length; i++) { state = (Math.imul(state, 1664525) + 1013904223) >>> 0; data[i] = state / 2147483648 - 1; }
-    return buffer;
-  }
-  track(source, nodes) {
-    this.sources.add(source);
-    source.onended = () => { this.sources.delete(source); source.disconnect(); nodes.forEach((node) => node.disconnect()); };
+    if (this.ambience) this.target(this.ambience.gain.gain,
+      this.ambienceLevel * (this.ducked ? .35 : .8), this.ducked ? .08 : .4);
   }
   effect(name) {
-    if (!this.context || !soundNames.includes(name)) return;
-    const now = this.context.currentTime, output = this.context.createGain();
-    output.connect(this.effectsBus);
-    const duration = name === 'whoosh' ? 0.38 : name === 'success' ? 0.65 : name === 'chime' ? 0.8 : 0.14;
-    output.gain.setValueAtTime(0, now);
-    output.gain.linearRampToValueAtTime(0.7, now + 0.012);
-    output.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-    if (name === 'whoosh' || name === 'tap' || name === 'click') {
-      const source = this.context.createBufferSource(), filter = this.context.createBiquadFilter();
-      source.buffer = this.noise(duration, name === 'whoosh' ? 12 : 32);
-      source.playbackRate.value = this.pitch;
-      filter.type = 'bandpass'; filter.Q.value = name === 'whoosh' ? 0.65 : 1.3;
-      filter.frequency.setValueAtTime((name === 'whoosh' ? 500 : name === 'tap' ? 350 : 1800) * this.pitch, now);
-      if (name === 'whoosh') filter.frequency.exponentialRampToValueAtTime(2800 * this.pitch, now + duration);
-      source.connect(filter).connect(output); this.track(source, [filter,output]); source.start(); source.stop(now + duration);
-    } else {
-      const source = this.context.createOscillator(); source.type = 'sine';
-      source.frequency.setValueAtTime((name === 'pop' ? 550 : 660) * this.pitch, now);
-      if (name === 'pop') source.frequency.exponentialRampToValueAtTime(160 * this.pitch, now + duration);
-      if (name === 'success') { source.frequency.setValueAtTime(825 * this.pitch, now + 0.13); source.frequency.setValueAtTime(990 * this.pitch, now + 0.27); }
-      source.connect(output); this.track(source,[output]); source.start(); source.stop(now + duration);
-    }
+    const buffer = this.buffers.get(name);
+    if (!this.context || !buffer || !soundNames.includes(name)) return 0;
+    const source = this.context.createBufferSource(), gain = this.context.createGain();
+    source.buffer = buffer; source.playbackRate.value = this.pitch;
+    source.connect(gain).connect(this.effectsBus); this.sources.set(source, gain);
+    source.onended = () => { this.sources.delete(source); source.disconnect(); gain.disconnect(); };
+    source.start();
+    return buffer.duration / this.pitch * 1000;
   }
   startAmbience(stage) {
-    this.stopAmbience(); if (!this.context || stage === 'room') return;
-    const source = this.context.createBufferSource(), filter = this.context.createBiquadFilter(), gain = this.context.createGain();
-    source.buffer = this.noise(4); source.loop = true;
-    filter.type = 'lowpass'; filter.frequency.value = stage === 'campfire' ? 420 : 110;
-    source.connect(filter).connect(gain).connect(this.context.destination);
-    this.ambience = {source, filter, gain}; gain.gain.value = 0;
-    source.start(); this.updateAmbience();
+    this.stopAmbience();
+    // No invented rumble for podcast/room: silence until an appropriate recording exists.
+    const buffer = this.buffers.get('fireplace');
+    if (!this.context || stage !== 'campfire' || !buffer) return;
+    const source = this.context.createBufferSource(), gain = this.context.createGain();
+    source.buffer = buffer; source.loop = true; gain.gain.value = 0;
+    source.connect(gain).connect(this.context.destination);
+    source.onended = () => { source.disconnect(); gain.disconnect(); };
+    this.ambience = {source, gain}; source.start(); this.updateAmbience();
   }
   stopAmbience() {
     if (!this.ambience) return;
-    this.ambience.source.stop();
-    for (const node of Object.values(this.ambience)) node.disconnect();
-    this.ambience = null;
+    const {source, gain} = this.ambience, now = this.context.currentTime;
+    gain.gain.cancelScheduledValues(now); gain.gain.setTargetAtTime(0, now, .02);
+    source.stop(now + .12); this.ambience = null;
   }
   stop() {
-    this.stopAmbience();
-    for (const source of this.sources) { try { source.stop(); } catch {} }
+    this.generation++; this.stopAmbience();
+    if (this.context) for (const [source, gain] of this.sources) {
+      const now = this.context.currentTime;
+      gain.gain.cancelScheduledValues(now); gain.gain.setTargetAtTime(0, now, .008);
+      try { source.stop(now + .04); } catch {}
+    }
     this.duck(false);
   }
 }

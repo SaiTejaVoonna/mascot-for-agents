@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "assets": {
+    "whoosh": {
+      "file": "whoosh.mp3",
+      "sha256": "99f978d2d2c3145d059f8509eef2c69cdf74092ca2817b0e5bad25a4578c7268",
+      "bytes": 4652,
+      "durationSeconds": 0.319,
+      "source": "uisfx 0.4.0 / zen / swipe",
+      "license": "CC0-1.0",
+      "creator": "Yuki Capital / Romain Simon",
+      "sourceUrl": "https://github.com/romainsimon/uisfx",
+      "sourceSha256": "d9d384782a3b73486bf7c94c4c9e4ba15b21a90d25c124af72afbee1201b0c31",
+      "edits": "Mono duplicated to stereo when needed; DC removal; peak ceiling -9 dBFS; edge fades; MP3 encoding",
+      "kind": "Produced UI cue (upstream synthesis, not a field recording)"
+    },
+    "pop": {
+      "file": "pop.mp3",
+      "sha256": "e1af636a9c62286c6ce4aba44f8c4112f9d2d9d3d5b04c4005817c5cfad3a327",
+      "bytes": 4940,
+      "durationSeconds": 0.352,
+      "source": "uisfx 0.4.0 / zen / reaction",
+      "license": "CC0-1.0",
+      "creator": "Yuki Capital / Romain Simon",
+      "sourceUrl": "https://github.com/romainsimon/uisfx",
+      "sourceSha256": "bcd51df24ab9ae2bfa7b4760a4108afe952ecc6843ec8b36a14c30c1e8165baa",
+      "edits": "Mono duplicated to stereo when needed; DC removal; peak ceiling -9 dBFS; edge fades; MP3 encoding",
+      "kind": "Produced UI cue (upstream synthesis, not a field recording)"
+    },
+    "tap": {
+      "file": "tap.mp3",
+      "sha256": "cd65c7d6f04244a623c9036aed2670e6d3ce98199e96f7530a5f3c95c8cdfaed",
+      "bytes": 2636,
+      "durationSeconds": 0.155,
+      "source": "uisfx 0.4.0 / zen / press",
+      "license": "CC0-1.0",
+      "creator": "Yuki Capital / Romain Simon",
+      "sourceUrl": "https://github.com/romainsimon/uisfx",
+      "sourceSha256": "e323f95066734d3fccbb369d18699aba97ac4cea62f09a3fcfa5b27e7c9843a2",
+      "edits": "Mono duplicated to stereo when needed; DC removal; peak ceiling -9 dBFS; edge fades; MP3 encoding",
+      "kind": "Produced UI cue (upstream synthesis, not a field recording)"
+    },
+    "chime": {
+      "file": "chime.mp3",
+      "sha256": "93e5cd6cb06c92c930f33b99d7a031e9dadc62e3fc6ff2bfa8b553a636ebcea6",
+      "bytes": 6380,
+      "durationSeconds": 0.458,
+      "source": "uisfx 0.4.0 / zen / notification",
+      "license": "CC0-1.0",
+      "creator": "Yuki Capital / Romain Simon",
+      "sourceUrl": "https://github.com/romainsimon/uisfx",
+      "sourceSha256": "0bc938dd36351fe3f1022674701ae0bd1cd5116312e80a42b6817c431e09726d",
+      "edits": "Mono duplicated to stereo when needed; DC removal; peak ceiling -9 dBFS; edge fades; MP3 encoding",
+      "kind": "Produced UI cue (upstream synthesis, not a field recording)"
+    },
+    "click": {
+      "file": "click.mp3",
+      "sha256": "b0e529cc44afd623c9016174f31ac375bf50b426799e9ba8503dd861645b8466",
+      "bytes": 3788,
+      "durationSeconds": 0.254,
+      "source": "uisfx 0.4.0 / zen / select",
+      "license": "CC0-1.0",
+      "creator": "Yuki Capital / Romain Simon",
+      "sourceUrl": "https://github.com/romainsimon/uisfx",
+      "sourceSha256": "7fc8a7319161e3cf1ffbe84d38c0200d710f07dc6860b1001de4a15822acbac1",
+      "edits": "Mono duplicated to stereo when needed; DC removal; peak ceiling -9 dBFS; edge fades; MP3 encoding",
+      "kind": "Produced UI cue (upstream synthesis, not a field recording)"
+    },
+    "success": {
+      "file": "success.mp3",
+      "sha256": "77f203be49465203545528e7d2812472fd48a6d01819882f9a1f9e9c02ea95b3",
+      "bytes": 7532,
+      "durationSeconds": 0.571,
+      "source": "uisfx 0.4.0 / zen / success",
+      "license": "CC0-1.0",
+      "creator": "Yuki Capital / Romain Simon",
+      "sourceUrl": "https://github.com/romainsimon/uisfx",
+      "sourceSha256": "b2e8426126af308d7abf99e4087549c5289df3d20774f30075ace1a3fea42292",
+      "edits": "Mono duplicated to stereo when needed; DC removal; peak ceiling -9 dBFS; edge fades; MP3 encoding",
+      "kind": "Produced UI cue (upstream synthesis, not a field recording)"
+    },
+    "fireplace": {
+      "file": "fireplace.mp3",
+      "sha256": "e010f7bc0be7175756bd6f04a45cc3b07444c61a9e8a2fe661634f7aec849da4",
+      "bytes": 234764,
+      "durationSeconds": 19.5,
+      "source": "Dry grass burning in open fireplace",
+      "creator": "ezwa",
+      "license": "Public domain (author dedication)",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dry_grass_burning_in_open_fireplace.ogg",
+      "sourceSha256": "0fb9fb4a44fe378ceffb2b80d0cf420e28404e04f5f200b7bc0205eadeebc8d4",
+      "kind": "Field recording",
+      "edits": "2\u201322 s excerpt; 80\u20136500 Hz filtering; real-sound loudness preparation; 500 ms equal-power loop overlap; MP3 encoding"
+    }
+  }
+}

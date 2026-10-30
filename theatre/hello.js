@@ -170,7 +170,7 @@ function updateStage() {
 }
 function applySettings(scene) {
   $('setting').value = scene.stage;
-  const values = {pace:'natural',textMode:'story',ambience:false,effects:true,voiceVolume:1,effectsVolume:.25,ambienceVolume:.2,soundPitch:1,light:.6,...scene.settings};
+  const values = {pace:'natural',textMode:'story',ambience:true,effects:true,voiceVolume:1,effectsVolume:.25,ambienceVolume:.4,soundPitch:1,light:.6,...scene.settings};
   setTextMode(values.textMode);
   $('pace').value = values.pace; $('ambience').checked = values.ambience; $('effects').checked = values.effects;
   for (const [key,id] of Object.entries({voiceVolume:'voice-volume',effectsVolume:'effects-volume',ambienceVolume:'ambience-volume',soundPitch:'sound-pitch',light:'light'})) $(id).value = values[key];
@@ -333,7 +333,9 @@ async function play() {
   let line = 0; const total = scene.beats.filter((b) => b.type === 'say').length;
   try {
     if (!silent && ($('effects').checked || $('ambience').checked)) {
-      await stageSound.ready();
+      const sounds = $('effects').checked ? scene.beats.filter((beat) => beat.type === 'sound').map((beat) => beat.sound) : [];
+      const ready = await stageSound.ready(sounds, $('ambience').checked ? $('setting').value : null);
+      if (!ready) throw abortError();
       if (run.signal.aborted) throw abortError();
       stageSound.configure(settings());
       if ($('ambience').checked) stageSound.startAmbience($('setting').value);
@@ -343,9 +345,9 @@ async function play() {
       if (run.signal.aborted) throw abortError();
       if (beat.type === 'pause') { resetActors(); message('A little pause…'); await delay(beat.durationMs * paceScale(), run.signal); continue; }
       if (beat.type === 'sound') {
-        if (!silent && $('effects').checked) stageSound.effect(beat.sound);
+        const duration = !silent && $('effects').checked ? stageSound.effect(beat.sound) : 0;
         message(`${silent ? 'Silent cue' : 'Sound cue'}: ${beat.sound}`);
-        await delay(400 * paceScale(), run.signal); continue;
+        await delay(duration + 80 * paceScale(), run.signal); continue;
       }
       line++;
       progress(line,total);
@@ -500,9 +502,30 @@ window.addEventListener('pagehide', () => stop(''));
 for (const id of ['setting','pace','ambience','effects']) $(id).addEventListener('change', () => { stop('Scene settings changed. Ready to play.'); updateStage(); });
 for (const id of ['voice-volume','effects-volume','ambience-volume','sound-pitch','light']) $(id).addEventListener('input', updateStage);
 document.querySelectorAll('[data-sound]').forEach((button) => button.addEventListener('click', async () => {
-  try { await stageSound.ready(); stageSound.configure(settings()); stageSound.effect(button.dataset.sound); message(`Previewing ${button.dataset.sound}.`); }
-  catch { error('Sound could not start. Check your browser audio settings.'); }
+  stop(''); error();
+  try {
+    if (!await stageSound.ready([button.dataset.sound])) return;
+    stageSound.configure(settings()); stageSound.effect(button.dataset.sound);
+    message(`Previewing ${button.dataset.sound} · uisfx Zen pack.`);
+  } catch (reason) { error(reason.message || 'Sound could not start. Check your browser audio settings.'); }
 }));
+$('preview-ambience').addEventListener('click', async () => {
+  stop(''); error();
+  const run = new AbortController(); controller = run; $('stop').disabled = false;
+  try {
+    const ready = await stageSound.ready([], 'campfire');
+    if (!ready || run.signal.aborted) throw abortError();
+    stageSound.configure(settings()); stageSound.startAmbience('campfire');
+    $('stage').dataset.playing = 'true'; message('Previewing the recorded fireplace · 5 seconds.');
+    await delay(5000, run.signal);
+    if (controller === run) stop('Fireplace preview finished.');
+  } catch (reason) {
+    if (controller === run) {
+      stop('');
+      if (reason.name !== 'AbortError') error(reason.message || 'Fireplace preview could not start.');
+    }
+  }
+});
 updateStage();
 if (!supportsSpeech) $('silent').checked = true;
 if (supportsSpeech) synth.addEventListener('voiceschanged', populateVoices);

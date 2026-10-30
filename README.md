@@ -2,7 +2,7 @@
 
 ## Video/theatre development branch
 
-Theatre now includes illustrated campfire/podcast/rehearsal settings, pacing presets, an original procedural sound palette and scene-format 0.2 settings. Open [Little Theatre](theatre/) on a local server; the main GitHub Pages gallery remains unchanged. See [format 0.2](docs/PERFORMANCE_FORMAT_V02.md) for agent-authored sound cues and settings.
+Theatre now includes illustrated campfire/podcast/rehearsal settings, pacing presets, a prepared CC0/public-domain sound pack and scene-format 0.2 settings. Real SFX's uisfx cues replace the old procedural palette; a recorded fireplace replaces filtered-noise ambience. See [audio preparation](docs/THEATRE_AUDIO.md). Open [Little Theatre](theatre/) on a local server; the main GitHub Pages gallery remains unchanged. See [format 0.2](docs/PERFORMANCE_FORMAT_V02.md) for agent-authored sound cues and settings.
 
 The first [Hello Studio prototype](theatre/) lives on feature/video-theatre: editable Claude/GPT dialogue, browser voices, captions, speaking/listening states and scene JSON import/export. See [the prototype notes](theatre/README.md). This is a 2D rehearsal; 3D stages, prepared voices and precise lip sync are future work. The deployed main gallery remains revision 11.
 
