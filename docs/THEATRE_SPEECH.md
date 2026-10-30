@@ -2,7 +2,7 @@
 
 ## Neural speech
 
-Kokoro is now the initial engine. Claude starts with female **Heart**, with **Bella, Nicole and Sarah** available to audition. GPT starts with Michael; Fenrir and Puck are also available. HeadTTS is pinned to 1.3.0. These are Kokoro voices, not new speech models supplied by the sound-effect skills.
+Kokoro is now the initial engine. Claude starts with female **Heart**, with **Bella, Nicole and Sarah** available to audition. GPT starts with male **Fenrir**; Michael and Puck are also available. Saved explicit choices are preserved. HeadTTS is pinned to 1.3.0. These are Kokoro voices, not new speech models supplied by the sound-effect skills.
 
 Play/Preview loads the model on demand. Failed loading never silently plays a device voice. Preferences use `theatre-voice-v2`, replacing the old device-first default; subsequent explicit device selections are respected. Stop invalidates pending playback while a model loads, although the download can finish for later reuse.
 

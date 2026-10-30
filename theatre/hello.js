@@ -1,4 +1,4 @@
-import {NeuralVoice, neuralVoices, recordedVocals} from './neural-voice.js?v=speech-3';
+import {NeuralVoice, neuralVoices, recordedVocals} from './neural-voice.js?v=speech-4';
 import {StageSound, soundNames} from './stage-sound.js';
 const neural = new NeuralVoice();
 const stageSound = new StageSound();
@@ -456,7 +456,7 @@ function applyVoiceEngine(persist = true) {
     if (useNeural) {
       $(`voice-${id}`).replaceChildren(...neuralVoices.map((v) => new Option(v.name, v.id)));
       const saved = savedVoicePrefs.voiceIds?.neural?.[id];
-      $(`voice-${id}`).value = neuralVoices.some((voice) => voice.id === saved) ? saved : index ? 'am_michael' : 'af_heart';
+      $(`voice-${id}`).value = neuralVoices.some((voice) => voice.id === saved) ? saved : index ? 'am_fenrir' : 'af_heart';
     }
   }
   if (!useNeural) populateVoices();
