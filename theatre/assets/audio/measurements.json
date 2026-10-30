@@ -231,6 +231,39 @@
       "flatness": 0.0001,
       "brightness_hz": 4957,
       "tonal_peak_ratio_db": 35.4
+    },
+    "hmm-female": {
+      "duration": 0.711,
+      "peak_dbfs": -6.4,
+      "true_peak_dbtp": -6.4,
+      "rms_dbfs": -17.3,
+      "lufs": -13.9,
+      "clipped_samples": 0,
+      "dc": 1e-05,
+      "noise_floor_dbfs": -46.6,
+      "dynamic_range_db": 32.3,
+      "digital_silence_frac": 0.0001,
+      "side_to_mid_db": null,
+      "correlation": 1.0,
+      "attack_at": 0.102,
+      "peak_at": 0.224,
+      "attack_ms": 18.0,
+      "decay_ms": 430.0,
+      "centroid_hz": 332,
+      "rolloff95_hz": 444,
+      "bands_db": {
+        "sub": -41.2,
+        "low": -1.7,
+        "lowmid": -5.4,
+        "mid": -14.8,
+        "presence": -33.7,
+        "air": -51.4,
+        "top": -102.8
+      },
+      "bandwidth_hz": 5120,
+      "flatness": 0.0,
+      "brightness_hz": 1052,
+      "tonal_peak_ratio_db": 99.4
     }
   }
 }

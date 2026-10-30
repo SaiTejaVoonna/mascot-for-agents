@@ -1,5 +1,9 @@
 # Hello Studio
 
+## Speech and mouth update
+
+Neural speech is now the initial engine, with female Heart for Claude and Bella/Nicole/Sarah alternatives. Device voices remain an explicit fallback. Mouth animation combines generated phoneme timing with the actual audio envelope and output-clock latency estimates; silence closes the speaking mouth. Play prepares neural dialogue before the scene starts, showing progress, so generation does not interrupt the conversation. A separately performed, credited CC0 female hmm is available as an optional cue. See [speech details and limitations](../docs/THEATRE_SPEECH.md). These are Kokoro voices; the sound-design skills do not contain a replacement TTS model.
+
 ## Prepared sound update
 
 The player now uses Real SFX's bundled uisfx Zen cues (CC0) and a public-domain fireplace recording, prepared with real-sound functions and measured with earshot's model-free path. This replaces the procedural effects and filtered-noise ambience described in older notes below. Fire ambience is enabled by default for new campfire scenes, starts only on Play, ducks under speech and fades on Stop. A five-second fire audition does not need the speech model. Podcast/room have no background recording yet.

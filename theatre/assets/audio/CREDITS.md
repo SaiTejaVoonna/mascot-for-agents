@@ -21,6 +21,16 @@ Whoosh, pop, tap, chime, click and success are edits of the Zen pack in **uisfx 
 - Edits: 2–22 second excerpt, 80–6500 Hz filtering, loudness preparation using real-sound, 500 ms overlap for looping, MP3 encoding. Final duration: 19.5 seconds.
 - This is a fireplace recording used for the illustrated campfire; it is not described as an outdoor campfire recording.
 
+## Female vocal cue
+
+**Hmm question.wav**, by **esperar**, Freesound, 30 November 2012. Optional female vocal recording, not a cloned or matched TTS voice.
+
+- Source and license: https://freesound.org/people/esperar/sounds/170768/
+- License: CC0-1.0.
+- Edition: public HQ MP3 preview at https://cdn.freesound.org/previews/170/170768_377731-hq.mp3 . The original WAV requires login and was not downloaded.
+- Edits: 48 kHz stereo decode, DC removal, peak adjustment, edge fades and MP3 encoding. Source/output hashes are in manifest.json.
+- The performer differs from Kokoro's voices. Choosing another voice does not change this recording. It plays only when explicitly auditioned or included as a vocal cue.
+
 ## Preparation and measurements
 
 [real-sound](https://github.com/Leonxlnx/earshot/tree/main/skills/real-sound) supplied edge-fade and mastering functions. [earshot 0.4.0](https://github.com/Leonxlnx/earshot) supplied model-free asset measurements (`features.measure(light=True)`). Their MIT-licensed source runs in the agent's workspace; it is not needed by site visitors. No earshot analysis models or speech models were added to the sound pack.

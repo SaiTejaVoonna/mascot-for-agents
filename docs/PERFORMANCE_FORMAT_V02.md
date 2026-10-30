@@ -36,3 +36,9 @@ Ambience is optional synthesized filtered noise, a stylized texture rather than 
 Agent instructions should use canonical character IDs and supported actions only. Community-created characters, Among Us-style characters, walking, custom recordings, detailed cue editing and video export are not implemented. No arbitrary code runs from imported JSON. Existing parse limits, plain-text rules and actor/beat reference checks remain.
 
 Credits: HeadTTS/Kokoro supply neural speech under their respective licenses; Openverse, Clipwing Real SFX and earshot are linked as workflow references. Their code, models and recordings are not part of this sound implementation.
+
+## Prepared sound and vocal update
+
+The runtime now uses prepared CC0 UI clips and a public-domain fireplace recording, rather than the original synthesis described above. Sound beats wait for the actual clip duration plus a pace-scaled gap. Podcast/room remain quiet. See THEATRE_AUDIO.md.
+
+A say beat may carry `"vocal":"hmm"` in version 0.2, with `"text":"Hmm?"`. This plays the bundled CC0 female recording, separately performed from TTS voices. Source syntax: `Claude [curious]: {hmm}`. Other vocal IDs, arbitrary audio URLs and mismatched captions are rejected. All existing beat, actor and text limits apply. See THEATRE_SPEECH.md for timing and credits.

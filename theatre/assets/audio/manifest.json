@@ -91,6 +91,21 @@
       "sourceSha256": "0fb9fb4a44fe378ceffb2b80d0cf420e28404e04f5f200b7bc0205eadeebc8d4",
       "kind": "Field recording",
       "edits": "2\u201322 s excerpt; 80\u20136500 Hz filtering; real-sound loudness preparation; 500 ms equal-power loop overlap; MP3 encoding"
+    },
+    "hmm-female": {
+      "file": "hmm-female.mp3",
+      "sha256": "b9f6494ffb8e1373ed3206e9afe9bd00e8c35af2e76061e3c5fa1490d22dfe07",
+      "bytes": 9260,
+      "durationSeconds": 0.711,
+      "source": "Hmm question.wav (public HQ MP3 preview)",
+      "creator": "esperar",
+      "license": "CC0-1.0",
+      "kind": "Human vocal recording",
+      "sourceUrl": "https://freesound.org/people/esperar/sounds/170768/",
+      "downloadUrl": "https://cdn.freesound.org/previews/170/170768_377731-hq.mp3",
+      "sourceSha256": "2a49243f228d192d59c1593d10b405dc6fcc77f472ede0ecc99fc6fffbc27a0b",
+      "edits": "48 kHz stereo decode; DC removal; -6 dBFS peak; short edge fades; MP3 encoding",
+      "note": "Separate performer from Kokoro voices; not voice-matched or cloned."
     }
   }
 }

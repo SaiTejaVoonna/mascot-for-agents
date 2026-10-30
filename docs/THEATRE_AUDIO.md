@@ -21,14 +21,14 @@ An isolated `audio-tools/.venv` contains numpy (from the host), scipy, soundfile
 To reproduce after installing the skills and these Python dependencies:
 
 ```text
-python -I tools/prepare_theatre_audio.py --skills-dir PATH_TO_AUDIO_TOOLS/skills --source PATH_TO_ORIGINAL_FIREPLACE.ogg
+python -I tools/prepare_theatre_audio.py --skills-dir PATH_TO_AUDIO_TOOLS/skills --source PATH_TO_ORIGINAL_FIREPLACE.ogg --vocal-source PATH_TO_HMM_PUBLIC_PREVIEW.mp3
 ```
 
 Obtain the original Ogg from the source linked in CREDITS.md. The tool prepares MP3 assets and records source/output SHA-256 values, edit notes, and earshot measurements. FFmpeg is provided by imageio-ffmpeg; this preparation path does not require ffprobe. The full upstream Real SFX video CLI and its semantic-analysis runtime have not been configured.
 
 ## Review scope
 
-The source licenses were checked and all seven final assets were measured through earshot. The report includes true peak and clipping; file measurements do not establish that a sound is pleasing, appropriate to every scene, or indistinguishable from a recording.
+The source licenses were checked and all eight final assets were measured through earshot. The report includes true peak and clipping; file measurements do not establish that a sound is pleasing, appropriate to every scene, or indistinguishable from a recording.
 
 This adapts the skills' asset preparation to a live interactive player. It does not run the full film workflow: no final video, whole-mix mastering, semantic realness/ranking, contact-sheet critique, or frame-accurate rendered-film sync assessment is claimed. Scripted effects remain serial cues between spoken lines. Silent preview mutes speech, cues and ambience. Effect pitch changes playback rate; it does not change speech.
 

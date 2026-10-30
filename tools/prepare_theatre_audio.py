@@ -32,6 +32,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--skills-dir', type=Path, required=True)
     parser.add_argument('--source', type=Path, required=True)
+    parser.add_argument('--vocal-source', type=Path, required=True)
     args = parser.parse_args()
     output = Path(__file__).resolve().parents[1] / 'theatre/assets/audio'
     output.mkdir(parents=True, exist_ok=True)
@@ -96,6 +97,24 @@ def main():
                  'sourceSha256': digest(source), 'kind': 'Field recording',
                  'edits': '2–22 s excerpt; 80–6500 Hz filtering; real-sound loudness preparation; 500 ms equal-power loop overlap; MP3 encoding'})
     assets['fireplace'] = item
+    vocal = args.vocal_source.resolve()
+    if digest(vocal) != '2a49243f228d192d59c1593d10b405dc6fcc77f472ede0ecc99fc6fffbc27a0b':
+        raise RuntimeError('Vocal source differs from the licensed Freesound public preview.')
+    data = read48(vocal)
+    data -= data.mean(axis=0)
+    peak = float(np.max(np.abs(data)))
+    if peak:
+        data *= 10 ** (-6 / 20) / peak
+    data = master.edge_fades(data, head=.004, tail=.012)
+    item = encode('hmm-female', data)
+    item.update({'source': 'Hmm question.wav (public HQ MP3 preview)',
+                 'creator': 'esperar', 'license': 'CC0-1.0', 'kind': 'Human vocal recording',
+                 'sourceUrl': 'https://freesound.org/people/esperar/sounds/170768/',
+                 'downloadUrl': 'https://cdn.freesound.org/previews/170/170768_377731-hq.mp3',
+                 'sourceSha256': digest(vocal),
+                 'edits': '48 kHz stereo decode; DC removal; -6 dBFS peak; short edge fades; MP3 encoding',
+                 'note': 'Separate performer from Kokoro voices; not voice-matched or cloned.'})
+    assets['hmm-female'] = item
     report = {'scope': 'Individual encoded assets only; not a rendered dialogue mix or listening judgment.',
               'engine': 'earshot 0.4.0 features.measure(light=True), no analysis models',
               'preparation': 'real-sound master.py and Real SFX bundled uisfx 0.4.0',

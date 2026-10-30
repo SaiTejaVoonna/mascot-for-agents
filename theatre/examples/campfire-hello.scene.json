@@ -23,46 +23,47 @@
       "id": "hello",
       "type": "say",
       "actor": "a",
-      "text": "Hello! I saved you a seat.",
+      "text": "Hello! Come and sit beside the fire. I was hoping you would bring a story tonight.",
       "expression": "happy",
       "lookAt": "b",
-      "afterMs": 350
+      "afterMs": 300
     },
     {
       "id": "reply",
       "type": "say",
       "actor": "b",
-      "text": "Thanks. What are we making tonight?",
-      "expression": "curious",
+      "text": "I brought a few ideas, actually. Shall we start with something small, and see where it takes us?",
+      "expression": "happy",
       "lookAt": "a",
-      "afterMs": 350,
-      "listener": {
-        "actor": "a",
-        "reaction": "nod"
-      }
+      "afterMs": 300
     },
     {
-      "id": "thought",
-      "type": "pause",
-      "durationMs": 600
+      "id": "human-hmm",
+      "type": "say",
+      "actor": "a",
+      "text": "Hmm?",
+      "vocal": "hmm",
+      "expression": "curious",
+      "lookAt": "b",
+      "afterMs": 250
     },
     {
       "id": "idea",
       "type": "say",
       "actor": "a",
-      "text": "A little theatre. You bring the story, and we bring it to life.",
+      "text": "That sounds lovely. We can take our time, and make something we both want to share.",
       "expression": "happy",
       "lookAt": "b",
-      "afterMs": 350
+      "afterMs": 300
     },
     {
       "id": "ending",
       "type": "say",
       "actor": "b",
-      "text": "Then let's start with hello.",
+      "text": "Then let us begin. One little conversation can be the start of a much bigger world.",
       "expression": "happy",
-      "lookAt": "viewer",
-      "afterMs": 500
+      "lookAt": "a",
+      "afterMs": 300
     }
   ],
   "settings": {

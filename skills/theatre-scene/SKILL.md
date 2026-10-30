@@ -23,3 +23,9 @@ For illustrated campfire/podcast/room stages, pacing, mix settings and procedura
 If an authorized voice tool is available, produce audio for each say beat and the audio sidecar described in the contract. Use filenames relative to the bundle and preserve beat IDs. Otherwise provide the screenplay alone, suitable for future draft browser speech or later audio attachment. Never fabricate generated files, timestamps, consent or credentials.
 
 A skill does not supply a voice engine. A user should be able to create the author file without a paid connector. Rendering, execution and publication remain separate capabilities and follow the user's requested scope.
+
+## Speech and vocal support
+
+Read ../../docs/THEATRE_SPEECH.md. The player now defaults to Kokoro neural speech with generated viseme timing and audio-envelope-driven mouth opening. Do not promise exact physical lip sync or native emotional speech. Voices are chosen in the browser, not supplied by this skill.
+
+An explicit optional say-beat field `"vocal":"hmm"`, with caption `"text":"Hmm?"`, plays the bundled CC0 female recording. Source equivalent: `Claude [curious]: {hmm}`. It has a separate performer and does not adapt to the selected TTS voice. Do not insert it into supplied dialogue without authorization or invent other vocal IDs. Sound cues now use prepared assets; see ../../docs/THEATRE_AUDIO.md.

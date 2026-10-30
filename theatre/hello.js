@@ -1,4 +1,4 @@
-import {NeuralVoice, neuralVoices} from './neural-voice.js';
+import {NeuralVoice, neuralVoices, recordedVocals} from './neural-voice.js?v=speech-2';
 import {StageSound, soundNames} from './stage-sound.js';
 const neural = new NeuralVoice();
 const stageSound = new StageSound();
@@ -9,13 +9,13 @@ const names = {claude: 'Claude', gpt: 'GPT'};
 const expressions = {neutral: 'neutral', happy: 'happy', curious: 'thinking', concerned: 'worried'};
 const example = $('script').value;
 let savedVoicePrefs = {};
-try { const value = JSON.parse(localStorage.getItem('theatre-voice-v1')); if (value && typeof value === 'object') savedVoicePrefs = value; } catch {}
+try { const value = JSON.parse(localStorage.getItem('theatre-voice-v2')); if (value && typeof value === 'object') savedVoicePrefs = value; } catch {}
 function saveVoicePreferences() {
   const engine = $('engine').value;
   savedVoicePrefs = {engine, rate:Number($('rate').value), tone:Number($('tone').value),
     pitch:{claude:Number($('pitch-claude').value),gpt:Number($('pitch-gpt').value)},
     voiceIds:{...savedVoicePrefs.voiceIds,[engine]:{claude:$('voice-claude').value,gpt:$('voice-gpt').value}}};
-  try { localStorage.setItem('theatre-voice-v1',JSON.stringify(savedVoicePrefs)); } catch {}
+  try { localStorage.setItem('theatre-voice-v2',JSON.stringify(savedVoicePrefs)); } catch {}
 }
 let voices = [], controller = null, importedScene = null, utterance = null;
 let mouthTimer = null;
@@ -26,24 +26,30 @@ Object.keys(names).forEach((character) => {
   $(`actor-${character}`).querySelector('.actor-art').append(layer);
   mouthLayers.set(character, layer);
 });
-function mouth(character, shape = 'sil') {
+function mouth(character, shape = 'sil', energy = .6) {
   const layer = mouthLayers.get(character), context = layer.getContext('2d');
   const still = String($('still').checked);
-  if (layer.dataset.shape === shape && layer.dataset.still === still) return;
-  layer.dataset.shape = shape; layer.dataset.still = still;
+  const level = Math.round(Math.max(0,Math.min(1,energy))*4);
+  if (layer.dataset.shape === shape && layer.dataset.still === still && layer.dataset.level === String(level)) return;
+  layer.dataset.shape = shape; layer.dataset.still = still; layer.dataset.level = level;
   context.clearRect(0, 0, 96, 96);
-  if (shape === 'sil' || $('still').checked) return;
+  if (shape === 'rest' || $('still').checked) return;
   const gpt = character === 'gpt';
   const x = gpt ? 49 : ($(`actor-${character}`).dataset.expression === 'curious' ? 50 : 48);
-  const y = gpt ? 55 : 50;
+  const y = gpt ? 55 : 51;
   context.fillStyle = gpt ? '#79dfb0' : '#d77757';
-  context.fillRect(x - (gpt ? 6 : 9), y - 5, gpt ? 12 : 18, 11);
-  const closed = ['PP','FF'].includes(shape), round = ['O','U'].includes(shape);
-  const width = closed ? 7 : round ? 5 : 9, height = closed ? 1 : round ? 6 : 4;
-  context.fillStyle = '#202531'; context.fillRect(Math.round(x - width / 2), y - 1, width, height);
-  if (!closed && !round) { context.fillStyle = '#ef839f'; context.fillRect(x - 2, y + 1, 4, 1); }
+  // Cover the baked-in expression mouth, including during silence. Only rest restores it.
+  context.fillRect(x - (gpt ? 7 : 12), y - 4, gpt ? 14 : 24, gpt ? 10 : 9);
+  const closed = shape === 'sil' || shape === 'PP' || !level;
+  const round = ['O','U','RR'].includes(shape), teeth = ['FF','SS','CH','TH'].includes(shape);
+  const width = closed ? 6 : round ? 4 + Math.min(2,level) : 8 + Math.min(2,level);
+  const height = closed ? 1 : teeth ? 2 + Math.round(level/3) : 2 + level;
+  const left = Math.round(x-width/2), top = y-1;
+  context.fillStyle = '#202531'; context.fillRect(left,top,width,height);
+  if (teeth && !closed) { context.fillStyle='#f7e8d6'; context.fillRect(left+1,top,width-2,1); }
+  if (!closed && !round && height>3) { context.fillStyle='#ef839f'; context.fillRect(x-2,top+height-2,4,1); }
 }
-function closeMouths() { clearInterval(mouthTimer); mouthTimer = null; Object.keys(names).forEach((id) => mouth(id)); }
+function closeMouths() { clearInterval(mouthTimer); mouthTimer = null; Object.keys(names).forEach((id) => mouth(id,'rest',0)); }
 function approximateMouth(character) {
   closeMouths(); let phase = 0;
   const shapes = ['aa', 'PP', 'E', 'O', 'sil', 'I'];
@@ -190,7 +196,8 @@ function parseScript() {
     if (sound) return {id:`beat-${index}`,type:'sound',sound:sound[1].toLowerCase()};
     const match = line.match(/^\s*(Claude|GPT)(?:\s*\[(neutral|happy|curious|concerned)\])?\s*:\s*(.+)\s*$/i);
     if (!match) throw new Error(`Line ${index + 1}: use Claude: Hello!, GPT [happy]: Hi!, Pause: 400, or Sound: whoosh.`);
-    return {id: `beat-${index}`, type: 'say', actor: match[1].toLowerCase() === 'claude' ? 'a' : 'b', text: match[3].trim(), expression: (match[2] || 'neutral').toLowerCase(), afterMs: 300};
+    const vocal = match[3].trim().toLowerCase() === '{hmm}' ? 'hmm' : null;
+    return {id: `beat-${index}`, type: 'say', actor: match[1].toLowerCase() === 'claude' ? 'a' : 'b', text: vocal ? recordedVocals[vocal].text : match[3].trim(), ...(vocal ? {vocal} : {}), expression: (match[2] || 'neutral').toLowerCase(), afterMs: 300};
   }).filter(Boolean);
   return validate({format: 'mascot-scene', version: '0.2', stage: $('setting').value, settings:settings(), seed: 42, cast, beats});
 }
@@ -230,13 +237,15 @@ function validate(scene) {
   const beatIds = new Set(); let total = 0;
   scene.beats.forEach((beat, index) => {
     const path = `beats[${index}]`;
-    allowed(beat, beat?.type === 'pause' ? ['id','type','durationMs'] : beat?.type === 'sound' ? ['id','type','sound'] : ['id','type','actor','text','expression','lookAt','afterMs','listener'], path);
+    allowed(beat, beat?.type === 'pause' ? ['id','type','durationMs'] : beat?.type === 'sound' ? ['id','type','sound'] : ['id','type','actor','text','expression','lookAt','afterMs','listener','vocal'], path);
     if (typeof beat.id !== 'string' || !beat.id || beatIds.has(beat.id)) throw new Error(`${path}: use a unique beat ID.`);
     beatIds.add(beat.id);
     if (beat.type === 'pause') { milliseconds(beat.durationMs, path); return; }
     if (beat.type === 'sound') { if (scene.version !== '0.2' || !soundNames.includes(beat.sound)) throw new Error(`${path}.sound: choose ${soundNames.join(', ')} in version 0.2.`); return; }
     if (beat.type !== 'say' || !ids.has(beat.actor)) throw new Error(`${path}: use say and an actor ID from cast.`);
     if (typeof beat.text !== 'string' || !beat.text.trim()) throw new Error(`${path}.text: add spoken words.`);
+    if (beat.vocal !== undefined && (scene.version !== '0.2' || typeof beat.vocal !== 'string' || !Object.hasOwn(recordedVocals,beat.vocal))) throw new Error(`${path}.vocal: use hmm in version 0.2.`);
+    if (beat.vocal && beat.text !== recordedVocals[beat.vocal].text) throw new Error(`${path}.text: the recorded hmm caption must be "Hmm?".`);
     total += beat.text.length;
     if (beat.expression !== undefined && !Object.hasOwn(expressions, beat.expression)) throw new Error(`${path}.expression: use neutral, happy, curious or concerned.`);
     if (beat.lookAt !== undefined && beat.lookAt !== 'viewer' && (!ids.has(beat.lookAt) || beat.lookAt === beat.actor)) throw new Error(`${path}.lookAt: choose another actor or viewer.`);
@@ -257,7 +266,7 @@ function count() {
 }
 function scriptText(scene) {
   const cast = new Map(scene.cast.map((actor) => [actor.id,actor]));
-  return scene.beats.map((beat) => beat.type === 'pause' ? `Pause: ${beat.durationMs}` : beat.type === 'sound' ? `Sound: ${beat.sound}` : `${names[cast.get(beat.actor)?.character] || 'Claude'} [${beat.expression || 'neutral'}]: ${beat.text}`).join('\n');
+  return scene.beats.map((beat) => beat.type === 'pause' ? `Pause: ${beat.durationMs}` : beat.type === 'sound' ? `Sound: ${beat.sound}` : `${names[cast.get(beat.actor)?.character] || 'Claude'} [${beat.expression || 'neutral'}]: ${beat.vocal ? `{${beat.vocal}}` : beat.text}`).join('\n');
 }
 function element(tag, text, className) { const node = document.createElement(tag); if (text !== undefined) node.textContent = text; if (className) node.className = className; return node; }
 function renderBeatCards() {
@@ -278,6 +287,7 @@ function renderBeatCards() {
       heading.append(actor,expression,remove);
       const words = element('textarea'); words.value = beat.text; words.rows = 2; words.maxLength = 2000; words.dataset.field = 'text'; words.setAttribute('aria-label',`Dialogue line ${index+1}`);
       card.append(heading,words);
+      if (beat.vocal) { words.readOnly = true; card.append(element('p',`${recordedVocals[beat.vocal].name}. Separate performer; voice selection does not change this clip.`,'hint')); }
     } else {
       card.classList.add('pause-card');
       card.append(element('span',beat.type === 'pause' ? 'Pause' : 'Sound'));
@@ -316,22 +326,44 @@ let initialMode = 'story'; try { const saved = localStorage.getItem('theatre-tex
 setTextMode(initialMode);
 async function play() {
   stop(''); error();
-  if (!$('silent').checked && savedVoicePrefs.engine === 'neural' && !neural.client) { if (!await loadNeural()) return; }
   let scene;
   try { scene = currentScene(); } catch (reason) { error(reason.message); return; }
   const silent = $('silent').checked;
   const useNeural = $('engine').value === 'neural';
   if (!silent && !useNeural && !supportsSpeech) { error('Speech is unavailable here. Enable Captions only or load neural voices.'); return; }
-  if (useNeural && !silent) {
-    try { await neural.unlock(); } catch { error('Audio could not start. Try device voices or Captions only.'); return; }
-  }
   const run = new AbortController(); controller = run;
   $('play').textContent = 'Restart conversation'; $('stop').disabled = false;
   const cast = new Map(scene.cast.map((actor) => [actor.id, actor]));
   Object.keys(names).forEach((id) => { $(`actor-${id}`).hidden = !scene.cast.some((actor) => actor.character === id); });
   for (const actor of scene.cast) $(`actor-${actor.character}`).style.order = actor.slot === 'seat-left' ? '0' : '1';
   let line = 0; const total = scene.beats.filter((b) => b.type === 'say').length;
+  const preparedSpeech = new Map();
   try {
+    if (useNeural && !silent && !neural.client && scene.beats.some((beat) => beat.type === 'say' && !beat.vocal)) {
+      if (!await loadNeural(run)) { if (controller === run) stop('Neural loading stopped.'); return; }
+    }
+    if (run.signal.aborted) throw abortError();
+    if (!silent && (useNeural || scene.beats.some((beat) => beat.vocal))) await neural.unlock();
+    if (!silent) {
+      const voiceBeats=scene.beats.filter((beat) => beat.type === 'say');
+      const audioBuffers=new Set(); let preparedBytes=0;
+      for (const [index,beat] of voiceBeats.entries()) {
+        if (run.signal.aborted) throw abortError();
+        message(`Preparing voice cue ${index+1} of ${voiceBeats.length}. The scene starts when every line is ready.`);
+        if (beat.vocal) await neural.prepareVocal(beat.vocal,run.signal);
+        else if (useNeural) {
+          const actor=cast.get(beat.actor);
+          const messages=await neural.prepare(beat.text,$(`voice-${actor.character}`).value,Number($('rate').value),run.signal);
+          for (const response of messages) {
+            const audio=response.data?.audio;
+            if (audio && !audioBuffers.has(audio)) { audioBuffers.add(audio); preparedBytes+=audio.length*audio.numberOfChannels*4; }
+          }
+          if (preparedBytes>24*1024*1024) throw new Error('This scene needs too much prepared audio. Shorten the dialogue or use fewer lines.');
+          preparedSpeech.set(beat.id,messages);
+        }
+      }
+      if (run.signal.aborted) throw abortError();
+    }
     if (!silent && ($('effects').checked || $('ambience').checked)) {
       const sounds = $('effects').checked ? scene.beats.filter((beat) => beat.type === 'sound').map((beat) => beat.sound) : [];
       const ready = await stageSound.ready(sounds, $('ambience').checked ? $('setting').value : null);
@@ -364,11 +396,16 @@ async function play() {
         $(`actor-${listener.character}`).classList.add('nod');
       }
       if (silent) await delay(Math.max(1200, beat.text.split(/\s+/).length * 350), run.signal);
-      else if (useNeural) {
-        message(`Preparing neural speech · Line ${line} of ${total}. First use can take time.`);
+      else if (beat.vocal) {
+        await neural.vocal(beat.vocal,run.signal,
+          () => { caption(names[actor.character],beat.text); stageSound.duck(true); pose(actor.character,'speaking',activeExpression,activeGaze); message('Recorded vocal · esperar · CC0'); },
+          (shape,energy) => { if (controller === run) mouth(actor.character,shape,energy); },Number($('voice-volume').value));
+      } else if (useNeural) {
         await neural.speak(beat.text, $(`voice-${actor.character}`).value, Number($('rate').value), run.signal,
-          () => { caption(names[actor.character],beat.text); stageSound.duck(true); pose(actor.character, 'speaking', activeExpression, activeGaze); message(`Neural speech · Line ${line} of ${total}`); },
-          (shape) => mouth(actor.character, shape), Number($('voice-volume').value),highlightWord);
+          () => {
+            caption(names[actor.character],beat.text); stageSound.duck(true); pose(actor.character, 'speaking', activeExpression, activeGaze); message(`Neural speech · Line ${line} of ${total}`);
+          },
+          (shape,energy) => { if (controller === run) mouth(actor.character,shape,energy); }, Number($('voice-volume').value),highlightWord,preparedSpeech.get(beat.id));
       } else await speak(beat.text, actor.character, run.signal);
       resetActors();
       await delay((beat.afterMs ?? 250) * paceScale(), run.signal);
@@ -411,8 +448,7 @@ document.querySelectorAll('[data-insert]').forEach((button) => button.addEventLi
   $('script').focus(); count(); error();
 }));
 for (const id of ['voice-claude','voice-gpt','pitch-claude','pitch-gpt','rate','silent']) $(id).addEventListener('change', () => { stop('Voice settings changed. Ready to play.'); saveVoicePreferences(); });
-$('engine').addEventListener('change', () => {
-  stop('Voice engine changed. Ready to play.');
+function applyVoiceEngine(persist = true) {
   const useNeural = $('engine').value === 'neural';
   for (const [index, id] of Object.keys(names).entries()) {
     $(`pitch-${id}`).disabled = useNeural;
@@ -425,35 +461,55 @@ $('engine').addEventListener('change', () => {
   }
   if (!useNeural) populateVoices();
   $('tone').disabled = !useNeural;
-  $('voice-note').textContent = useNeural ? 'Kokoro speech runs on this device. Try Heart or Michael, then tune speed and tone. Mouth timing follows the generated audio. Repeated lines reuse a small session cache.' : 'Device voices vary. Try a different voice before changing pitch. Neural tone controls are available after loading Kokoro.';
-  saveVoicePreferences();
-});
-async function loadNeural() {
-  stop('Loading neural voices…'); error(); $('load-neural').disabled = true;
+  $('voice-note').textContent = useNeural ? 'Claude starts with Heart, a female Kokoro voice. Compare Bella, Nicole and Sarah with Preview Claude. Mouth shapes follow phoneme timing and the audio energy; recorded vocal cues use their own performer.' : 'Device voices are a fallback and may sound robotic. Choose Kokoro for neural speech and audio-based mouth timing.';
+  if (persist) saveVoicePreferences();
+}
+$('engine').addEventListener('change', () => { stop('Voice engine changed. Ready to play.'); applyVoiceEngine(); });
+async function loadNeural(run = null) {
+  const ownRun = !run;
+  if (ownRun) { stop('Loading neural voices…'); run = new AbortController(); controller = run; $('stop').disabled = false; }
+  error(); $('load-neural').disabled = true;
   try {
-    await neural.load(message);
-    $('engine').querySelector('[value=neural]').disabled = false;
-    $('engine').value = 'neural'; $('engine').dispatchEvent(new Event('change'));
+    await neural.load((text) => { if (controller === run) message(text); });
+    if (run.signal.aborted || controller !== run) return false;
+    $('engine').value = 'neural'; applyVoiceEngine();
     $('load-neural').textContent = 'Neural voices loaded'; message('Neural voices ready. Press Play to generate your lines.');
     return true;
   } catch (reason) {
+    if (run.signal.aborted || controller !== run) return false;
     error(`Could not load neural voices: ${reason?.message || String(reason)}. Device voices remain available.`);
-    $('load-neural').disabled = false; message('Neural loading failed. Try device voices or Captions only.');
+    message('Neural loading failed. Retry or choose Device voices. No fallback voice was played.');
     return false;
+  } finally {
+    $('load-neural').disabled = false;
+    $('load-neural').textContent = neural.client ? 'Neural voices loaded' : 'Load neural voices';
+    if (ownRun && controller === run) { controller = null; $('stop').disabled = true; }
   }
 }
-$('load-neural').addEventListener('click', loadNeural);
+$('load-neural').addEventListener('click', () => loadNeural());
 $('preview-claude').addEventListener('click', () => previewVoice('claude'));
 $('preview-gpt').addEventListener('click', () => previewVoice('gpt'));
+$('preview-vocal').addEventListener('click', async () => {
+  stop('Recorded vocal preview…'); error();
+  const run = new AbortController(); controller = run; $('stop').disabled = false;
+  try {
+    await neural.vocal('hmm',run.signal,
+      () => { caption('Claude · recorded cue','Hmm?'); pose('claude','speaking','curious'); },
+      (shape,energy) => { if (controller === run) mouth('claude',shape,energy); },Number($('voice-volume').value));
+    if (controller === run) { controller = null; resetActors(); $('stop').disabled = true; message('Recorded hmm preview finished · esperar · CC0.'); }
+  } catch (reason) { if (controller === run) { stop('Preview stopped.'); if (reason.name !== 'AbortError') error(reason.message); } }
+});
 async function previewVoice(character) {
-  if (savedVoicePrefs.engine === 'neural' && !neural.client) { if (!await loadNeural()) return; }
   stop('Voice preview…'); error(); const run = new AbortController(); controller = run; $('stop').disabled = false;
   activeExpression = 'happy'; activeGaze = 'viewer';
-  let text = `Hello! I'm ${names[character]}. It's lovely to meet you.`;
-  try { const scene = currentScene(); const actor = scene.cast.find((a) => a.character === character); text = scene.beats.find((b) => b.type === 'say' && b.actor === actor?.id)?.text || text; } catch {}
-  caption(names[character], text);
+  let text = `Hello! I'm ${names[character]}. Come and sit by the fire, and tell me what you've been thinking about today.`;
+  try { const scene = currentScene(); const actor = scene.cast.find((a) => a.character === character); text = scene.beats.find((b) => b.type === 'say' && !b.vocal && b.actor === actor?.id)?.text || text; } catch {}
   try {
-    if ($('engine').value === 'neural') await neural.speak(text, $(`voice-${character}`).value, Number($('rate').value), run.signal, () => { caption(names[character],text); pose(character, 'speaking', 'happy'); }, (shape) => mouth(character, shape),Number($('voice-volume').value),highlightWord);
+    if ($('engine').value === 'neural') {
+      if (!neural.client && !await loadNeural(run)) { if (controller === run) stop('Voice preview stopped.'); return; }
+      if (run.signal.aborted) throw abortError();
+      await neural.speak(text, $(`voice-${character}`).value, Number($('rate').value), run.signal, () => { caption(names[character],text); pose(character, 'speaking', 'happy'); stageSound.duck(true); }, (shape,energy) => { if (controller === run) mouth(character,shape,energy); },Number($('voice-volume').value),highlightWord);
+    }
     else if (supportsSpeech) await speak(text, character, run.signal);
     else throw new Error('No device speech engine is available.');
     if (controller === run) { controller = null; resetActors(); $('stop').disabled = true; message('Voice preview finished.'); }
@@ -490,8 +546,7 @@ $('upload').addEventListener('change', async (event) => {
     if (file.size > 16384) throw new Error('Choose a scene JSON file smaller than 16 KB.');
     const scene = validate(JSON.parse(await file.text()));
     importedScene = scene;
-    const cast = new Map(scene.cast.map((actor) => [actor.id, actor]));
-    $('script').value = scene.beats.map((beat) => beat.type === 'pause' ? `Pause: ${beat.durationMs}` : beat.type === 'sound' ? `Sound: ${beat.sound}` : `${names[cast.get(beat.actor).character]} [${beat.expression || 'neutral'}]: ${beat.text}`).join('\n');
+    $('script').value = scriptText(scene);
     applySettings(scene);
     error(); count(); message('Scene opened. Directions are preserved until you edit the script; editing uses basic dialogue defaults.');
   } catch (reason) { error(reason.message); message('Could not open scene. Your previous script is preserved.'); }
@@ -527,11 +582,13 @@ $('preview-ambience').addEventListener('click', async () => {
   }
 });
 updateStage();
-if (!supportsSpeech) $('silent').checked = true;
 if (supportsSpeech) synth.addEventListener('voiceschanged', populateVoices);
-populateVoices(); count();
+$('engine').value = savedVoicePrefs.engine === 'device' ? 'device' : 'neural';
+applyVoiceEngine(false); count();
+if (!supportsSpeech && $('engine').value === 'device') $('silent').checked = true;
 if (Number.isFinite(savedVoicePrefs.rate)) $('rate').value = Math.max(.7,Math.min(1.3,savedVoicePrefs.rate));
 if (Number.isFinite(savedVoicePrefs.tone)) $('tone').value = Math.max(-1,Math.min(1,savedVoicePrefs.tone));
 for (const id of Object.keys(names)) if (Number.isFinite(savedVoicePrefs.pitch?.[id])) $(`pitch-${id}`).value = Math.max(.85,Math.min(1.15,savedVoicePrefs.pitch[id]));
 $('rate-value').value = `${Number($('rate').value)}×`; updateTone();
-if (savedVoicePrefs.engine === 'neural') message('Your saved neural voices will load when you press Play or preview a voice.');
+saveVoicePreferences();
+if ($('engine').value === 'neural') message(`Neural speech selected · Claude: ${$('voice-claude').selectedOptions[0]?.textContent}. Press Play or Preview to load voices.`);
