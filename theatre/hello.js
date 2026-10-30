@@ -1,3 +1,5 @@
+import {NeuralVoice, neuralVoices} from './neural-voice.js';
+const neural = new NeuralVoice();
 const $ = (id) => document.getElementById(id);
 const synth = window.speechSynthesis;
 const supportsSpeech = Boolean(synth && window.SpeechSynthesisUtterance);
@@ -5,19 +7,51 @@ const names = {claude: 'Claude', gpt: 'GPT'};
 const expressions = {neutral: 'neutral', happy: 'happy', curious: 'thinking', concerned: 'worried'};
 const example = $('script').value;
 let voices = [], controller = null, importedScene = null, utterance = null;
+let mouthTimer = null;
+const mouthLayers = new Map();
+Object.keys(names).forEach((character) => {
+  const layer = document.createElement('canvas'); layer.width = layer.height = 96;
+  layer.className = 'mouth-layer'; layer.setAttribute('aria-hidden', 'true');
+  $(`actor-${character}`).querySelector('.actor-art').append(layer);
+  mouthLayers.set(character, layer);
+});
+function mouth(character, shape = 'sil') {
+  const layer = mouthLayers.get(character), context = layer.getContext('2d');
+  const still = String($('still').checked);
+  if (layer.dataset.shape === shape && layer.dataset.still === still) return;
+  layer.dataset.shape = shape; layer.dataset.still = still;
+  context.clearRect(0, 0, 96, 96);
+  if (shape === 'sil' || $('still').checked) return;
+  const gpt = character === 'gpt';
+  const x = gpt ? 49 : ($(`actor-${character}`).dataset.expression === 'curious' ? 50 : 48);
+  const y = gpt ? 55 : 50;
+  context.fillStyle = gpt ? '#79dfb0' : '#d77757';
+  context.fillRect(x - (gpt ? 6 : 9), y - 5, gpt ? 12 : 18, 11);
+  const closed = ['PP','FF'].includes(shape), round = ['O','U'].includes(shape);
+  const width = closed ? 7 : round ? 5 : 9, height = closed ? 1 : round ? 6 : 4;
+  context.fillStyle = '#202531'; context.fillRect(Math.round(x - width / 2), y - 1, width, height);
+  if (!closed && !round) { context.fillStyle = '#ef839f'; context.fillRect(x - 2, y + 1, 4, 1); }
+}
+function closeMouths() { clearInterval(mouthTimer); mouthTimer = null; Object.keys(names).forEach((id) => mouth(id)); }
+function approximateMouth(character) {
+  closeMouths(); let phase = 0;
+  const shapes = ['aa', 'PP', 'E', 'O', 'sil', 'I'];
+  mouth(character, 'aa'); mouthTimer = setInterval(() => mouth(character, shapes[phase++ % shapes.length]), 130);
+}
 const message = (text) => { $('status').textContent = text; };
 function error(text = '') { $('error').textContent = text; $('error').hidden = !text; }
 function caption(speaker, text) { $('caption-speaker').textContent = speaker; $('caption-text').textContent = text; }
 function pose(character, state = 'idle', expression = 'neutral', gaze = 'viewer') {
   const figure = $(`actor-${character}`);
   figure.dataset.state = state;
+  figure.dataset.expression = expression;
   figure.dataset.gaze = gaze;
   figure.querySelector('.actor-state').textContent = {idle: 'Ready', speaking: 'Speaking', listening: 'Listening'}[state];
   const image = figure.querySelector('img');
   const path = `../assets/collection/${character}-v5/${expressions[expression] || 'neutral'}.png?v=9`;
   if (image.getAttribute('src') !== path) image.src = path;
 }
-function resetActors() { Object.keys(names).forEach((id) => { pose(id); $(`actor-${id}`).classList.remove('nod'); }); }
+function resetActors() { closeMouths(); Object.keys(names).forEach((id) => { pose(id); $(`actor-${id}`).classList.remove('nod'); }); }
 function stop(text = 'Stopped. Ready to start again.') {
   const previous = controller;
   controller = null;
@@ -48,11 +82,13 @@ function speak(text, character, signal) {
     if (voice) { speech.voice = voice; speech.lang = voice.lang; }
     else speech.lang = 'en-US';
     speech.rate = Number($('rate').value);
+    speech.pitch = Number($(`pitch-${character}`).value);
     let settled = false;
     const finish = (reason) => {
       if (settled) return;
       settled = true; clearTimeout(watchdog); signal.removeEventListener('abort', cancel);
-      speech.onend = speech.onerror = speech.onstart = null;
+      speech.onend = speech.onerror = speech.onstart = speech.onboundary = null;
+      closeMouths();
       if (utterance === speech) utterance = null;
       reason ? reject(reason) : resolve();
     };
@@ -63,7 +99,12 @@ function speak(text, character, signal) {
     }, 90000);
     speech.onend = () => finish();
     speech.onerror = (event) => finish(new Error(`Speech could not play (${event.error || 'voice unavailable'}). Try another voice or Captions only.`));
-    speech.onstart = () => { if (!signal.aborted) pose(character, 'speaking', activeExpression, activeGaze); };
+    speech.onstart = () => { if (!signal.aborted) { pose(character, 'speaking', activeExpression, activeGaze); approximateMouth(character); } };
+    speech.onboundary = (event) => {
+      if (signal.aborted || event.name !== 'word') return;
+      const word = text.slice(event.charIndex).split(/\s/)[0].toLowerCase();
+      mouth(character, /^[bmp]/.test(word) ? 'PP' : /[ou]/.test(word) ? 'O' : 'aa');
+    };
     signal.addEventListener('abort', cancel, {once: true});
     try { synth.speak(speech); } catch (reason) { finish(reason); }
   });
@@ -139,7 +180,11 @@ async function play() {
   let scene;
   try { scene = currentScene(); } catch (reason) { error(reason.message); return; }
   const silent = $('silent').checked;
-  if (!silent && !supportsSpeech) { error('Speech is unavailable here. Enable Captions only to preview the conversation.'); return; }
+  const useNeural = $('engine').value === 'neural';
+  if (!silent && !useNeural && !supportsSpeech) { error('Speech is unavailable here. Enable Captions only or load neural voices.'); return; }
+  if (useNeural && !silent) {
+    try { await neural.unlock(); } catch { error('Audio could not start. Try device voices or Captions only.'); return; }
+  }
   const run = new AbortController(); controller = run;
   $('play').textContent = 'Restart conversation'; $('stop').disabled = false;
   const cast = new Map(scene.cast.map((actor) => [actor.id, actor]));
@@ -164,7 +209,12 @@ async function play() {
         $(`actor-${listener.character}`).classList.add('nod');
       }
       if (silent) await delay(Math.max(1200, beat.text.split(/\s+/).length * 350), run.signal);
-      else await speak(beat.text, actor.character, run.signal);
+      else if (useNeural) {
+        message(`Preparing neural speech · Line ${line} of ${total}. First use can take time.`);
+        await neural.speak(beat.text, $(`voice-${actor.character}`).value, Number($('rate').value), run.signal,
+          () => { pose(actor.character, 'speaking', activeExpression, activeGaze); message(`Neural speech · Line ${line} of ${total}`); },
+          (shape) => mouth(actor.character, shape));
+      } else await speak(beat.text, actor.character, run.signal);
       resetActors();
       await delay(beat.afterMs ?? 250, run.signal);
     }
@@ -179,7 +229,10 @@ async function play() {
   }
 }
 function populateVoices() {
+  if ($('engine').value === 'neural') return;
   voices = supportsSpeech ? synth.getVoices() : [];
+  const score = (v) => (/^en\b/i.test(v.lang) ? 100 : 0) + (/natural|neural|online/i.test(v.name) ? 50 : 0) + (/Google (US|UK) English/i.test(v.name) ? 25 : 0) - (/Microsoft (David|Zira|Mark) Desktop/i.test(v.name) ? 20 : 0);
+  voices.sort((a,b) => score(b) - score(a));
   const preferred = voices.filter((v) => /^en\b/i.test(v.lang));
   for (const [index, id] of Object.keys(names).entries()) {
     const select = $(`voice-${id}`), previous = select.value;
@@ -202,10 +255,49 @@ document.querySelectorAll('[data-insert]').forEach((button) => button.addEventLi
   $('script').value += `${$('script').value.trim() ? '\n' : ''}${button.dataset.insert}`;
   $('script').focus(); count(); error();
 }));
-for (const id of ['voice-claude','voice-gpt','rate','silent']) $(id).addEventListener('change', () => stop('Voice settings changed. Ready to play.'));
+for (const id of ['voice-claude','voice-gpt','pitch-claude','pitch-gpt','rate','silent']) $(id).addEventListener('change', () => stop('Voice settings changed. Ready to play.'));
+$('engine').addEventListener('change', () => {
+  stop('Voice engine changed. Ready to play.');
+  const useNeural = $('engine').value === 'neural';
+  for (const [index, id] of Object.keys(names).entries()) {
+    $(`pitch-${id}`).disabled = useNeural;
+    if (useNeural) {
+      $(`voice-${id}`).replaceChildren(...neuralVoices.map((v) => new Option(v.name, v.id)));
+      $(`voice-${id}`).value = index ? 'am_fenrir' : 'af_bella';
+    }
+  }
+  if (!useNeural) populateVoices();
+  $('voice-note').textContent = useNeural ? 'Kokoro neural speech runs on this device. Initial generation can be slow. Mouth shapes use model timestamps; pitch adjustment is unavailable.' : 'Device voices vary. Names marked Natural, Neural or Google English are useful candidates to audition. Pitch changes delivery, not voice quality.';
+});
+$('load-neural').addEventListener('click', async () => {
+  stop('Loading neural voices…'); error(); $('load-neural').disabled = true;
+  try {
+    await neural.load(message);
+    $('engine').querySelector('[value=neural]').disabled = false;
+    $('engine').value = 'neural'; $('engine').dispatchEvent(new Event('change'));
+    $('load-neural').textContent = 'Neural voices loaded'; message('Neural voices ready. Press Play to generate your lines.');
+  } catch (reason) {
+    error(`Could not load neural voices: ${reason?.message || String(reason)}. Device voices remain available.`);
+    $('load-neural').disabled = false; message('Neural loading failed. Try device voices or Captions only.');
+  }
+});
+$('preview-claude').addEventListener('click', () => previewVoice('claude'));
+$('preview-gpt').addEventListener('click', () => previewVoice('gpt'));
+async function previewVoice(character) {
+  stop('Voice preview…'); error(); const run = new AbortController(); controller = run; $('stop').disabled = false;
+  activeExpression = 'happy'; activeGaze = 'viewer';
+  const text = `Hello! I'm ${names[character]}. It's lovely to meet you.`;
+  caption(names[character], text);
+  try {
+    if ($('engine').value === 'neural') await neural.speak(text, $(`voice-${character}`).value, Number($('rate').value), run.signal, () => pose(character, 'speaking', 'happy'), (shape) => mouth(character, shape));
+    else if (supportsSpeech) await speak(text, character, run.signal);
+    else throw new Error('No device speech engine is available.');
+    if (controller === run) { controller = null; resetActors(); $('stop').disabled = true; message('Voice preview finished.'); }
+  } catch (reason) { if (controller === run) { stop('Preview stopped.'); if (reason.name !== 'AbortError') error(reason.message); } }
+}
 $('rate').addEventListener('input', () => { $('rate-value').value = `${Number($('rate').value)}×`; });
 $('still').checked = matchMedia('(prefers-reduced-motion: reduce)').matches;
-$('still').addEventListener('change', () => document.body.classList.toggle('still', $('still').checked));
+$('still').addEventListener('change', () => { document.body.classList.toggle('still', $('still').checked); closeMouths(); });
 document.body.classList.toggle('still', $('still').checked);
 $('download').addEventListener('click', () => {
   try {
