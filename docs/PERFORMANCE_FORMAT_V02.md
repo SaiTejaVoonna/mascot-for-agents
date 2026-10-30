@@ -6,6 +6,8 @@ Root fields remain format, version, stage, seed, cast, beats and optional target
 
 Optional settings object:
 
+Presentation addition: optional settings.textMode accepts "off", "subtitles" or "story". It controls on-stage dialogue only; silent preview is a separate local playback choice. See THEATRE_DIRECTOR_DESIGN.md for timing behavior.
+
 ```json
 {
   "pace": "natural",

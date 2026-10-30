@@ -1,5 +1,9 @@
 # Hello Studio
 
+## Director layout
+
+A wide scene with a new original generated twilight background, smaller grounded mascot layers, compact Dialogue/Source editing and collapsed settings replaces the earlier oversized rehearsal layout. Off/Subtitles/Story text controls stage typography separately from Silent preview. Neural captions start with actual audio; active words use provided timing, with approximate fallback when unavailable. Text mode is included in scene 0.2 settings. See docs/THEATRE_DIRECTOR_DESIGN.md.
+
 ## Voice tuning
 
 Heart/Michael are now the initial neural voice pair; Bella/Fenrir remain selectable. This is an alternative to audition, not a measured quality claim. Calm/Natural/Lively presets adjust speed and a modest audio EQ tone value. A Brighter–Warmer slider applies low/high shelves to neural playback without changing vocal pitch, duration or mouth timing. It does not infer emotions or create a different voice model. Unsupported neural pitch sliders are hidden.

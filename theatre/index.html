@@ -8,13 +8,14 @@
   <link rel="stylesheet" href="hello.css">
   <link rel="stylesheet" href="stage.css">
   <link rel="stylesheet" href="voice-tuning.css">
+  <link rel="stylesheet" href="director.css">
   <script type="module" src="hello.js"></script>
 </head>
 <body>
 <a class="skip" href="#script">Skip to dialogue</a>
 <header><a class="brand" href="../"><img src="../site/brand.svg" width="28" height="28" alt="">Mascot for Agents</a><a href="https://github.com/SaiTejaVoonna/mascot-for-agents/tree/feature/video-theatre">Development branch</a></header>
 <main>
-  <div class="heading"><div><p class="edition">Little Theatre / Scene studies</p><h1>Set the scene.</h1><p>Two familiar faces. A story that’s yours.</p></div><button id="load-example" class="secondary">Load Hello example</button></div>
+  <div class="heading"><div><h1>Little Theatre</h1><p>Your story. Their little world.</p></div><button id="load-example" class="secondary">Load Hello example</button></div>
   <div class="workspace">
     <section class="performance" aria-label="Conversation preview">
       <div class="stage" id="stage" data-scene="campfire" data-playing="false"><span class="stage-note" id="stage-name">Campfire after dark</span>
@@ -29,11 +30,11 @@
         <figure id="actor-claude" data-state="idle"><div class="actor-art"><img src="../assets/collection/claude-v5/neutral.png?v=9" width="288" height="288" alt="Claude mascot"><div class="speech-dots" aria-hidden="true"><i></i><i></i><i></i></div></div><figcaption>Claude <span class="actor-state">Ready</span></figcaption></figure>
         <figure id="actor-gpt" data-state="idle"><div class="actor-art"><img src="../assets/collection/gpt-v5/neutral.png?v=9" width="288" height="288" alt="GPT mascot"><div class="speech-dots" aria-hidden="true"><i></i><i></i><i></i></div></div><figcaption>GPT <span class="actor-state">Ready</span></figcaption></figure>
       </div><div class="caption"><span id="caption-speaker">Your stage is ready</span><p id="caption-text">Start with Hello, or write your own exchange.</p></div></div>
-      <div class="transport"><button id="play" class="primary">Play conversation</button><button id="stop" class="secondary" disabled>Stop</button><label class="check"><input id="silent" type="checkbox">Captions only</label></div>
+      <div class="transport"><button id="play" class="primary">Play conversation</button><button id="stop" class="secondary" disabled>Stop</button><span id="line-progress" class="line-progress">Ready</span><div class="text-modes" role="group" aria-label="On-screen text"><button data-textmode="off" aria-pressed="false">Off</button><button data-textmode="subtitles" aria-pressed="false">Subtitles</button><button data-textmode="story" aria-pressed="true">Story text</button></div><label class="check"><input id="silent" type="checkbox">Silent preview</label></div>
       <p id="status" role="status" aria-live="polite">Preparing available browser voices…</p>
-      <div class="scene-controls"><label>Setting<select id="setting"><option value="campfire">Campfire after dark</option><option value="podcast">The podcast room</option><option value="room">Rehearsal room</option></select></label><label>Conversation pace<select id="pace"><option value="relaxed">Relaxed</option><option value="natural" selected>Natural</option><option value="snappy">Snappy</option></select></label></div>
+      <details class="scene-settings"><summary>Scene &amp; pacing</summary><div class="scene-controls"><label>Setting<select id="setting"><option value="campfire">Campfire after dark</option><option value="podcast">The podcast room</option><option value="room">Rehearsal room</option></select></label><label>Conversation pace<select id="pace"><option value="relaxed">Relaxed</option><option value="natural" selected>Natural</option><option value="snappy">Snappy</option></select></label></div></details>
       <details class="sound-settings"><summary>Sound &amp; atmosphere</summary><div class="voice-grid"><label class="check"><input id="ambience" type="checkbox">Background ambience</label><label class="check"><input id="effects" type="checkbox" checked>Scripted sound effects</label><label>Voice volume<input id="voice-volume" type="range" min="0" max="1" step="0.05" value="1"></label><label>Effects volume<input id="effects-volume" type="range" min="0" max="1" step="0.05" value="0.25"></label><label>Ambience volume<input id="ambience-volume" type="range" min="0" max="1" step="0.05" value="0.2"></label><label>Effect pitch<input id="sound-pitch" type="range" min="0.5" max="1.5" step="0.05" value="1"></label><label>Firelight<input id="light" type="range" min="0" max="1" step="0.05" value="0.6"></label></div><p class="hint">Original synthesized effects and ambience. Sound starts only when you play or preview. Voice volume controls generated neural audio; device voices may apply volume differently.</p><div class="sound-palette" role="group" aria-label="Preview a sound"><button data-sound="whoosh">Whoosh</button><button data-sound="pop">Pop</button><button data-sound="tap">Tap</button><button data-sound="chime">Chime</button><button data-sound="click">Click</button><button data-sound="success">Success</button></div><p class="hint">Try <code>Sound: whoosh</code> in your script. Sound cues play between dialogue lines. Ambience lowers while a character speaks.</p></details>
-      <details class="voice-settings" open><summary>Voices &amp; delivery</summary>
+      <details class="voice-settings"><summary>Voices &amp; delivery</summary>
         <div class="voice-engine"><label>Voice engine<select id="engine"><option value="device">Device voices · instant</option><option value="neural" disabled>Kokoro neural · experimental</option></select></label><button id="load-neural" class="secondary">Load neural voices</button></div>
         <div class="delivery-presets" role="group" aria-label="Delivery preset"><button data-delivery="calm">Calm</button><button data-delivery="natural">Natural</button><button data-delivery="lively">Lively</button></div>
         <p class="hint">Neural mode downloads model files and code from Hugging Face and jsDelivr and uses substantial RAM. Loading starts when you choose Load, or press Play/Preview with a remembered neural preference. Generation runs in your browser.</p>
@@ -47,13 +48,14 @@
       </details>
       <p class="scope-note">2D prototype. Device mode uses approximate mouth movement; neural mode maps model mouth cues to simple shapes. No account or API key required.</p>
     </section>
-    <section class="editor" aria-labelledby="script-title"><div class="editor-heading"><h2 id="script-title">The script</h2><span id="line-count">4 lines</span></div>
-      <label for="script">One speaker per line</label><textarea id="script" spellcheck="true" maxlength="4000" rows="11">Claude [happy]: Hello! I am Claude.
-GPT [happy]: Hi Claude! I am GPT. Nice to meet you.
+    <section class="editor" aria-labelledby="script-title"><div class="editor-heading"><h2 id="script-title">Script</h2><span id="line-count">4 lines</span></div>
+      <div class="editor-modes" role="group" aria-label="Script editor mode"><button data-editmode="cards" aria-pressed="true">Dialogue</button><button data-editmode="source" aria-pressed="false">Source</button></div><div id="beat-cards"></div>
+      <div id="source-editor" hidden><label for="script">One speaker per line</label><textarea id="script" spellcheck="true" maxlength="4000" rows="11">Claude [happy]: A little story. A little spark.
+GPT [happy]: Different ideas. A brighter tomorrow.
 Pause: 400
-Claude [curious]: Shall we make something together?
-GPT [happy]: Yes! Let's start with a little conversation.</textarea>
-      <p class="hint">Use <code>Claude: Hello!</code> or <code>GPT [curious]: How are you?</code> Add <code>Pause: 400</code> for a pause in milliseconds.</p>
+Claude [curious]: Same campfire. New possibilities.
+GPT [happy]: Small steps make big worlds.</textarea>
+      <p class="hint">Use <code>Claude: Hello!</code> or <code>GPT [curious]: How are you?</code> Add <code>Pause: 400</code> for a pause in milliseconds.</p></div>
       <div class="insertions" role="group" aria-label="Add a line"><button data-insert="Claude [happy]: Hello!">+ Claude</button><button data-insert="GPT [happy]: Hi there!">+ GPT</button><button data-insert="Pause: 400">+ Pause</button><button data-insert="Sound: whoosh">+ Sound</button></div>
       <p class="hint">Expressions: neutral, happy, curious, concerned. Up to 2,000 spoken characters. English starter dialogue; no grammar correction or AI service runs here.</p>
       <p id="error" role="alert" hidden></p>

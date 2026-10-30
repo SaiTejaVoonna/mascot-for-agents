@@ -38,7 +38,7 @@ export class NeuralVoice {
     try { await this.loading; } finally { this.loading = null; }
   }
   async unlock() { if (this.context) await this.context.resume(); }
-  async speak(text, voice, speed, signal, onStart, onMouth, volume = 1) {
+  async speak(text, voice, speed, signal, onStart, onMouth, volume = 1, onWord = () => {}) {
     if (!this.client) throw new Error('Load neural voices before selecting this mode.');
     await this.unlock();
     if (signal.aborted) throw new DOMException('Stopped', 'AbortError');
@@ -57,17 +57,19 @@ export class NeuralVoice {
         }
       }
       if (signal.aborted) throw new DOMException('Stopped', 'AbortError');
+      let wordBase = 0;
       for (const response of messages) {
         if (response.type === 'error') throw new Error(response.data?.error || 'Neural speech generation failed.');
         if (response.type !== 'audio') continue;
         const data = response.data;
         if (!data?.audio) throw new Error('The neural voice returned no audio.');
-        await this.play(data, signal, onStart, onMouth, volume);
+        await this.play(data, signal, onStart, onMouth, volume,(index) => onWord(wordBase+index));
+        wordBase += data.words?.length || 0;
       }
       if (!messages.some((m) => m.type === 'audio')) throw new Error('No speech returned. Try a shorter line.');
     } finally { signal.removeEventListener('abort', abort); onMouth('sil'); }
   }
-  play(data, signal, onStart, onMouth, volume) {
+  play(data, signal, onStart, onMouth, volume,onWord) {
     return new Promise((resolve, reject) => {
       if (signal.aborted) return reject(new DOMException('Stopped', 'AbortError'));
       const source = this.context.createBufferSource();
@@ -76,7 +78,7 @@ export class NeuralVoice {
       warmth.type = 'lowshelf'; warmth.frequency.value = 220; warmth.gain.value = this.tone * 2;
       presence.type = 'highshelf'; presence.frequency.value = 3200; presence.gain.value = -this.tone * 3;
       source.buffer = data.audio; source.connect(warmth).connect(presence).connect(gain).connect(this.context.destination);
-      let frame = 0, index = 0, done = false;
+      let frame = 0, index = 0, wordIndex = -1, done = false;
       const start = this.context.currentTime;
       const finish = (reason) => {
         if (done) return; done = true; cancelAnimationFrame(frame);
@@ -92,6 +94,9 @@ export class NeuralVoice {
         while (index + 1 < times.length && times[index + 1] <= elapsed) index++;
         const active = times[index] <= elapsed && elapsed <= times[index] + (durations[index] || 70);
         onMouth(active ? data.visemes?.[index] || 'sil' : 'sil');
+        let nextWord = wordIndex;
+        while (nextWord + 1 < (data.wtimes?.length || 0) && data.wtimes[nextWord+1] <= elapsed) nextWord++;
+        if (nextWord !== wordIndex) { wordIndex = nextWord; onWord(wordIndex); }
         if (!done) frame = requestAnimationFrame(tick);
       };
       source.onended = () => finish();

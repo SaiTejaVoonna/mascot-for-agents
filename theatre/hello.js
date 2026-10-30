@@ -51,7 +51,38 @@ function approximateMouth(character) {
 }
 const message = (text) => { $('status').textContent = text; };
 function error(text = '') { $('error').textContent = text; $('error').hidden = !text; }
-function caption(speaker, text) { $('caption-speaker').textContent = speaker; $('caption-text').textContent = text; }
+let captionWords = [], currentWord = -1, captionFallback = null;
+function caption(speaker, text) {
+  $('caption-speaker').textContent = speaker;
+  const target = $('caption-text'); target.replaceChildren(); captionWords = []; currentWord = -1;
+  clearInterval(captionFallback);
+  let offset = 0;
+  for (const token of text.split(/(\s+)/)) {
+    if (!token) continue;
+    if (/^\s+$/.test(token)) target.append(document.createTextNode(token));
+    else { const span = document.createElement('span'); span.className = 'word'; span.textContent = token; target.append(span); captionWords.push({span,start:offset,end:offset+token.length}); }
+    offset += token.length;
+  }
+  target.classList.remove('caption-enter');
+  if (captionWords.length > 12) {
+    captionWords.forEach((word,index) => { word.span.hidden = index >= 12; });
+    let estimated = 0;
+    captionFallback = setInterval(() => {
+      if (estimated >= captionWords.length - 1) { clearInterval(captionFallback); return; }
+      highlightWord(++estimated,true);
+    },370 / Number($('rate').value));
+  }
+  if (!$('still').checked) { void target.offsetWidth; target.classList.add('caption-enter'); }
+}
+function highlightWord(index,approximate = false) {
+  if (!approximate) clearInterval(captionFallback);
+  if (currentWord === index) return;
+  captionWords[currentWord]?.span.classList.remove('is-current');
+  captionWords[index]?.span.classList.add('is-current'); currentWord = index;
+  if (index >= 0 && captionWords.length > 12) { const page = Math.floor(index/12); captionWords.forEach((word,i) => { word.span.hidden = Math.floor(i/12) !== page; }); }
+}
+function highlightChar(index) { highlightWord(captionWords.findIndex((word) => index >= word.start && index < word.end)); }
+function progress(line = 0, total = 0) { $('line-progress').textContent = line ? `Line ${line} / ${total}` : 'Ready'; }
 function pose(character, state = 'idle', expression = 'neutral', gaze = 'viewer') {
   const figure = $(`actor-${character}`);
   figure.dataset.state = state;
@@ -62,7 +93,7 @@ function pose(character, state = 'idle', expression = 'neutral', gaze = 'viewer'
   const path = `../assets/collection/${character}-v5/${expressions[expression] || 'neutral'}.png?v=9`;
   if (image.getAttribute('src') !== path) image.src = path;
 }
-function resetActors() { closeMouths(); stageSound.duck(false); Object.keys(names).forEach((id) => { pose(id); $(`actor-${id}`).classList.remove('nod'); }); }
+function resetActors() { closeMouths(); clearInterval(captionFallback); stageSound.duck(false); Object.keys(names).forEach((id) => { pose(id); $(`actor-${id}`).classList.remove('nod'); }); }
 function stop(text = 'Stopped. Ready to start again.') {
   const previous = controller;
   controller = null;
@@ -71,6 +102,7 @@ function stop(text = 'Stopped. Ready to start again.') {
   utterance = null;
   stageSound.stop(); $('stage').dataset.playing = 'false';
   resetActors();
+  progress();
   $('play').textContent = 'Play conversation'; $('stop').disabled = true;
   if (text) { message(text); caption('Your stage is ready', 'Start with Hello, or write your own exchange.'); }
 }
@@ -112,10 +144,11 @@ function speak(text, character, signal) {
     }, 90000);
     speech.onend = () => finish();
     speech.onerror = (event) => finish(new Error(`Speech could not play (${event.error || 'voice unavailable'}). Try another voice or Captions only.`));
-    speech.onstart = () => { if (!signal.aborted) { stageSound.duck(true); pose(character, 'speaking', activeExpression, activeGaze); approximateMouth(character); } };
+    speech.onstart = () => { if (!signal.aborted) { caption(names[character],text); stageSound.duck(true); pose(character, 'speaking', activeExpression, activeGaze); approximateMouth(character); } };
     speech.onboundary = (event) => {
       if (signal.aborted || event.name !== 'word') return;
       const word = text.slice(event.charIndex).split(/\s/)[0].toLowerCase();
+      highlightChar(event.charIndex);
       mouth(character, /^[bmp]/.test(word) ? 'PP' : /[ou]/.test(word) ? 'O' : 'aa');
     };
     signal.addEventListener('abort', cancel, {once: true});
@@ -125,7 +158,7 @@ function speak(text, character, signal) {
 let activeExpression = 'neutral', activeGaze = 'viewer';
 const settingNames = {campfire:'Campfire after dark', podcast:'The podcast room', room:'Rehearsal room'};
 function settings() {
-  return {pace:$('pace').value, ambience:$('ambience').checked, effects:$('effects').checked,
+  return {pace:$('pace').value, textMode:$('stage').dataset.textmode || 'story', ambience:$('ambience').checked, effects:$('effects').checked,
     voiceVolume:Number($('voice-volume').value), effectsVolume:Number($('effects-volume').value),
     ambienceVolume:Number($('ambience-volume').value), soundPitch:Number($('sound-pitch').value), light:Number($('light').value)};
 }
@@ -137,7 +170,8 @@ function updateStage() {
 }
 function applySettings(scene) {
   $('setting').value = scene.stage;
-  const values = {pace:'natural',ambience:false,effects:true,voiceVolume:1,effectsVolume:.25,ambienceVolume:.2,soundPitch:1,light:.6,...scene.settings};
+  const values = {pace:'natural',textMode:'story',ambience:false,effects:true,voiceVolume:1,effectsVolume:.25,ambienceVolume:.2,soundPitch:1,light:.6,...scene.settings};
+  setTextMode(values.textMode);
   $('pace').value = values.pace; $('ambience').checked = values.ambience; $('effects').checked = values.effects;
   for (const [key,id] of Object.entries({voiceVolume:'voice-volume',effectsVolume:'effects-volume',ambienceVolume:'ambience-volume',soundPitch:'sound-pitch',light:'light'})) $(id).value = values[key];
   updateStage();
@@ -172,9 +206,10 @@ function validate(scene) {
   if (scene.format !== 'mascot-scene' || !['0.1','0.2'].includes(scene.version)) throw new Error('Use mascot-scene format version 0.1 or 0.2.');
   if (!Object.hasOwn(settingNames, scene.stage) || (scene.version === '0.1' && scene.stage !== 'campfire')) throw new Error('Choose a supported stage: campfire, podcast or room (new settings use version 0.2).');
   if (scene.settings !== undefined) {
-    allowed(scene.settings,['pace','ambience','effects','voiceVolume','effectsVolume','ambienceVolume','soundPitch','light'],'settings');
+    allowed(scene.settings,['pace','textMode','ambience','effects','voiceVolume','effectsVolume','ambienceVolume','soundPitch','light'],'settings');
     for (const [key,value] of Object.entries(scene.settings)) {
       if (key === 'pace') { if (!['relaxed','natural','snappy'].includes(value)) throw new Error('settings.pace: choose relaxed, natural or snappy.'); }
+      else if (key === 'textMode') { if (!['off','subtitles','story'].includes(value)) throw new Error('settings.textMode: choose off, subtitles or story.'); }
       else if (['ambience','effects'].includes(key)) { if (typeof value !== 'boolean') throw new Error(`settings.${key}: use true or false.`); }
       else if (!Number.isFinite(value) || value < (key === 'soundPitch' ? .5 : 0) || value > (key === 'soundPitch' ? 1.5 : 1)) throw new Error(`settings.${key}: value is out of range.`);
     }
@@ -218,7 +253,67 @@ function currentScene() { const scene = importedScene || parseScript(); return v
 function count() {
   try { const scene = currentScene(); $('line-count').textContent = `${scene.beats.filter((b) => b.type === 'say').length} spoken lines`; }
   catch { $('line-count').textContent = 'Check script'; }
+  renderBeatCards();
 }
+function scriptText(scene) {
+  const cast = new Map(scene.cast.map((actor) => [actor.id,actor]));
+  return scene.beats.map((beat) => beat.type === 'pause' ? `Pause: ${beat.durationMs}` : beat.type === 'sound' ? `Sound: ${beat.sound}` : `${names[cast.get(beat.actor)?.character] || 'Claude'} [${beat.expression || 'neutral'}]: ${beat.text}`).join('\n');
+}
+function element(tag, text, className) { const node = document.createElement(tag); if (text !== undefined) node.textContent = text; if (className) node.className = className; return node; }
+function renderBeatCards() {
+  const container = $('beat-cards'); container.replaceChildren();
+  let scene;
+  try { scene = importedScene || parseScript(); } catch { container.append(element('p','Your source has an error. Open Source to edit it.','hint')); return; }
+  const cast = new Map(scene.cast.map((a) => [a.id,a]));
+  scene.beats.forEach((beat,index) => {
+    const card = element('article',undefined,'beat-card'); card.dataset.index = index;
+    const heading = element('div',undefined,'beat-card-heading'); heading.append(element('span',String(index+1),'beat-number'));
+    const remove = element('button','×','remove-beat'); remove.type = 'button'; remove.dataset.remove = index; remove.setAttribute('aria-label',`Remove line ${index+1}`);
+    if (beat.type === 'say') {
+      card.dataset.character = cast.get(beat.actor)?.character;
+      const actor = element('select'); actor.dataset.field = 'actor'; actor.setAttribute('aria-label',`Speaker for line ${index+1}`);
+      scene.cast.forEach((item) => actor.add(new Option(names[item.character],item.id))); actor.value = beat.actor;
+      const expression = element('select'); expression.dataset.field = 'expression'; expression.setAttribute('aria-label',`Expression for line ${index+1}`);
+      Object.keys(expressions).forEach((id) => expression.add(new Option(id[0].toUpperCase()+id.slice(1),id))); expression.value = beat.expression || 'neutral';
+      heading.append(actor,expression,remove);
+      const words = element('textarea'); words.value = beat.text; words.rows = 2; words.maxLength = 2000; words.dataset.field = 'text'; words.setAttribute('aria-label',`Dialogue line ${index+1}`);
+      card.append(heading,words);
+    } else {
+      card.classList.add('pause-card');
+      card.append(element('span',beat.type === 'pause' ? 'Pause' : 'Sound'));
+      if (beat.type === 'pause') { const input = element('input'); input.type = 'number'; input.min = 0; input.max = 5000; input.step = 50; input.value = beat.durationMs; input.dataset.field = 'durationMs'; input.className = 'duration'; input.setAttribute('aria-label',`Pause ${index+1} in milliseconds`); card.append(input,element('span','ms')); }
+      else { const select = element('select'); soundNames.forEach((name) => select.add(new Option(name,name))); select.value = beat.sound; select.dataset.field = 'sound'; select.setAttribute('aria-label',`Sound for cue ${index+1}`); card.append(select); }
+      card.append(remove);
+    }
+    container.append(card);
+  });
+}
+$('beat-cards').addEventListener('input',(event) => {
+  const field = event.target.dataset.field, index = Number(event.target.closest('[data-index]')?.dataset.index);
+  if (!field || !Number.isInteger(index)) return;
+  const scene = importedScene || parseScript(), beat = scene.beats[index];
+  beat[field] = field === 'durationMs' ? Number(event.target.value) : event.target.value;
+  if (field === 'actor') { delete beat.listener; delete beat.lookAt; event.target.closest('article').dataset.character = scene.cast.find((a) => a.id === beat.actor)?.character; }
+  importedScene = scene; $('script').value = scriptText(scene); stop('Script changed. Ready to play.'); error();
+  $('line-count').textContent = `${scene.beats.filter((b) => b.type === 'say').length} spoken lines`;
+});
+$('beat-cards').addEventListener('click',(event) => {
+  const button = event.target.closest('[data-remove]'); if (!button) return;
+  const scene = importedScene || parseScript(); scene.beats.splice(Number(button.dataset.remove),1);
+  importedScene = scene; $('script').value = scriptText(scene); stop('Line removed.'); count();
+});
+document.querySelectorAll('[data-editmode]').forEach((button) => button.addEventListener('click',() => {
+  const source = button.dataset.editmode === 'source'; $('source-editor').hidden = !source; $('beat-cards').hidden = source;
+  document.querySelectorAll('[data-editmode]').forEach((item) => item.setAttribute('aria-pressed',String(item === button)));
+}));
+function setTextMode(mode) {
+  $('stage').dataset.textmode = mode;
+  document.querySelectorAll('[data-textmode]').forEach((button) => button.setAttribute('aria-pressed',String(button.dataset.textmode === mode)));
+  try { localStorage.setItem('theatre-text-mode',mode); } catch {}
+}
+document.querySelectorAll('[data-textmode]').forEach((button) => button.addEventListener('click',() => setTextMode(button.dataset.textmode)));
+let initialMode = 'story'; try { const saved = localStorage.getItem('theatre-text-mode'); if (['off','subtitles','story'].includes(saved)) initialMode = saved; } catch {}
+setTextMode(initialMode);
 async function play() {
   stop(''); error();
   if (!$('silent').checked && savedVoicePrefs.engine === 'neural' && !neural.client) { if (!await loadNeural()) return; }
@@ -253,11 +348,12 @@ async function play() {
         await delay(400 * paceScale(), run.signal); continue;
       }
       line++;
+      progress(line,total);
       const actor = cast.get(beat.actor), other = scene.cast.find((item) => item.id !== actor.id);
       activeExpression = beat.expression || 'neutral'; activeGaze = beat.lookAt || other?.id || 'viewer';
       pose(actor.character, silent ? 'speaking' : 'listening', activeExpression, activeGaze);
       if (other) pose(other.character, 'listening', 'neutral', actor.id);
-      caption(names[actor.character], beat.text);
+      if (silent) caption(names[actor.character], beat.text);
       message(`${silent ? 'Caption preview' : 'Playing'} · Line ${line} of ${total}`);
       if (beat.listener?.reaction === 'nod') {
         const listener = cast.get(beat.listener.actor);
@@ -269,15 +365,15 @@ async function play() {
       else if (useNeural) {
         message(`Preparing neural speech · Line ${line} of ${total}. First use can take time.`);
         await neural.speak(beat.text, $(`voice-${actor.character}`).value, Number($('rate').value), run.signal,
-          () => { stageSound.duck(true); pose(actor.character, 'speaking', activeExpression, activeGaze); message(`Neural speech · Line ${line} of ${total}`); },
-          (shape) => mouth(actor.character, shape), Number($('voice-volume').value));
+          () => { caption(names[actor.character],beat.text); stageSound.duck(true); pose(actor.character, 'speaking', activeExpression, activeGaze); message(`Neural speech · Line ${line} of ${total}`); },
+          (shape) => mouth(actor.character, shape), Number($('voice-volume').value),highlightWord);
       } else await speak(beat.text, actor.character, run.signal);
       resetActors();
       await delay((beat.afterMs ?? 250) * paceScale(), run.signal);
     }
     if (controller === run) {
       controller = null; resetActors(); stageSound.stop(); $('stage').dataset.playing = 'false'; $('play').textContent = 'Play again'; $('stop').disabled = true;
-      message('Finished. Change a line or play it again.');
+      $('line-progress').textContent = 'Finished'; highlightWord(-1); message('Finished. Change a line or play it again.');
     }
   } catch (reason) {
     if (controller !== run) return;
@@ -355,7 +451,7 @@ async function previewVoice(character) {
   try { const scene = currentScene(); const actor = scene.cast.find((a) => a.character === character); text = scene.beats.find((b) => b.type === 'say' && b.actor === actor?.id)?.text || text; } catch {}
   caption(names[character], text);
   try {
-    if ($('engine').value === 'neural') await neural.speak(text, $(`voice-${character}`).value, Number($('rate').value), run.signal, () => pose(character, 'speaking', 'happy'), (shape) => mouth(character, shape),Number($('voice-volume').value));
+    if ($('engine').value === 'neural') await neural.speak(text, $(`voice-${character}`).value, Number($('rate').value), run.signal, () => { caption(names[character],text); pose(character, 'speaking', 'happy'); }, (shape) => mouth(character, shape),Number($('voice-volume').value),highlightWord);
     else if (supportsSpeech) await speak(text, character, run.signal);
     else throw new Error('No device speech engine is available.');
     if (controller === run) { controller = null; resetActors(); $('stop').disabled = true; message('Voice preview finished.'); }
