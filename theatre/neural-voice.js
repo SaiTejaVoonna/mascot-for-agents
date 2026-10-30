@@ -18,6 +18,7 @@ const stopped = () => new DOMException('Stopped', 'AbortError');
 export class NeuralVoice {
   client = null; context = null; loading = null; tone = 0;
   cache = new Map(); pending = new Map(); clips = new Map(); envelopes = new WeakMap();
+  generationQueue = Promise.resolve();
   audioContext() {
     if (!this.context || this.context.state === 'closed') this.context = new AudioContext();
     return this.context;
@@ -49,12 +50,19 @@ export class NeuralVoice {
     const pending = this.pending.get(key);
     if (pending && pending.signal === signal) return pending.promise;
     const entry = {signal};
-    entry.promise = (async () => {
+    const generation = this.generationQueue.then(async () => {
+      if (signal.aborted) throw stopped();
       const abort = () => this.client.clear();
       signal.addEventListener('abort',abort,{once:true});
       try {
-        // Pass settings with the request: prefetch cannot change the current actor's voice.
-        const messages = await this.client.synthesize({input:text,voice,language:'en-us',speed,audioEncoding:'wav'});
+        // HeadTTS 1.3's worker path overwrites request-level values from ttsSetup.
+        // Serialize setup + synthesis until the response completes so actors cannot cross voices.
+        await this.client.setup({voice,language:'en-us',speed,audioEncoding:'wav'});
+        if (signal.aborted) throw stopped();
+        if (this.client.ttsSetup.voice !== voice || this.client.ttsSetup.speed !== speed) {
+          throw new Error('The selected voice could not be applied. No fallback speech was played.');
+        }
+        const messages = await this.client.synthesize({input:text});
         if (signal.aborted) throw stopped();
         const failure = messages.find((message) => message.type === 'error');
         if (failure) throw new Error(failure.data?.error || 'Neural speech generation failed.');
@@ -66,9 +74,10 @@ export class NeuralVoice {
         return messages;
       } finally {
         signal.removeEventListener('abort',abort);
-        if (this.pending.get(key) === entry) this.pending.delete(key);
       }
-    })();
+    });
+    this.generationQueue = generation.then(()=>{},()=>{});
+    entry.promise = generation.finally(() => { if (this.pending.get(key) === entry) this.pending.delete(key); });
     this.pending.set(key,entry);
     return entry.promise;
   }

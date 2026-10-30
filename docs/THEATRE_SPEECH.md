@@ -2,6 +2,8 @@
 
 ## Neural speech
 
+Voice routing correction: HeadTTS 1.3's worker path replaces per-request voice/speed with its current `ttsSetup`. The adapter now serializes `setup` and `synthesize` through completion, verifies the configured voice/speed, and rejects failed application instead of playing a default voice. The versioned module update clears old in-memory audio generated before this correction.
+
 Kokoro is now the initial engine. Claude starts with female **Heart**, with **Bella, Nicole and Sarah** available to audition. GPT starts with male **Fenrir**; Michael and Puck are also available. Saved explicit choices are preserved. HeadTTS is pinned to 1.3.0. These are Kokoro voices, not new speech models supplied by the sound-effect skills.
 
 Play/Preview loads the model on demand. Failed loading never silently plays a device voice. Preferences use `theatre-voice-v2`, replacing the old device-first default; subsequent explicit device selections are respected. Stop invalidates pending playback while a model loads, although the download can finish for later reuse.

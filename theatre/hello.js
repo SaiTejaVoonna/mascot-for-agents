@@ -1,4 +1,4 @@
-import {NeuralVoice, neuralVoices, recordedVocals} from './neural-voice.js?v=speech-4';
+import {NeuralVoice, neuralVoices, recordedVocals} from './neural-voice.js?v=speech-5';
 import {StageSound, soundNames} from './stage-sound.js';
 const neural = new NeuralVoice();
 const stageSound = new StageSound();
@@ -508,7 +508,7 @@ async function previewVoice(character) {
     if ($('engine').value === 'neural') {
       if (!neural.client && !await loadNeural(run)) { if (controller === run) stop('Voice preview stopped.'); return; }
       if (run.signal.aborted) throw abortError();
-      await neural.speak(text, $(`voice-${character}`).value, Number($('rate').value), run.signal, () => { caption(names[character],text); pose(character, 'speaking', 'happy'); stageSound.duck(true); }, (shape,energy) => { if (controller === run) mouth(character,shape,energy); },Number($('voice-volume').value),highlightWord);
+      await neural.speak(text, $(`voice-${character}`).value, Number($('rate').value), run.signal, () => { caption(names[character],text); pose(character, 'speaking', 'happy'); stageSound.duck(true); message(`Playing ${names[character]} · ${$(`voice-${character}`).selectedOptions[0]?.textContent}`); }, (shape,energy) => { if (controller === run) mouth(character,shape,energy); },Number($('voice-volume').value),highlightWord);
     }
     else if (supportsSpeech) await speak(text, character, run.signal);
     else throw new Error('No device speech engine is available.');
