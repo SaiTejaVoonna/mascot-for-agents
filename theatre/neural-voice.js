@@ -33,7 +33,7 @@ export class NeuralVoice {
         dtypeWebgpu:'q8', dtypeWasm:'q8',
         workerModule:`${packageURL}/modules/worker-tts.mjs`,
         dictionaryURL:`${packageURL}/dictionaries/`,
-        languages:['en-us'], voices:['af_heart','am_fenrir'], splitSentences:false
+        languages:['en-us'], voices:['af_heart','am_michael'], splitSentences:false
       });
       await client.connect(null, () => progress('Preparing Kokoro neural voices…'));
       if (!client.isConnected) throw new Error('Neural voice model could not connect.');
