@@ -22,6 +22,10 @@ The SVG defines Claude's ground contact near **(283,351)**, GPT's near **(710,35
 
 A quiet flame moves while the outpost is idle; Play adds the existing ember and firelight motion. All of this respects reduced movement. Firelight continues to use the existing slider. Speech, voice selection and audio adapters are unchanged. The campfire stage ID and JSON contract remain compatible. Podcast and rehearsal room retain their existing worlds.
 
-Caption pages now use six, nine or twelve words according to stage width, keeping dialogue from covering most of a small stage. The artwork remains a 2D illustrated set with standing mascot artwork around camp furniture. Walking, seated character rigs, free camera movement, collision and a playable game map are not implemented by this visual update.
+Caption pages use six, nine or twelve words according to stage width. The campsite now has a small interactive layer in `theatre/world-interactions.js`: choose a mascot, tap the ground or use arrow keys to move, return to a stool, stand, wave, reset positions and extinguish or relight the fire. Movement uses the existing walking WebP; greeting uses hello WebP. During dialogue, the speech renderer retains ownership of the face, so moving uses position changes without replacing its mouth artwork.
+
+Ground bounds and the central fire ring constrain destinations. A crossing path passes in front of the fire. These are simple 2D constraints, not a general collision or pathfinding system. Sitting is a stylized compressed rest pose on the stool, not a new articulated seated rig. Reduced movement skips travel animation. Fire-off hides flame, ember and firelight and stops fireplace ambience. Free exploration does not generate speech or download the voice model.
+
+Positions and fire state are temporary preview controls, not part of scene JSON 0.2. Reload resets the world. There is no free camera, 3D navigation, multiplayer or game map.
 
 The environment geometry is original project art. This update uses no third-party image or game asset. The genre reference is a friendly cartoon space outpost.

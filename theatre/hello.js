@@ -1,5 +1,6 @@
 import {NeuralVoice, neuralVoices, recordedVocals} from './neural-voice.js?v=speech-6';
 import {StageSound, soundNames} from './stage-sound.js?v=audio-unlock-1';
+import {setupWorld} from './world-interactions.js?v=2';
 const neural = new NeuralVoice();
 const stageSound = new StageSound();
 const $ = (id) => document.getElementById(id);
@@ -382,7 +383,7 @@ async function play() {
       if (!ready) throw abortError();
       if (run.signal.aborted) throw abortError();
       stageSound.configure(settings());
-      if ($('ambience').checked) stageSound.startAmbience($('setting').value);
+      if ($('ambience').checked && $('stage').dataset.fire !== 'off') stageSound.startAmbience($('setting').value);
     }
     $('stage').dataset.playing = 'true';
     $('play').disabled = false; $('play').removeAttribute('aria-busy');
@@ -607,3 +608,4 @@ for (const id of Object.keys(names)) if (Number.isFinite(savedVoicePrefs.pitch?.
 $('rate-value').value = `${Number($('rate').value)}×`; updateTone();
 saveVoicePreferences();
 if ($('engine').value === 'neural') message(`Neural speech selected · Claude: ${$('voice-claude').selectedOptions[0]?.textContent}. Press Play or Preview to load voices.`);
+setupWorld({stageSound,isPerforming:() => Boolean(controller)});

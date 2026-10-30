@@ -9,8 +9,8 @@
   <link rel="stylesheet" href="stage.css">
   <link rel="stylesheet" href="voice-tuning.css">
   <link rel="stylesheet" href="director.css">
-  <link rel="stylesheet" href="world.css?v=2">
-  <script type="module" src="hello.js?v=michael-1"></script>
+  <link rel="stylesheet" href="world.css?v=3">
+  <script type="module" src="hello.js?v=playground-2"></script>
 </head>
 <body>
 <a class="skip" href="#script">Skip to dialogue</a>
@@ -32,6 +32,13 @@
         <figure id="actor-claude" data-state="idle"><div class="actor-art"><img src="../assets/collection/claude-v5/neutral.png?v=9" width="288" height="288" alt="Claude mascot"><div class="speech-dots" aria-hidden="true"><i></i><i></i><i></i></div></div><figcaption>Claude <span class="actor-state">Ready</span></figcaption></figure>
         <figure id="actor-gpt" data-state="idle"><div class="actor-art"><img src="../assets/collection/gpt-v5/neutral.png?v=9" width="288" height="288" alt="GPT mascot"><div class="speech-dots" aria-hidden="true"><i></i><i></i><i></i></div></div><figcaption>GPT <span class="actor-state">Ready</span></figcaption></figure>
       </div><div class="caption"><span id="caption-speaker">Your stage is ready</span><p id="caption-text">Start with Hello, or write your own exchange.</p></div></div>
+      <section id="world-controls" class="world-controls" aria-label="Explore the campsite">
+        <div class="world-tools">
+          <div class="world-selection" role="group" aria-label="Control a mascot"><button data-world-actor="claude" aria-pressed="true">Claude</button><button data-world-actor="gpt" aria-pressed="false">GPT</button></div>
+          <button id="world-sit">Sit by fire</button><button id="world-wave">Wave</button><button id="world-fire" aria-pressed="true">Put fire out</button><button id="world-reset">Reset places</button>
+        </div>
+        <p id="world-status" role="status">Select a mascot, then tap the campsite to move.</p>
+      </section>
       <div class="transport"><button id="play" class="primary">Play conversation</button><button id="stop" class="secondary" disabled>Stop</button><span id="line-progress" class="line-progress">Ready</span><div class="text-modes" role="group" aria-label="On-screen text"><button data-textmode="off" aria-pressed="false">Off</button><button data-textmode="subtitles" aria-pressed="false">Subtitles</button><button data-textmode="story" aria-pressed="true">Story text</button></div><label class="check"><input id="silent" type="checkbox">Silent preview</label></div>
       <p id="status" role="status" aria-live="polite">Preparing available browser voices…</p>
       <details class="scene-settings"><summary>Scene &amp; pacing</summary><div class="scene-controls"><label>Setting<select id="setting"><option value="campfire">Campfire outpost</option><option value="podcast">The podcast room</option><option value="room">Rehearsal room</option></select></label><label>Conversation pace<select id="pace"><option value="relaxed">Relaxed</option><option value="natural" selected>Natural</option><option value="snappy">Snappy</option></select></label></div></details>
@@ -63,7 +70,7 @@ GPT [happy]: Then let us begin. One little conversation can be the start of a mu
       <p class="hint">Expressions: neutral, happy, curious, concerned. Up to 2,000 spoken characters. English starter dialogue; no grammar correction or AI service runs here.</p>
       <p id="error" role="alert" hidden></p>
       <div class="files"><button id="download" class="secondary">Save scene JSON</button><label class="file-button secondary">Open scene JSON<input id="upload" type="file" accept=".json,application/json"></label></div>
-      <details><summary>For your agent</summary><p>Ask your agent for dialogue, pauses and optional Sound: cues. Format 0.2 saves the setting, pacing and sound mix; earlier 0.1 dialogue scenes still open.</p><a href="../skills/theatre-scene/SKILL.md">Read the scene skill</a><p>Illustrated 2D stages with standing mascot artwork. Walking, seated rigs and 3D camera movement are future work.</p></details>
+      <details><summary>For your agent</summary><p>Ask your agent for dialogue, pauses and optional Sound: cues. Format 0.2 saves the setting, pacing and sound mix; earlier 0.1 dialogue scenes still open.</p><a href="../skills/theatre-scene/SKILL.md">Read the scene skill</a><p>Explore the campfire with click-to-move, greetings and a simple seated rest pose. Exploration is temporary; scene JSON saves dialogue and sound settings. Articulated seated rigs and 3D camera movement are future work.</p></details>
       <details class="credits"><summary>Credits &amp; sound sources</summary><p>Neural speech: <a href="https://github.com/met4citizen/HeadTTS">HeadTTS by Mika Suominen</a> (MIT), <a href="https://huggingface.co/hexgrad/Kokoro-82M">Kokoro by hexgrad</a> (Apache-2.0), and the <a href="https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX-timestamped">timestamped ONNX conversion</a>. Female voices: Heart, Bella, Nicole, Sarah. Recorded hmm: <a href="https://freesound.org/people/esperar/sounds/170768/">esperar / Freesound</a> (CC0). Device speech: your browser/OS. The stage artwork is original. Effects use the Zen pack from <a href="https://github.com/romainsimon/uisfx">uisfx</a> (CC0-1.0), bundled with Real SFX.</p><p>Sound resources: <a href="https://openverse.org/">Openverse</a>, <a href="https://clipwing.pro/skills/real-sfx">Real SFX</a> and <a href="https://github.com/Leonxlnx/earshot">earshot</a>. Fireplace recording: <a href="https://commons.wikimedia.org/wiki/File:Dry_grass_burning_in_open_fireplace.ogg">ezwa / PDSounds</a> (public domain), edited for looping. Real-sound prepared levels and earshot measured the files locally; analysis models are not loaded in this player. These tools do not generate speech. <a href="assets/audio/CREDITS.md">Audio credits</a> · <a href="assets/audio/measurements.json">Asset measurements</a>.</p></details>
     </section>
   </div>

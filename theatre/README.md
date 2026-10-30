@@ -2,6 +2,8 @@
 
 ## Coded campfire world
 
+The campsite is interactive: choose Claude or GPT, tap its ground to move, or focus the world and use arrow keys. Sit by fire returns the selected character to a stool in a stylized rest pose; Stand up, Wave, Put fire out / Light fire and Reset places provide quick actions. These controls work without loading speech. Exploration state is temporary and is not embedded in scene JSON. See `world-interactions.js` for the transform-based movement and ground constraints.
+
 The campfire stage now uses an original SVG space outpost: flat outlined scenery, tent, landing pod, supplies, stools and a shared ground plane around the live fire. It replaces the raster forest in this stage. World geometry and proportional placement are editable in [the SVG](assets/campfire-outpost.svg) and world.css. Voice choices remain unchanged. See [world design notes](../docs/THEATRE_WORLD.md). This is a 2D set, with standing character artwork and existing dialogue playback.
 
 ## Speech and mouth update
