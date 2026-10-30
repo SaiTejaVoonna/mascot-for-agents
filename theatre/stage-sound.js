@@ -4,6 +4,10 @@ export class StageSound {
   context = null; ambience = null; effectsBus = null;
   sources = new Map(); buffers = new Map(); pending = new Map(); generation = 0;
   gain = .25; ambienceLevel = .4; pitch = 1; ducked = false;
+  async unlock() {
+    this.context ||= new AudioContext();
+    await this.context.resume();
+  }
   async load(name) {
     if (this.buffers.has(name)) return;
     if (!this.pending.has(name)) {

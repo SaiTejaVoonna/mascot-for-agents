@@ -1,5 +1,5 @@
 import {NeuralVoice, neuralVoices, recordedVocals} from './neural-voice.js?v=speech-5';
-import {StageSound, soundNames} from './stage-sound.js';
+import {StageSound, soundNames} from './stage-sound.js?v=audio-unlock-1';
 const neural = new NeuralVoice();
 const stageSound = new StageSound();
 const $ = (id) => document.getElementById(id);
@@ -110,6 +110,7 @@ function stop(text = 'Stopped. Ready to start again.') {
   stageSound.stop(); $('stage').dataset.playing = 'false';
   resetActors();
   progress();
+  $('play').disabled = false; $('play').removeAttribute('aria-busy');
   $('play').textContent = 'Play conversation'; $('stop').disabled = true;
   if (text) { message(text); caption('Your stage is ready', 'Start with Hello, or write your own exchange.'); }
 }
@@ -333,13 +334,21 @@ async function play() {
   const useNeural = $('engine').value === 'neural';
   if (!silent && !useNeural && !supportsSpeech) { error('Speech is unavailable here. Enable Captions only or load neural voices.'); return; }
   const run = new AbortController(); controller = run;
-  $('play').textContent = 'Restart conversation'; $('stop').disabled = false;
+  $('play').textContent = 'Preparing voices…'; $('play').disabled = true;
+  $('play').setAttribute('aria-busy','true'); $('stop').disabled = false;
+  // Resume both audio contexts directly in the Play gesture, before model downloads
+  // or synthesis consume transient user activation. A late resume can wait forever.
+  const audioUnlock = !silent ? Promise.all([
+    useNeural || scene.beats.some((beat) => beat.vocal) ? neural.unlock() : Promise.resolve(),
+    $('effects').checked || $('ambience').checked ? stageSound.unlock() : Promise.resolve()
+  ]) : Promise.resolve();
   const cast = new Map(scene.cast.map((actor) => [actor.id, actor]));
   Object.keys(names).forEach((id) => { $(`actor-${id}`).hidden = !scene.cast.some((actor) => actor.character === id); });
   for (const actor of scene.cast) $(`actor-${actor.character}`).style.order = actor.slot === 'seat-left' ? '0' : '1';
   let line = 0; const total = scene.beats.filter((b) => b.type === 'say').length;
   const preparedSpeech = new Map();
   try {
+    await audioUnlock;
     if (useNeural && !silent && !neural.client && scene.beats.some((beat) => beat.type === 'say' && !beat.vocal)) {
       if (!await loadNeural(run)) { if (controller === run) stop('Neural loading stopped.'); return; }
     }
@@ -351,6 +360,8 @@ async function play() {
       for (const [index,beat] of voiceBeats.entries()) {
         if (run.signal.aborted) throw abortError();
         message(`Preparing voice cue ${index+1} of ${voiceBeats.length}. The scene starts when every line is ready.`);
+        $('play').textContent = `Preparing ${index+1} / ${voiceBeats.length}…`;
+        progress(index+1,voiceBeats.length);
         if (beat.vocal) await neural.prepareVocal(beat.vocal,run.signal);
         else if (useNeural) {
           const actor=cast.get(beat.actor);
@@ -374,6 +385,8 @@ async function play() {
       if ($('ambience').checked) stageSound.startAmbience($('setting').value);
     }
     $('stage').dataset.playing = 'true';
+    $('play').disabled = false; $('play').removeAttribute('aria-busy');
+    $('play').textContent = 'Restart conversation';
     for (const beat of scene.beats) {
       if (run.signal.aborted) throw abortError();
       if (beat.type === 'pause') { resetActors(); message('A little pause…'); await delay(beat.durationMs * paceScale(), run.signal); continue; }
