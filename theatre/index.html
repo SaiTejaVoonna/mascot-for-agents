@@ -7,6 +7,7 @@
   <link rel="icon" href="../site/brand.svg" type="image/svg+xml">
   <link rel="stylesheet" href="hello.css">
   <link rel="stylesheet" href="stage.css">
+  <link rel="stylesheet" href="voice-tuning.css">
   <script type="module" src="hello.js"></script>
 </head>
 <body>
@@ -34,11 +35,14 @@
       <details class="sound-settings"><summary>Sound &amp; atmosphere</summary><div class="voice-grid"><label class="check"><input id="ambience" type="checkbox">Background ambience</label><label class="check"><input id="effects" type="checkbox" checked>Scripted sound effects</label><label>Voice volume<input id="voice-volume" type="range" min="0" max="1" step="0.05" value="1"></label><label>Effects volume<input id="effects-volume" type="range" min="0" max="1" step="0.05" value="0.25"></label><label>Ambience volume<input id="ambience-volume" type="range" min="0" max="1" step="0.05" value="0.2"></label><label>Effect pitch<input id="sound-pitch" type="range" min="0.5" max="1.5" step="0.05" value="1"></label><label>Firelight<input id="light" type="range" min="0" max="1" step="0.05" value="0.6"></label></div><p class="hint">Original synthesized effects and ambience. Sound starts only when you play or preview. Voice volume controls generated neural audio; device voices may apply volume differently.</p><div class="sound-palette" role="group" aria-label="Preview a sound"><button data-sound="whoosh">Whoosh</button><button data-sound="pop">Pop</button><button data-sound="tap">Tap</button><button data-sound="chime">Chime</button><button data-sound="click">Click</button><button data-sound="success">Success</button></div><p class="hint">Try <code>Sound: whoosh</code> in your script. Sound cues play between dialogue lines. Ambience lowers while a character speaks.</p></details>
       <details class="voice-settings" open><summary>Voices &amp; delivery</summary>
         <div class="voice-engine"><label>Voice engine<select id="engine"><option value="device">Device voices · instant</option><option value="neural" disabled>Kokoro neural · experimental</option></select></label><button id="load-neural" class="secondary">Load neural voices</button></div>
-        <p class="hint">Optional neural mode downloads model files and code from Hugging Face and jsDelivr. Files may total hundreds of MB and use substantial RAM. Generation runs in your browser; first use can be slow on this PC. Nothing downloads until you choose Load.</p>
+        <div class="delivery-presets" role="group" aria-label="Delivery preset"><button data-delivery="calm">Calm</button><button data-delivery="natural">Natural</button><button data-delivery="lively">Lively</button></div>
+        <p class="hint">Neural mode downloads model files and code from Hugging Face and jsDelivr and uses substantial RAM. Loading starts when you choose Load, or press Play/Preview with a remembered neural preference. Generation runs in your browser.</p>
         <div class="voice-grid"><label>Claude’s voice<select id="voice-claude"></select></label><label>GPT’s voice<select id="voice-gpt"></select></label>
           <button id="preview-claude" class="secondary">Hear Claude say hello</button><button id="preview-gpt" class="secondary">Hear GPT say hello</button>
           <label>Claude’s pitch<input id="pitch-claude" type="range" min="0.85" max="1.15" step="0.05" value="1"></label><label>GPT’s pitch<input id="pitch-gpt" type="range" min="0.85" max="1.15" step="0.05" value="1"></label>
           <label>Speaking speed <output id="rate-value">1×</output><input id="rate" type="range" min="0.7" max="1.3" step="0.05" value="1"></label><label class="check"><input id="still" type="checkbox">Reduce movement</label></div>
+        <label class="tone-control">Neural voice tone <output id="tone-value">Neutral</output><input id="tone" type="range" min="-1" max="1" step="0.1" value="0" disabled><span>Brighter ← Neutral → Warmer</span></label>
+        <p class="hint">Speed and tone apply to the next playback. Tone gently changes equalization, not emotion or vocal identity. Voice previews read your first line for that character. Choices stay in this browser.</p>
         <p id="voice-note">Device voices vary. Natural, Neural or Google English voices are useful candidates to audition. Some device voices use an online service.</p>
       </details>
       <p class="scope-note">2D prototype. Device mode uses approximate mouth movement; neural mode maps model mouth cues to simple shapes. No account or API key required.</p>

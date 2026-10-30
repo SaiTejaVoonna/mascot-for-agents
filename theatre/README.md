@@ -1,5 +1,15 @@
 # Hello Studio
 
+## Voice tuning
+
+Heart/Michael are now the initial neural voice pair; Bella/Fenrir remain selectable. This is an alternative to audition, not a measured quality claim. Calm/Natural/Lively presets adjust speed and a modest audio EQ tone value. A Brighter–Warmer slider applies low/high shelves to neural playback without changing vocal pitch, duration or mouth timing. It does not infer emotions or create a different voice model. Unsupported neural pitch sliders are hidden.
+
+Voice audition now reads the first actual script line for that actor. A six-entry/24 MiB session cache reuses generated audio for the same text, voice and speed, allowing tone/volume comparisons without regenerating it. Cache is in memory only; reload clears it. Changing voice or speed requires new generation.
+
+Engine choice, voice IDs, rate, tone and device pitch stay in localStorage when available. A remembered neural preference loads on the next Play/Preview action rather than silently playing a device voice. Page load itself does not download the model. These voice preferences remain browser-local and are not serialized into scene 0.2. Preview and full playback share voice-volume handling.
+
+These tuning changes have not had an audio-quality or playback review in this implementation turn. Sound-engine references in the Credits panel provide effects/analysis, not replacement speech synthesis.
+
 ## Little Theatre: first scene version
 
 The current stage selector offers an illustrated campfire, a podcast room and the original rehearsal room. These are original HTML/CSS/SVG environments around the existing 2D mascots. Character rigging, walking and 3D environments remain future work.

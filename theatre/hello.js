@@ -8,6 +8,15 @@ const supportsSpeech = Boolean(synth && window.SpeechSynthesisUtterance);
 const names = {claude: 'Claude', gpt: 'GPT'};
 const expressions = {neutral: 'neutral', happy: 'happy', curious: 'thinking', concerned: 'worried'};
 const example = $('script').value;
+let savedVoicePrefs = {};
+try { const value = JSON.parse(localStorage.getItem('theatre-voice-v1')); if (value && typeof value === 'object') savedVoicePrefs = value; } catch {}
+function saveVoicePreferences() {
+  const engine = $('engine').value;
+  savedVoicePrefs = {engine, rate:Number($('rate').value), tone:Number($('tone').value),
+    pitch:{claude:Number($('pitch-claude').value),gpt:Number($('pitch-gpt').value)},
+    voiceIds:{...savedVoicePrefs.voiceIds,[engine]:{claude:$('voice-claude').value,gpt:$('voice-gpt').value}}};
+  try { localStorage.setItem('theatre-voice-v1',JSON.stringify(savedVoicePrefs)); } catch {}
+}
 let voices = [], controller = null, importedScene = null, utterance = null;
 let mouthTimer = null;
 const mouthLayers = new Map();
@@ -212,6 +221,7 @@ function count() {
 }
 async function play() {
   stop(''); error();
+  if (!$('silent').checked && savedVoicePrefs.engine === 'neural' && !neural.client) { if (!await loadNeural()) return; }
   let scene;
   try { scene = currentScene(); } catch (reason) { error(reason.message); return; }
   const silent = $('silent').checked;
@@ -282,7 +292,7 @@ function populateVoices() {
   voices.sort((a,b) => score(b) - score(a));
   const preferred = voices.filter((v) => /^en\b/i.test(v.lang));
   for (const [index, id] of Object.keys(names).entries()) {
-    const select = $(`voice-${id}`), previous = select.value;
+    const select = $(`voice-${id}`), previous = savedVoicePrefs.voiceIds?.device?.[id] || select.value;
     select.replaceChildren(new Option('Device default (English requested)', ''));
     for (const voice of voices) select.add(new Option(`${voice.name} · ${voice.lang}${voice.localService ? ' · device' : ' · online'}`, voice.voiceURI));
     if (voices.some((v) => v.voiceURI === previous)) select.value = previous;
@@ -302,47 +312,68 @@ document.querySelectorAll('[data-insert]').forEach((button) => button.addEventLi
   $('script').value += `${$('script').value.trim() ? '\n' : ''}${button.dataset.insert}`;
   $('script').focus(); count(); error();
 }));
-for (const id of ['voice-claude','voice-gpt','pitch-claude','pitch-gpt','rate','silent']) $(id).addEventListener('change', () => stop('Voice settings changed. Ready to play.'));
+for (const id of ['voice-claude','voice-gpt','pitch-claude','pitch-gpt','rate','silent']) $(id).addEventListener('change', () => { stop('Voice settings changed. Ready to play.'); saveVoicePreferences(); });
 $('engine').addEventListener('change', () => {
   stop('Voice engine changed. Ready to play.');
   const useNeural = $('engine').value === 'neural';
   for (const [index, id] of Object.keys(names).entries()) {
     $(`pitch-${id}`).disabled = useNeural;
+    $(`pitch-${id}`).closest('label').classList.toggle('pitch-hidden',useNeural);
     if (useNeural) {
       $(`voice-${id}`).replaceChildren(...neuralVoices.map((v) => new Option(v.name, v.id)));
-      $(`voice-${id}`).value = index ? 'am_fenrir' : 'af_bella';
+      const saved = savedVoicePrefs.voiceIds?.neural?.[id];
+      $(`voice-${id}`).value = neuralVoices.some((voice) => voice.id === saved) ? saved : index ? 'am_michael' : 'af_heart';
     }
   }
   if (!useNeural) populateVoices();
-  $('voice-note').textContent = useNeural ? 'Kokoro neural speech runs on this device. Initial generation can be slow. Mouth shapes use model timestamps; pitch adjustment is unavailable.' : 'Device voices vary. Names marked Natural, Neural or Google English are useful candidates to audition. Pitch changes delivery, not voice quality.';
+  $('tone').disabled = !useNeural;
+  $('voice-note').textContent = useNeural ? 'Kokoro speech runs on this device. Try Heart or Michael, then tune speed and tone. Mouth timing follows the generated audio. Repeated lines reuse a small session cache.' : 'Device voices vary. Try a different voice before changing pitch. Neural tone controls are available after loading Kokoro.';
+  saveVoicePreferences();
 });
-$('load-neural').addEventListener('click', async () => {
+async function loadNeural() {
   stop('Loading neural voices…'); error(); $('load-neural').disabled = true;
   try {
     await neural.load(message);
     $('engine').querySelector('[value=neural]').disabled = false;
     $('engine').value = 'neural'; $('engine').dispatchEvent(new Event('change'));
     $('load-neural').textContent = 'Neural voices loaded'; message('Neural voices ready. Press Play to generate your lines.');
+    return true;
   } catch (reason) {
     error(`Could not load neural voices: ${reason?.message || String(reason)}. Device voices remain available.`);
     $('load-neural').disabled = false; message('Neural loading failed. Try device voices or Captions only.');
+    return false;
   }
-});
+}
+$('load-neural').addEventListener('click', loadNeural);
 $('preview-claude').addEventListener('click', () => previewVoice('claude'));
 $('preview-gpt').addEventListener('click', () => previewVoice('gpt'));
 async function previewVoice(character) {
+  if (savedVoicePrefs.engine === 'neural' && !neural.client) { if (!await loadNeural()) return; }
   stop('Voice preview…'); error(); const run = new AbortController(); controller = run; $('stop').disabled = false;
   activeExpression = 'happy'; activeGaze = 'viewer';
-  const text = `Hello! I'm ${names[character]}. It's lovely to meet you.`;
+  let text = `Hello! I'm ${names[character]}. It's lovely to meet you.`;
+  try { const scene = currentScene(); const actor = scene.cast.find((a) => a.character === character); text = scene.beats.find((b) => b.type === 'say' && b.actor === actor?.id)?.text || text; } catch {}
   caption(names[character], text);
   try {
-    if ($('engine').value === 'neural') await neural.speak(text, $(`voice-${character}`).value, Number($('rate').value), run.signal, () => pose(character, 'speaking', 'happy'), (shape) => mouth(character, shape));
+    if ($('engine').value === 'neural') await neural.speak(text, $(`voice-${character}`).value, Number($('rate').value), run.signal, () => pose(character, 'speaking', 'happy'), (shape) => mouth(character, shape),Number($('voice-volume').value));
     else if (supportsSpeech) await speak(text, character, run.signal);
     else throw new Error('No device speech engine is available.');
     if (controller === run) { controller = null; resetActors(); $('stop').disabled = true; message('Voice preview finished.'); }
   } catch (reason) { if (controller === run) { stop('Preview stopped.'); if (reason.name !== 'AbortError') error(reason.message); } }
 }
 $('rate').addEventListener('input', () => { $('rate-value').value = `${Number($('rate').value)}×`; });
+function updateTone() {
+  neural.tone = Number($('tone').value);
+  $('tone-value').value = neural.tone === 0 ? 'Neutral' : `${Math.round(Math.abs(neural.tone)*100)}% ${neural.tone > 0 ? 'warmer' : 'brighter'}`;
+}
+$('tone').addEventListener('input',updateTone);
+$('tone').addEventListener('change', () => { stop('Tone changed. Replay a line to hear it.'); saveVoicePreferences(); });
+document.querySelectorAll('[data-delivery]').forEach((button) => button.addEventListener('click', () => {
+  stop('Delivery preset applied. Preview a voice to hear it.');
+  const preset = {calm:[.9,.5],natural:[1,0],lively:[1.1,-.2]}[button.dataset.delivery];
+  $('rate').value = preset[0]; $('rate-value').value = `${preset[0]}×`; $('tone').value = preset[1];
+  updateTone(); saveVoicePreferences();
+}));
 $('still').checked = matchMedia('(prefers-reduced-motion: reduce)').matches;
 $('still').addEventListener('change', () => { document.body.classList.toggle('still', $('still').checked); closeMouths(); });
 document.body.classList.toggle('still', $('still').checked);
@@ -380,3 +411,8 @@ updateStage();
 if (!supportsSpeech) $('silent').checked = true;
 if (supportsSpeech) synth.addEventListener('voiceschanged', populateVoices);
 populateVoices(); count();
+if (Number.isFinite(savedVoicePrefs.rate)) $('rate').value = Math.max(.7,Math.min(1.3,savedVoicePrefs.rate));
+if (Number.isFinite(savedVoicePrefs.tone)) $('tone').value = Math.max(-1,Math.min(1,savedVoicePrefs.tone));
+for (const id of Object.keys(names)) if (Number.isFinite(savedVoicePrefs.pitch?.[id])) $(`pitch-${id}`).value = Math.max(.85,Math.min(1.15,savedVoicePrefs.pitch[id]));
+$('rate-value').value = `${Number($('rate').value)}×`; updateTone();
+if (savedVoicePrefs.engine === 'neural') message('Your saved neural voices will load when you press Play or preview a voice.');

@@ -11,6 +11,8 @@ export class NeuralVoice {
   client = null;
   context = null;
   loading = null;
+  cache = new Map();
+  tone = 0;
   async load(progress) {
     if (this.client) return;
     if (this.loading) return this.loading;
@@ -22,7 +24,7 @@ export class NeuralVoice {
         endpoints: ['webgpu', 'wasm'], dtypeWebgpu: 'q8', dtypeWasm: 'q8',
         workerModule: `${packageURL}/modules/worker-tts.mjs`,
         dictionaryURL: `${packageURL}/dictionaries/`,
-        languages: ['en-us'], voices: ['af_bella', 'am_fenrir'],
+        languages: ['en-us'], voices: ['af_heart', 'am_michael'],
         splitSentences: false
       });
       try {
@@ -43,8 +45,17 @@ export class NeuralVoice {
     const abort = () => this.client.clear();
     signal.addEventListener('abort', abort, {once: true});
     try {
-      await this.client.setup({voice, language: 'en-us', speed, audioEncoding: 'wav'});
-      const messages = await this.client.synthesize({input: text});
+      const key = JSON.stringify([text,voice,speed]);
+      let messages = this.cache.get(key);
+      if (!messages) {
+        await this.client.setup({voice, language: 'en-us', speed, audioEncoding: 'wav'});
+        messages = await this.client.synthesize({input: text});
+        if (!signal.aborted && messages.some((m) => m.type === 'audio') && !messages.some((m) => m.type === 'error')) {
+          this.cache.set(key,messages);
+          const bytes = () => [...this.cache.values()].flat().reduce((sum,m) => sum + (m.data?.audio?.length || 0) * (m.data?.audio?.numberOfChannels || 1) * 4,0);
+          while (this.cache.size > 6 || bytes() > 24 * 1024 * 1024) this.cache.delete(this.cache.keys().next().value);
+        }
+      }
       if (signal.aborted) throw new DOMException('Stopped', 'AbortError');
       for (const response of messages) {
         if (response.type === 'error') throw new Error(response.data?.error || 'Neural speech generation failed.');
@@ -61,14 +72,17 @@ export class NeuralVoice {
       if (signal.aborted) return reject(new DOMException('Stopped', 'AbortError'));
       const source = this.context.createBufferSource();
       const gain = this.context.createGain(); gain.gain.value = volume;
-      source.buffer = data.audio; source.connect(gain).connect(this.context.destination);
+      const warmth = this.context.createBiquadFilter(), presence = this.context.createBiquadFilter();
+      warmth.type = 'lowshelf'; warmth.frequency.value = 220; warmth.gain.value = this.tone * 2;
+      presence.type = 'highshelf'; presence.frequency.value = 3200; presence.gain.value = -this.tone * 3;
+      source.buffer = data.audio; source.connect(warmth).connect(presence).connect(gain).connect(this.context.destination);
       let frame = 0, index = 0, done = false;
       const start = this.context.currentTime;
       const finish = (reason) => {
         if (done) return; done = true; cancelAnimationFrame(frame);
         signal.removeEventListener('abort', cancel); source.onended = null;
         try { source.stop(); } catch { /* May already be ended. */ }
-        source.disconnect(); gain.disconnect(); onMouth('sil'); reason ? reject(reason) : resolve();
+        source.disconnect(); warmth.disconnect(); presence.disconnect(); gain.disconnect(); onMouth('sil'); reason ? reject(reason) : resolve();
       };
       const cancel = () => finish(new DOMException('Stopped', 'AbortError'));
       signal.addEventListener('abort', cancel, {once: true});
