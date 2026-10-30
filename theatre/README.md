@@ -1,5 +1,9 @@
 # Hello Studio
 
+## Workspace controls
+
+Script, Voices, Scene and Sound now have separate inspector tabs. The campsite has cast selection, a visible direction pad and labelled actions below playback. Focus stage hides the editor; Escape restores it. Dialogue and scene settings auto-save in this browser, including unfinished source. Sound sliders show their values. Everything uses the existing free static browser runtime. See [control notes](../docs/THEATRE_CONTROLS.md).
+
 ## Coded campfire world
 
 The campsite is interactive: choose Claude or GPT, tap its ground to move, or focus the world and use arrow keys. Sit by fire returns the selected character to a stool in a stylized rest pose; Stand up, Wave, Put fire out / Light fire and Reset places provide quick actions. These controls work without loading speech. Exploration state is temporary and is not embedded in scene JSON. See `world-interactions.js` for the transform-based movement and ground constraints.

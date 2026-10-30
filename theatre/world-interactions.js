@@ -68,6 +68,10 @@ export function setupWorld({stageSound,isPerforming}) {
     a.el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();select(id);}});
   }
   controls.querySelectorAll('[data-world-actor]').forEach(b=>b.addEventListener('click',()=>select(b.dataset.worldActor)));
+  controls.querySelectorAll('[data-move]').forEach(button=>button.addEventListener('click',()=>{
+    const step={left:[-5,0],right:[5,0],up:[0,-4],down:[0,4]}[button.dataset.move];
+    move(selected,actors[selected].x+step[0],actors[selected].y+step[1]);
+  }));
   stage.tabIndex=0;stage.setAttribute('aria-describedby','world-status');
   stage.addEventListener('click',e=>{
     if(stage.dataset.scene!=='campfire')return;

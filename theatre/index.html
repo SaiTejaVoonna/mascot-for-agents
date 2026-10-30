@@ -10,13 +10,14 @@
   <link rel="stylesheet" href="voice-tuning.css">
   <link rel="stylesheet" href="director.css">
   <link rel="stylesheet" href="world.css?v=3">
-  <script type="module" src="hello.js?v=playground-2"></script>
+  <link rel="stylesheet" href="studio.css?v=2">
+  <script type="module" src="hello.js?v=studio-2"></script>
 </head>
 <body>
 <a class="skip" href="#script">Skip to dialogue</a>
 <header><a class="brand" href="../"><img src="../site/brand.svg" width="28" height="28" alt="">Mascot for Agents</a><a href="https://github.com/SaiTejaVoonna/mascot-for-agents/tree/feature/video-theatre">Development branch</a></header>
 <main>
-  <div class="heading"><div><h1>Little Theatre</h1><p>Your story. Their little world.</p></div><button id="load-example" class="secondary">Load Hello example</button></div>
+  <div class="heading"><div><h1>Little Theatre</h1><p>Move your cast. Write their lines. Press play.</p></div><div class="heading-tools"><button id="focus-stage" class="secondary" aria-pressed="false">Focus stage</button><button id="load-example" class="secondary">Load example</button></div></div>
   <div class="workspace">
     <section class="performance" aria-label="Conversation preview">
       <div class="stage" id="stage" data-scene="campfire" data-playing="false"><span class="stage-note" id="stage-name">Campfire outpost</span>
@@ -33,9 +34,11 @@
         <figure id="actor-gpt" data-state="idle"><div class="actor-art"><img src="../assets/collection/gpt-v5/neutral.png?v=9" width="288" height="288" alt="GPT mascot"><div class="speech-dots" aria-hidden="true"><i></i><i></i><i></i></div></div><figcaption>GPT <span class="actor-state">Ready</span></figcaption></figure>
       </div><div class="caption"><span id="caption-speaker">Your stage is ready</span><p id="caption-text">Start with Hello, or write your own exchange.</p></div></div>
       <section id="world-controls" class="world-controls" aria-label="Explore the campsite">
-        <div class="world-tools">
-          <div class="world-selection" role="group" aria-label="Control a mascot"><button data-world-actor="claude" aria-pressed="true">Claude</button><button data-world-actor="gpt" aria-pressed="false">GPT</button></div>
-          <button id="world-sit">Sit by fire</button><button id="world-wave">Wave</button><button id="world-fire" aria-pressed="true">Put fire out</button><button id="world-reset">Reset places</button>
+        <div class="world-control-heading"><h2>Explore the campsite</h2><button id="world-reset">Reset positions</button></div>
+        <div class="world-control-grid">
+          <div><span class="control-label">Control a mascot</span><div class="world-selection" role="group" aria-label="Control a mascot"><button data-world-actor="claude" aria-pressed="true"><img src="../assets/collection/claude-v5/neutral.png?v=9" alt="" width="25" height="25">Claude</button><button data-world-actor="gpt" aria-pressed="false"><img src="../assets/collection/gpt-v5/neutral.png?v=9" alt="" width="25" height="25">GPT</button></div></div>
+          <div><span class="control-label">Move · or tap the ground</span><div class="move-pad" role="group" aria-label="Move selected mascot"><button data-move="up" aria-label="Move up">↑</button><button data-move="left" aria-label="Move left">←</button><button data-move="down" aria-label="Move down">↓</button><button data-move="right" aria-label="Move right">→</button></div></div>
+          <div class="world-action-group"><span class="control-label">Actions</span><div class="world-actions"><button id="world-sit">Sit by fire</button><button id="world-wave">Wave hello</button><button id="world-fire" aria-pressed="true">Put fire out</button></div></div>
         </div>
         <p id="world-status" role="status">Select a mascot, then tap the campsite to move.</p>
       </section>

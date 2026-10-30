@@ -1,6 +1,7 @@
 import {NeuralVoice, neuralVoices, recordedVocals} from './neural-voice.js?v=speech-6';
 import {StageSound, soundNames} from './stage-sound.js?v=audio-unlock-1';
-import {setupWorld} from './world-interactions.js?v=2';
+import {setupWorld} from './world-interactions.js?v=3';
+import {setupStudio} from './studio-ui.js?v=2';
 const neural = new NeuralVoice();
 const stageSound = new StageSound();
 const $ = (id) => document.getElementById(id);
@@ -609,3 +610,7 @@ $('rate-value').value = `${Number($('rate').value)}×`; updateTone();
 saveVoicePreferences();
 if ($('engine').value === 'neural') message(`Neural speech selected · Claude: ${$('voice-claude').selectedOptions[0]?.textContent}. Press Play or Preview to load voices.`);
 setupWorld({stageSound,isPerforming:() => Boolean(controller)});
+setupStudio({readScene:currentScene,restoreScene:(scene) => {
+  const valid=validate(scene);importedScene=valid;$('script').value=scriptText(valid);
+  applySettings(valid);count();
+},restoreSource:(source) => {importedScene=null;$('script').value=source;count();}});
