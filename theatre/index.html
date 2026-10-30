@@ -2,25 +2,36 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Hello Studio · Mascot for Agents</title>
+  <title>Little Theatre · Mascot for Agents</title>
   <meta name="description" content="Write a little conversation. Let Claude and GPT say hello with browser voices and captions.">
   <link rel="icon" href="../site/brand.svg" type="image/svg+xml">
   <link rel="stylesheet" href="hello.css">
+  <link rel="stylesheet" href="stage.css">
   <script type="module" src="hello.js"></script>
 </head>
 <body>
 <a class="skip" href="#script">Skip to dialogue</a>
 <header><a class="brand" href="../"><img src="../site/brand.svg" width="28" height="28" alt="">Mascot for Agents</a><a href="https://github.com/SaiTejaVoonna/mascot-for-agents/tree/feature/video-theatre">Development branch</a></header>
 <main>
-  <div class="heading"><div><p class="edition">Hello Studio / First rehearsal</p><h1>A little conversation.</h1><p>Give the mascots a few words. Hear them take turns.</p></div><button id="load-example" class="secondary">Load Hello example</button></div>
+  <div class="heading"><div><p class="edition">Little Theatre / Scene studies</p><h1>Set the scene.</h1><p>Two familiar faces. A story that’s yours.</p></div><button id="load-example" class="secondary">Load Hello example</button></div>
   <div class="workspace">
     <section class="performance" aria-label="Conversation preview">
-      <div class="stage"><span class="stage-note">Rehearsal room</span><div class="cast">
+      <div class="stage" id="stage" data-scene="campfire" data-playing="false"><span class="stage-note" id="stage-name">Campfire after dark</span>
+        <div class="scenery" aria-hidden="true">
+          <svg class="forest" viewBox="0 0 700 360" preserveAspectRatio="xMidYMax slice"><path fill="#253e45" d="M0 205 70 90 100 150 150 40 230 190 280 105 350 230 420 100 500 200 570 50 650 190 700 125V360H0Z"/><path fill="#132f37" d="m0 245 45-90 55 100 55-100 60 110 65-85 70 100 90-150 70 140 60-100 75 120V360H0Z"/></svg>
+          <div class="stars"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="moon"></div><div class="ground"></div>
+          <div class="firelight"></div><div class="bench left"></div><div class="bench right"></div>
+          <div class="campfire"><div class="wood one"></div><div class="wood two"></div><div class="flame outer"></div><div class="flame inner"></div><div class="ember"></div></div>
+          <div class="studio-panels"><i></i><i></i><i></i></div><div class="studio-sign">The little things</div><div class="podcast-desk"></div>
+          <svg class="microphones" viewBox="0 0 700 360" preserveAspectRatio="none"><g fill="none" stroke="#b9c9c5" stroke-width="5" stroke-linecap="round"><path d="m70 300 105-45 55 18m400 27-105-45-55 18"/><path d="m224 263 8 26m-20-13 25 8m239-21-8 26m20-13-25 8" stroke="#242b30" stroke-width="15"/></g></svg>
+        </div><div class="cast">
         <figure id="actor-claude" data-state="idle"><div class="actor-art"><img src="../assets/collection/claude-v5/neutral.png?v=9" width="288" height="288" alt="Claude mascot"><div class="speech-dots" aria-hidden="true"><i></i><i></i><i></i></div></div><figcaption>Claude <span class="actor-state">Ready</span></figcaption></figure>
         <figure id="actor-gpt" data-state="idle"><div class="actor-art"><img src="../assets/collection/gpt-v5/neutral.png?v=9" width="288" height="288" alt="GPT mascot"><div class="speech-dots" aria-hidden="true"><i></i><i></i><i></i></div></div><figcaption>GPT <span class="actor-state">Ready</span></figcaption></figure>
       </div><div class="caption"><span id="caption-speaker">Your stage is ready</span><p id="caption-text">Start with Hello, or write your own exchange.</p></div></div>
       <div class="transport"><button id="play" class="primary">Play conversation</button><button id="stop" class="secondary" disabled>Stop</button><label class="check"><input id="silent" type="checkbox">Captions only</label></div>
       <p id="status" role="status" aria-live="polite">Preparing available browser voices…</p>
+      <div class="scene-controls"><label>Setting<select id="setting"><option value="campfire">Campfire after dark</option><option value="podcast">The podcast room</option><option value="room">Rehearsal room</option></select></label><label>Conversation pace<select id="pace"><option value="relaxed">Relaxed</option><option value="natural" selected>Natural</option><option value="snappy">Snappy</option></select></label></div>
+      <details class="sound-settings"><summary>Sound &amp; atmosphere</summary><div class="voice-grid"><label class="check"><input id="ambience" type="checkbox">Background ambience</label><label class="check"><input id="effects" type="checkbox" checked>Scripted sound effects</label><label>Voice volume<input id="voice-volume" type="range" min="0" max="1" step="0.05" value="1"></label><label>Effects volume<input id="effects-volume" type="range" min="0" max="1" step="0.05" value="0.25"></label><label>Ambience volume<input id="ambience-volume" type="range" min="0" max="1" step="0.05" value="0.2"></label><label>Effect pitch<input id="sound-pitch" type="range" min="0.5" max="1.5" step="0.05" value="1"></label><label>Firelight<input id="light" type="range" min="0" max="1" step="0.05" value="0.6"></label></div><p class="hint">Original synthesized effects and ambience. Sound starts only when you play or preview. Voice volume controls generated neural audio; device voices may apply volume differently.</p><div class="sound-palette" role="group" aria-label="Preview a sound"><button data-sound="whoosh">Whoosh</button><button data-sound="pop">Pop</button><button data-sound="tap">Tap</button><button data-sound="chime">Chime</button><button data-sound="click">Click</button><button data-sound="success">Success</button></div><p class="hint">Try <code>Sound: whoosh</code> in your script. Sound cues play between dialogue lines. Ambience lowers while a character speaks.</p></details>
       <details class="voice-settings" open><summary>Voices &amp; delivery</summary>
         <div class="voice-engine"><label>Voice engine<select id="engine"><option value="device">Device voices · instant</option><option value="neural" disabled>Kokoro neural · experimental</option></select></label><button id="load-neural" class="secondary">Load neural voices</button></div>
         <p class="hint">Optional neural mode downloads model files and code from Hugging Face and jsDelivr. Files may total hundreds of MB and use substantial RAM. Generation runs in your browser; first use can be slow on this PC. Nothing downloads until you choose Load.</p>
@@ -39,11 +50,12 @@ Pause: 400
 Claude [curious]: Shall we make something together?
 GPT [happy]: Yes! Let's start with a little conversation.</textarea>
       <p class="hint">Use <code>Claude: Hello!</code> or <code>GPT [curious]: How are you?</code> Add <code>Pause: 400</code> for a pause in milliseconds.</p>
-      <div class="insertions" role="group" aria-label="Add a line"><button data-insert="Claude [happy]: Hello!">+ Claude</button><button data-insert="GPT [happy]: Hi there!">+ GPT</button><button data-insert="Pause: 400">+ Pause</button></div>
+      <div class="insertions" role="group" aria-label="Add a line"><button data-insert="Claude [happy]: Hello!">+ Claude</button><button data-insert="GPT [happy]: Hi there!">+ GPT</button><button data-insert="Pause: 400">+ Pause</button><button data-insert="Sound: whoosh">+ Sound</button></div>
       <p class="hint">Expressions: neutral, happy, curious, concerned. Up to 2,000 spoken characters. English starter dialogue; no grammar correction or AI service runs here.</p>
       <p id="error" role="alert" hidden></p>
       <div class="files"><button id="download" class="secondary">Save scene JSON</button><label class="file-button secondary">Open scene JSON<input id="upload" type="file" accept=".json,application/json"></label></div>
-      <details><summary>For your agent</summary><p>Ask your agent to write a short exchange using this syntax, or create a format 0.1 scene file. The editor and scene import use the same dialogue model.</p><a href="../skills/theatre-scene/SKILL.md">Read the scene skill</a><p>The campfire ID in saved files reserves the future stage. This demo renders a rehearsal room and approximates gaze with character direction.</p></details>
+      <details><summary>For your agent</summary><p>Ask your agent for dialogue, pauses and optional Sound: cues. Format 0.2 saves the setting, pacing and sound mix; earlier 0.1 dialogue scenes still open.</p><a href="../skills/theatre-scene/SKILL.md">Read the scene skill</a><p>Illustrated 2D stages with standing mascot artwork. Walking, seated rigs and 3D camera movement are future work.</p></details>
+      <details class="credits"><summary>Credits &amp; sound sources</summary><p>Neural speech: <a href="https://github.com/met4citizen/HeadTTS">HeadTTS</a> (MIT), using Kokoro and its runtime dependencies. Device speech: your browser/OS. The stage artwork and procedural sound palette are original project code.</p><p>Sound-workflow references from your screenshot: <a href="https://openverse.org/">Openverse</a>, <a href="https://clipwing.pro/skills/real-sfx">Real SFX</a> and <a href="https://github.com/Leonxlnx/earshot">earshot</a>. Their recordings, scripts and analysis models are not bundled here. Any future imported recordings need their own license credits.</p></details>
     </section>
   </div>
   <noscript>This rehearsal needs JavaScript. You can still browse the <a href="../">mascot gallery</a>.</noscript>

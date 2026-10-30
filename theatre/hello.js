@@ -1,5 +1,7 @@
 import {NeuralVoice, neuralVoices} from './neural-voice.js';
+import {StageSound, soundNames} from './stage-sound.js';
 const neural = new NeuralVoice();
+const stageSound = new StageSound();
 const $ = (id) => document.getElementById(id);
 const synth = window.speechSynthesis;
 const supportsSpeech = Boolean(synth && window.SpeechSynthesisUtterance);
@@ -51,13 +53,14 @@ function pose(character, state = 'idle', expression = 'neutral', gaze = 'viewer'
   const path = `../assets/collection/${character}-v5/${expressions[expression] || 'neutral'}.png?v=9`;
   if (image.getAttribute('src') !== path) image.src = path;
 }
-function resetActors() { closeMouths(); Object.keys(names).forEach((id) => { pose(id); $(`actor-${id}`).classList.remove('nod'); }); }
+function resetActors() { closeMouths(); stageSound.duck(false); Object.keys(names).forEach((id) => { pose(id); $(`actor-${id}`).classList.remove('nod'); }); }
 function stop(text = 'Stopped. Ready to start again.') {
   const previous = controller;
   controller = null;
   previous?.abort();
   if (previous && supportsSpeech) synth.cancel();
   utterance = null;
+  stageSound.stop(); $('stage').dataset.playing = 'false';
   resetActors();
   $('play').textContent = 'Play conversation'; $('stop').disabled = true;
   if (text) { message(text); caption('Your stage is ready', 'Start with Hello, or write your own exchange.'); }
@@ -83,6 +86,7 @@ function speak(text, character, signal) {
     else speech.lang = 'en-US';
     speech.rate = Number($('rate').value);
     speech.pitch = Number($(`pitch-${character}`).value);
+    speech.volume = Number($('voice-volume').value);
     let settled = false;
     const finish = (reason) => {
       if (settled) return;
@@ -99,7 +103,7 @@ function speak(text, character, signal) {
     }, 90000);
     speech.onend = () => finish();
     speech.onerror = (event) => finish(new Error(`Speech could not play (${event.error || 'voice unavailable'}). Try another voice or Captions only.`));
-    speech.onstart = () => { if (!signal.aborted) { pose(character, 'speaking', activeExpression, activeGaze); approximateMouth(character); } };
+    speech.onstart = () => { if (!signal.aborted) { stageSound.duck(true); pose(character, 'speaking', activeExpression, activeGaze); approximateMouth(character); } };
     speech.onboundary = (event) => {
       if (signal.aborted || event.name !== 'word') return;
       const word = text.slice(event.charIndex).split(/\s/)[0].toLowerCase();
@@ -110,6 +114,26 @@ function speak(text, character, signal) {
   });
 }
 let activeExpression = 'neutral', activeGaze = 'viewer';
+const settingNames = {campfire:'Campfire after dark', podcast:'The podcast room', room:'Rehearsal room'};
+function settings() {
+  return {pace:$('pace').value, ambience:$('ambience').checked, effects:$('effects').checked,
+    voiceVolume:Number($('voice-volume').value), effectsVolume:Number($('effects-volume').value),
+    ambienceVolume:Number($('ambience-volume').value), soundPitch:Number($('sound-pitch').value), light:Number($('light').value)};
+}
+function updateStage() {
+  $('stage').dataset.scene = $('setting').value;
+  $('stage-name').textContent = settingNames[$('setting').value];
+  $('stage').style.setProperty('--firelight', $('light').value);
+  stageSound.configure(settings());
+}
+function applySettings(scene) {
+  $('setting').value = scene.stage;
+  const values = {pace:'natural',ambience:false,effects:true,voiceVolume:1,effectsVolume:.25,ambienceVolume:.2,soundPitch:1,light:.6,...scene.settings};
+  $('pace').value = values.pace; $('ambience').checked = values.ambience; $('effects').checked = values.effects;
+  for (const [key,id] of Object.entries({voiceVolume:'voice-volume',effectsVolume:'effects-volume',ambienceVolume:'ambience-volume',soundPitch:'sound-pitch',light:'light'})) $(id).value = values[key];
+  updateStage();
+}
+const paceScale = () => ({relaxed:1.5,natural:1,snappy:.6})[$('pace').value];
 function parseScript() {
   const cast = [
     {id: 'a', character: 'claude', voice: 'warm', slot: 'seat-left'},
@@ -119,11 +143,13 @@ function parseScript() {
     if (!line.trim()) return null;
     const pause = line.match(/^\s*Pause:\s*(\d+)\s*$/i);
     if (pause) return {id: `beat-${index}`, type: 'pause', durationMs: Number(pause[1])};
+    const sound = line.match(/^\s*Sound:\s*(\w+)\s*$/i);
+    if (sound) return {id:`beat-${index}`,type:'sound',sound:sound[1].toLowerCase()};
     const match = line.match(/^\s*(Claude|GPT)(?:\s*\[(neutral|happy|curious|concerned)\])?\s*:\s*(.+)\s*$/i);
-    if (!match) throw new Error(`Line ${index + 1}: use Claude: Hello!, GPT [happy]: Hi!, or Pause: 400.`);
+    if (!match) throw new Error(`Line ${index + 1}: use Claude: Hello!, GPT [happy]: Hi!, Pause: 400, or Sound: whoosh.`);
     return {id: `beat-${index}`, type: 'say', actor: match[1].toLowerCase() === 'claude' ? 'a' : 'b', text: match[3].trim(), expression: (match[2] || 'neutral').toLowerCase(), afterMs: 300};
   }).filter(Boolean);
-  return validate({format: 'mascot-scene', version: '0.1', stage: 'campfire', seed: 42, cast, beats});
+  return validate({format: 'mascot-scene', version: '0.2', stage: $('setting').value, settings:settings(), seed: 42, cast, beats});
 }
 function allowed(value, keys, path) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error(`${path}: expected an object.`);
@@ -133,9 +159,17 @@ function milliseconds(value, path) {
   if (!Number.isInteger(value) || value < 0 || value > 5000) throw new Error(`${path}: use 0 to 5000 milliseconds.`);
 }
 function validate(scene) {
-  allowed(scene, ['format','version','stage','seed','targetDurationMs','cast','beats'], 'scene');
-  if (scene.format !== 'mascot-scene' || scene.version !== '0.1') throw new Error('Use mascot-scene format version 0.1.');
-  if (scene.stage !== 'campfire') throw new Error('Only the campfire scene contract is supported; this prototype shows the rehearsal room.');
+  allowed(scene, scene?.version === '0.1' ? ['format','version','stage','seed','targetDurationMs','cast','beats'] : ['format','version','stage','seed','targetDurationMs','cast','beats','settings'], 'scene');
+  if (scene.format !== 'mascot-scene' || !['0.1','0.2'].includes(scene.version)) throw new Error('Use mascot-scene format version 0.1 or 0.2.');
+  if (!Object.hasOwn(settingNames, scene.stage) || (scene.version === '0.1' && scene.stage !== 'campfire')) throw new Error('Choose a supported stage: campfire, podcast or room (new settings use version 0.2).');
+  if (scene.settings !== undefined) {
+    allowed(scene.settings,['pace','ambience','effects','voiceVolume','effectsVolume','ambienceVolume','soundPitch','light'],'settings');
+    for (const [key,value] of Object.entries(scene.settings)) {
+      if (key === 'pace') { if (!['relaxed','natural','snappy'].includes(value)) throw new Error('settings.pace: choose relaxed, natural or snappy.'); }
+      else if (['ambience','effects'].includes(key)) { if (typeof value !== 'boolean') throw new Error(`settings.${key}: use true or false.`); }
+      else if (!Number.isFinite(value) || value < (key === 'soundPitch' ? .5 : 0) || value > (key === 'soundPitch' ? 1.5 : 1)) throw new Error(`settings.${key}: value is out of range.`);
+    }
+  }
   if (!Number.isInteger(scene.seed)) throw new Error('scene.seed: use an integer.');
   if (scene.targetDurationMs !== undefined && (!Number.isInteger(scene.targetDurationMs) || scene.targetDurationMs <= 0)) throw new Error('targetDurationMs must be a positive integer.');
   if (!Array.isArray(scene.cast) || scene.cast.length < 1 || scene.cast.length > 2) throw new Error('Use one or two actors.');
@@ -152,10 +186,11 @@ function validate(scene) {
   const beatIds = new Set(); let total = 0;
   scene.beats.forEach((beat, index) => {
     const path = `beats[${index}]`;
-    allowed(beat, beat?.type === 'pause' ? ['id','type','durationMs'] : ['id','type','actor','text','expression','lookAt','afterMs','listener'], path);
+    allowed(beat, beat?.type === 'pause' ? ['id','type','durationMs'] : beat?.type === 'sound' ? ['id','type','sound'] : ['id','type','actor','text','expression','lookAt','afterMs','listener'], path);
     if (typeof beat.id !== 'string' || !beat.id || beatIds.has(beat.id)) throw new Error(`${path}: use a unique beat ID.`);
     beatIds.add(beat.id);
     if (beat.type === 'pause') { milliseconds(beat.durationMs, path); return; }
+    if (beat.type === 'sound') { if (scene.version !== '0.2' || !soundNames.includes(beat.sound)) throw new Error(`${path}.sound: choose ${soundNames.join(', ')} in version 0.2.`); return; }
     if (beat.type !== 'say' || !ids.has(beat.actor)) throw new Error(`${path}: use say and an actor ID from cast.`);
     if (typeof beat.text !== 'string' || !beat.text.trim()) throw new Error(`${path}.text: add spoken words.`);
     total += beat.text.length;
@@ -170,7 +205,7 @@ function validate(scene) {
   if (!total || total > 2000) throw new Error('Include dialogue, using at most 2,000 spoken characters.');
   return scene;
 }
-function currentScene() { return importedScene || parseScript(); }
+function currentScene() { const scene = importedScene || parseScript(); return validate({...scene,version:'0.2',stage:$('setting').value,settings:settings()}); }
 function count() {
   try { const scene = currentScene(); $('line-count').textContent = `${scene.beats.filter((b) => b.type === 'say').length} spoken lines`; }
   catch { $('line-count').textContent = 'Check script'; }
@@ -192,9 +227,21 @@ async function play() {
   for (const actor of scene.cast) $(`actor-${actor.character}`).style.order = actor.slot === 'seat-left' ? '0' : '1';
   let line = 0; const total = scene.beats.filter((b) => b.type === 'say').length;
   try {
+    if (!silent && ($('effects').checked || $('ambience').checked)) {
+      await stageSound.ready();
+      if (run.signal.aborted) throw abortError();
+      stageSound.configure(settings());
+      if ($('ambience').checked) stageSound.startAmbience($('setting').value);
+    }
+    $('stage').dataset.playing = 'true';
     for (const beat of scene.beats) {
       if (run.signal.aborted) throw abortError();
-      if (beat.type === 'pause') { resetActors(); message('A little pause…'); await delay(beat.durationMs, run.signal); continue; }
+      if (beat.type === 'pause') { resetActors(); message('A little pause…'); await delay(beat.durationMs * paceScale(), run.signal); continue; }
+      if (beat.type === 'sound') {
+        if (!silent && $('effects').checked) stageSound.effect(beat.sound);
+        message(`${silent ? 'Silent cue' : 'Sound cue'}: ${beat.sound}`);
+        await delay(400 * paceScale(), run.signal); continue;
+      }
       line++;
       const actor = cast.get(beat.actor), other = scene.cast.find((item) => item.id !== actor.id);
       activeExpression = beat.expression || 'neutral'; activeGaze = beat.lookAt || other?.id || 'viewer';
@@ -212,14 +259,14 @@ async function play() {
       else if (useNeural) {
         message(`Preparing neural speech · Line ${line} of ${total}. First use can take time.`);
         await neural.speak(beat.text, $(`voice-${actor.character}`).value, Number($('rate').value), run.signal,
-          () => { pose(actor.character, 'speaking', activeExpression, activeGaze); message(`Neural speech · Line ${line} of ${total}`); },
-          (shape) => mouth(actor.character, shape));
+          () => { stageSound.duck(true); pose(actor.character, 'speaking', activeExpression, activeGaze); message(`Neural speech · Line ${line} of ${total}`); },
+          (shape) => mouth(actor.character, shape), Number($('voice-volume').value));
       } else await speak(beat.text, actor.character, run.signal);
       resetActors();
-      await delay(beat.afterMs ?? 250, run.signal);
+      await delay((beat.afterMs ?? 250) * paceScale(), run.signal);
     }
     if (controller === run) {
-      controller = null; resetActors(); $('play').textContent = 'Play again'; $('stop').disabled = true;
+      controller = null; resetActors(); stageSound.stop(); $('stage').dataset.playing = 'false'; $('play').textContent = 'Play again'; $('stop').disabled = true;
       message('Finished. Change a line or play it again.');
     }
   } catch (reason) {
@@ -315,13 +362,21 @@ $('upload').addEventListener('change', async (event) => {
     const scene = validate(JSON.parse(await file.text()));
     importedScene = scene;
     const cast = new Map(scene.cast.map((actor) => [actor.id, actor]));
-    $('script').value = scene.beats.map((beat) => beat.type === 'pause' ? `Pause: ${beat.durationMs}` : `${names[cast.get(beat.actor).character]} [${beat.expression || 'neutral'}]: ${beat.text}`).join('\n');
+    $('script').value = scene.beats.map((beat) => beat.type === 'pause' ? `Pause: ${beat.durationMs}` : beat.type === 'sound' ? `Sound: ${beat.sound}` : `${names[cast.get(beat.actor).character]} [${beat.expression || 'neutral'}]: ${beat.text}`).join('\n');
+    applySettings(scene);
     error(); count(); message('Scene opened. Directions are preserved until you edit the script; editing uses basic dialogue defaults.');
   } catch (reason) { error(reason.message); message('Could not open scene. Your previous script is preserved.'); }
   event.target.value = '';
 });
 document.addEventListener('visibilitychange', () => { if (document.hidden && controller) stop('Stopped because the page was hidden. Press Play to restart.'); });
 window.addEventListener('pagehide', () => stop(''));
+for (const id of ['setting','pace','ambience','effects']) $(id).addEventListener('change', () => { stop('Scene settings changed. Ready to play.'); updateStage(); });
+for (const id of ['voice-volume','effects-volume','ambience-volume','sound-pitch','light']) $(id).addEventListener('input', updateStage);
+document.querySelectorAll('[data-sound]').forEach((button) => button.addEventListener('click', async () => {
+  try { await stageSound.ready(); stageSound.configure(settings()); stageSound.effect(button.dataset.sound); message(`Previewing ${button.dataset.sound}.`); }
+  catch { error('Sound could not start. Check your browser audio settings.'); }
+}));
+updateStage();
 if (!supportsSpeech) $('silent').checked = true;
 if (supportsSpeech) synth.addEventListener('voiceschanged', populateVoices);
 populateVoices(); count();

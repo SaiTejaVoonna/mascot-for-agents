@@ -9,6 +9,8 @@ Status: an initial 2D Hello Studio player is implemented on feature/video-theatr
 
 Read [the format contract](../../docs/PERFORMANCE_FORMAT_V0.md) for fields, sequencing and timing. Use [the reference scene](../../theatre/examples/campfire-hello.scene.json) as the starting shape. These paths assume the repository layout; standalone distribution must bundle or correctly resolve those references before release.
 
+For illustrated campfire/podcast/room stages, pacing, mix settings and procedural Sound: cues, use [format 0.2](../../docs/PERFORMANCE_FORMAT_V02.md) and the [podcast example](../../theatre/examples/podcast.scene.json). New saves use 0.2; 0.1 dialogue imports still work. These are 2D arrangements of existing mascot artwork, not seated 3D actors. New characters need reviewed runtime support.
+
 ## Create a scene
 
 1. Preserve supplied dialogue unless the user requests edits. Infer simple casting when possible. For an approximately 30-second scene, keep dialogue brief; duration is unknown until the selected voice is rendered.

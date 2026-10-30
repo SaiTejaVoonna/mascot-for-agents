@@ -1,5 +1,15 @@
 # Hello Studio
 
+## Little Theatre: first scene version
+
+The current stage selector offers an illustrated campfire, a podcast room and the original rehearsal room. These are original HTML/CSS/SVG environments around the existing 2D mascots. Character rigging, walking and 3D environments remain future work.
+
+Conversation pace is separate from speaking speed. Optional original Web Audio effects (whoosh/pop/tap/chime/click/success), synthetic ambience, volume controls, effect pitch and firelight are editable. Sound: whoosh adds a serial effect cue to the script. Ambience ducks under dialogue. No recordings from the screenshot resources are bundled; those projects are linked as workflow references in Credits.
+
+New saves use scene format 0.2, including scene and sound settings. Earlier 0.1 imports remain supported. See docs/PERFORMANCE_FORMAT_V02.md and theatre/examples/podcast.scene.json. Voice choices and generated speech are still not embedded in exported files.
+
+The neural playback path was subsequently exercised in Chrome: all four Hello lines completed with Bella/Fenrir, and Stop followed by another audition completed. These observations preceded the scene/sound extension. New scene/sound behavior has not had a full playback or device review in this implementation turn.
+
 ## Voice and mouth update
 
 Device voice selection now prioritizes English candidates with Natural/Neural/Online or Google English names over legacy desktop voices. This is a naming heuristic, not an audio quality measurement. Separate voice audition buttons and modest pitch controls help choose delivery. Pitch controls do not turn an old voice into a neural voice.
@@ -35,7 +45,7 @@ Then open http://127.0.0.1:8765/theatre/.
 
 ## Limitations
 
-This is a rehearsal room, not the planned 3D campfire. campfire is the saved scene contract ID; there are no rendered campfire assets or walking/sitting transitions yet. Raster expressions and speech-activity movement are not phoneme lip sync. Character lean only approximates attention.
+These are illustrated 2D stages, not the planned 3D theatre. Walking/sitting transitions are not implemented. Character lean only approximates attention; simplified neural mouth shapes do not reproduce a full facial rig.
 
 Browser voices vary by device; some are network services. No promise of offline speech, emotional voice delivery, audio export, exact duration or cross-device voice consistency. Browser speech is not captured into an audio file. Use Stop/Restart; precise Pause/Resume and seeking are intentionally absent from this draft-speech player.
 

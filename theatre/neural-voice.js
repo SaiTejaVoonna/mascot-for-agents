@@ -36,7 +36,7 @@ export class NeuralVoice {
     try { await this.loading; } finally { this.loading = null; }
   }
   async unlock() { if (this.context) await this.context.resume(); }
-  async speak(text, voice, speed, signal, onStart, onMouth) {
+  async speak(text, voice, speed, signal, onStart, onMouth, volume = 1) {
     if (!this.client) throw new Error('Load neural voices before selecting this mode.');
     await this.unlock();
     if (signal.aborted) throw new DOMException('Stopped', 'AbortError');
@@ -51,23 +51,24 @@ export class NeuralVoice {
         if (response.type !== 'audio') continue;
         const data = response.data;
         if (!data?.audio) throw new Error('The neural voice returned no audio.');
-        await this.play(data, signal, onStart, onMouth);
+        await this.play(data, signal, onStart, onMouth, volume);
       }
       if (!messages.some((m) => m.type === 'audio')) throw new Error('No speech returned. Try a shorter line.');
     } finally { signal.removeEventListener('abort', abort); onMouth('sil'); }
   }
-  play(data, signal, onStart, onMouth) {
+  play(data, signal, onStart, onMouth, volume) {
     return new Promise((resolve, reject) => {
       if (signal.aborted) return reject(new DOMException('Stopped', 'AbortError'));
       const source = this.context.createBufferSource();
-      source.buffer = data.audio; source.connect(this.context.destination);
+      const gain = this.context.createGain(); gain.gain.value = volume;
+      source.buffer = data.audio; source.connect(gain).connect(this.context.destination);
       let frame = 0, index = 0, done = false;
       const start = this.context.currentTime;
       const finish = (reason) => {
         if (done) return; done = true; cancelAnimationFrame(frame);
         signal.removeEventListener('abort', cancel); source.onended = null;
         try { source.stop(); } catch { /* May already be ended. */ }
-        source.disconnect(); onMouth('sil'); reason ? reject(reason) : resolve();
+        source.disconnect(); gain.disconnect(); onMouth('sil'); reason ? reject(reason) : resolve();
       };
       const cancel = () => finish(new DOMException('Stopped', 'AbortError'));
       signal.addEventListener('abort', cancel, {once: true});

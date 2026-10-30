@@ -1,0 +1,18 @@
+{
+  "format": "mascot-scene",
+  "version": "0.2",
+  "stage": "podcast",
+  "seed": 42,
+  "settings": {"pace":"natural","ambience":false,"effects":true,"voiceVolume":1,"effectsVolume":0.2,"ambienceVolume":0.15,"soundPitch":1,"light":0.6},
+  "cast": [
+    {"id":"a","character":"claude","voice":"warm","slot":"seat-left"},
+    {"id":"b","character":"gpt","voice":"bright","slot":"seat-right"}
+  ],
+  "beats": [
+    {"id":"opening","type":"sound","sound":"chime"},
+    {"id":"welcome","type":"say","actor":"a","text":"Welcome to The Little Things. What made you smile today?","expression":"happy","afterMs":350},
+    {"id":"answer","type":"say","actor":"b","text":"Someone turned a tiny idea into something we could play with.","expression":"happy","listener":{"actor":"a","reaction":"nod"},"afterMs":400},
+    {"id":"pause","type":"pause","durationMs":350},
+    {"id":"close","type":"say","actor":"a","text":"That sounds like a good place to start.","expression":"happy","afterMs":300}
+  ]
+}
